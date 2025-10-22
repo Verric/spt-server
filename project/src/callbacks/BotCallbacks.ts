@@ -12,18 +12,25 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class BotCallbacks {
+    private botController: BotController;
+    private httpResponse: HttpResponseUtil;
+    private applicationContext: ApplicationContext;
     constructor(
-        @inject("BotController") protected botController: BotController,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ApplicationContext") protected applicationContext: ApplicationContext,
-    ) {}
+        @inject("BotController") botController: BotController,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ApplicationContext") applicationContext: ApplicationContext
+    ) {
+        this.botController = botController;
+        this.httpResponse = httpResponse;
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * Handle singleplayer/settings/bot/limit
      * Is called by client to define each bot roles wave limit
      * @returns string
      */
-    public getBotLimit(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getBotLimit(url: string, _info: IEmptyRequestData, _sessionID: string): string {
         const splittedUrl = url.split("/");
         const type = splittedUrl[splittedUrl.length - 1];
         return this.httpResponse.noBody(this.botController.getBotPresetGenerationLimit(type));
@@ -53,9 +60,9 @@ export class BotCallbacks {
      * @returns dictionary of every bot and its diffiulty settings
      */
     public getAllBotDifficulties(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string
     ): Record<string, IDifficulties> {
         return this.httpResponse.noBody(this.botController.getAllBotDifficulties());
     }
@@ -65,9 +72,9 @@ export class BotCallbacks {
      * @returns IGetBodyResponseData
      */
     public async generateBots(
-        url: string,
+        _url: string,
         info: IGenerateBotsRequestData,
-        sessionID: string,
+        sessionID: string
     ): Promise<IGetBodyResponseData<IBotBase[]>> {
         return this.httpResponse.getBody(await this.botController.generate(sessionID, info));
     }
