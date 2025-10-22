@@ -9,19 +9,24 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class AchievementCallbacks {
+    private achievementController: AchievementController;
+    private httpResponse: HttpResponseUtil;
+
     constructor(
-        @inject("AchievementController") protected achievementController: AchievementController,
-        @inject("ProfileController") protected profileController: ProfileController,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-    ) {}
+        @inject("AchievementController") achievementController: AchievementController,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil
+    ) {
+        this.achievementController = achievementController;
+        this.httpResponse = httpResponse;
+    }
 
     /**
      * Handle client/achievement/list
      */
     public getAchievements(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        sessionID: string
     ): IGetBodyResponseData<IGetAchievementsResponse> {
         return this.httpResponse.getBody(this.achievementController.getAchievements(sessionID));
     }
@@ -30,9 +35,9 @@ export class AchievementCallbacks {
      * Handle client/achievement/statistic
      */
     public statistic(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        sessionID: string
     ): IGetBodyResponseData<ICompletedAchievementsResponse> {
         return this.httpResponse.getBody(this.achievementController.getAchievementStatistics(sessionID));
     }
