@@ -7,21 +7,22 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class BundleSerializer extends Serializer {
+    protected logger: ILogger;
+    protected bundleLoader: BundleLoader;
+    protected httpFileUtil: HttpFileUtil;
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("BundleLoader") protected bundleLoader: BundleLoader,
-        @inject("HttpFileUtil") protected httpFileUtil: HttpFileUtil,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("BundleLoader") bundleLoader: BundleLoader,
+        @inject("HttpFileUtil") httpFileUtil: HttpFileUtil
     ) {
         super();
+        this.logger = logger;
+        this.bundleLoader = bundleLoader;
+        this.httpFileUtil = httpFileUtil;
     }
 
-    public override async serialize(
-        sessionID: string,
-        req: IncomingMessage,
-        resp: ServerResponse,
-        body: any,
-    ): Promise<void> {
-        const key = decodeURI(req.url.split("/bundle/")[1]);
+    public override async serialize(_sessionID: string, req: IncomingMessage, resp: ServerResponse): Promise<void> {
+        const key = decodeURI(req.url!.split("/bundle/")[1]);
         const bundle = this.bundleLoader.getBundle(key);
         if (!bundle) {
             return;

@@ -10,18 +10,13 @@ export class NotifySerializer extends Serializer {
     constructor(
         @inject("NotifierController") protected notifierController: NotifierController,
         @inject("JsonUtil") protected jsonUtil: JsonUtil,
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper,
+        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper
     ) {
         super();
     }
 
-    public override async serialize(
-        _sessionID: string,
-        req: IncomingMessage,
-        resp: ServerResponse,
-        _: any,
-    ): Promise<void> {
-        const splittedUrl = req.url.split("/");
+    public override async serialize(_sessionID: string, req: IncomingMessage, resp: ServerResponse): Promise<void> {
+        const splittedUrl = req.url!.split("/");
         const tmpSessionID = splittedUrl[splittedUrl.length - 1].split("?last_id")[0];
 
         /**

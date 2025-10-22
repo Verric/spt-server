@@ -10,14 +10,14 @@ export class ImageRouter {
     constructor(
         @inject("PrimaryLogger") protected logger: ILogger,
         @inject("ImageRouteService") protected imageRouteService: ImageRouteService,
-        @inject("HttpFileUtil") protected httpFileUtil: HttpFileUtil,
+        @inject("HttpFileUtil") protected httpFileUtil: HttpFileUtil
     ) {}
 
     public addRoute(key: string, valueToAdd: string): void {
         this.imageRouteService.addRoute(key.toLowerCase(), valueToAdd);
     }
 
-    public async sendImage(sessionID: string, req: IncomingMessage, resp: ServerResponse, body: any): Promise<void> {
+    public async sendImage(_sessionID: string, req: IncomingMessage, resp: ServerResponse): Promise<void> {
         // remove file extension
         const url = req.url ? FileSystemSync.stripExtension(req.url) : "";
 

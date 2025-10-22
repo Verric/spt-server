@@ -1,11 +1,6 @@
-import { IncomingMessage, ServerResponse } from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
-export class Serializer {
-    public async serialize(sessionID: string, req: IncomingMessage, resp: ServerResponse, body: any): Promise<void> {
-        throw new Error("Should be extended and overrode");
-    }
-
-    public canHandle(something: string): boolean {
-        throw new Error("Should be extended and overrode");
-    }
+export abstract class Serializer {
+    public abstract serialize(sessionID: string, req: IncomingMessage, resp: ServerResponse): Promise<void>;
+    public abstract canHandle(something: string): boolean;
 }

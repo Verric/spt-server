@@ -24,7 +24,7 @@ export class SptHttpListener implements IHttpListener {
         @inject("RequestsLogger") protected requestsLogger: ILogger,
         @inject("JsonUtil") protected jsonUtil: JsonUtil,
         @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
+        @inject("LocalisationService") protected localisationService: LocalisationService
     ) {}
 
     public canHandle(_: string, req: IncomingMessage): boolean {
@@ -94,10 +94,8 @@ export class SptHttpListener implements IHttpListener {
         req: IncomingMessage,
         resp: ServerResponse,
         body: Buffer | undefined,
-        output: string,
+        output: string
     ): Promise<void> {
-        const bodyInfo = this.getBodyInfo(body);
-
         if (this.isDebugRequest(req)) {
             // Send only raw response without transformation
             this.sendJson(resp, output, sessionID);
@@ -109,7 +107,7 @@ export class SptHttpListener implements IHttpListener {
         // Not debug, minority of requests need a serializer to do the job (IMAGE/BUNDLE/NOTIFY)
         const serialiser = this.serializers.find((x) => x.canHandle(output));
         if (serialiser) {
-            await serialiser.serialize(sessionID, req, resp, bodyInfo);
+            await serialiser.serialize(sessionID, req, resp);
         } else {
             // No serializer can handle the request (majority of requests dont), zlib the output and send response back
             await this.sendZlibJson(resp, output, sessionID);
@@ -178,23 +176,13 @@ export class SptHttpListener implements IHttpListener {
 }
 
 class RequestData {
-    constructor(
-        public url: string,
-        public headers: IncomingHttpHeaders,
-        public data?: any,
-    ) {}
+    constructor(public url: string, public headers: IncomingHttpHeaders, public data?: any) {}
 }
 
 class Request {
-    constructor(
-        public type: string,
-        public req: RequestData,
-    ) {}
+    constructor(public type: string, public req: RequestData) {}
 }
 
 class Response {
-    constructor(
-        public type: string,
-        public response: any,
-    ) {}
+    constructor(public type: string, public response: any) {}
 }
