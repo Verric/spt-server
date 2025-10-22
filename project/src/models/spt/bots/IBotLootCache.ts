@@ -15,18 +15,20 @@ export interface IBotLootCache {
     grenadeItems: Record<string, number>;
 }
 
-export enum LootCacheType {
-    SPECIAL = "Special",
-    BACKPACK = "Backpack",
-    POCKET = "Pocket",
-    VEST = "Vest",
-    SECURE = "SecuredContainer",
-    COMBINED = "Combined",
-    HEALING_ITEMS = "HealingItems",
-    DRUG_ITEMS = "DrugItems",
-    STIM_ITEMS = "StimItems",
-    GRENADE_ITEMS = "GrenadeItems",
-    FOOD_ITEMS = "FoodItems",
-    DRINK_ITEMS = "DrinkItems",
-    CURRENCY_ITEMS = "CurrencyItems",
-}
+export const LootCacheType = {
+    SPECIAL: "Special",
+    BACKPACK: "Backpack",
+    POCKET: "Pocket",
+    VEST: "Vest",
+    SECURE: "SecuredContainer",
+    COMBINED: "Combined",
+    HEALING_ITEMS: "HealingItems",
+    DRUG_ITEMS: "DrugItems",
+    STIM_ITEMS: "StimItems",
+    GRENADE_ITEMS: "GrenadeItems",
+    FOOD_ITEMS: "FoodItems",
+    DRINK_ITEMS: "DrinkItems",
+    CURRENCY_ITEMS: "CurrencyItems",
+} as const;
+
+export type LootCacheType = (typeof LootCacheType)[keyof typeof LootCacheType];

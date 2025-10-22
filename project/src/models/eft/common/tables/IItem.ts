@@ -48,12 +48,13 @@ export interface IUpd {
     Lockable?: boolean;
 }
 
-export enum PinLockState {
-    FREE = "Free",
-    LOCKED = "Locked",
-    PINNED = "Pinned",
-}
+export const PinLockState = {
+    FREE: "Free",
+    LOCKED: "Locked",
+    PINNED: "Pinned",
+} as const;
 
+export type PinLockState = (typeof PinLockState)[keyof typeof PinLockState];
 export interface IUpdBuff {
     Rarity: string;
     BuffType: string;

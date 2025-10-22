@@ -1,11 +1,13 @@
-export enum LogBackgroundColor {
-    DEFAULT = "",
-    BLACK = "blackBG",
-    RED = "redBG",
-    GREEN = "greenBG",
-    YELLOW = "yellowBG",
-    BLUE = "blueBG",
-    MAGENTA = "magentaBG",
-    CYAN = "cyanBG",
-    WHITE = "whiteBG",
-}
+export const LogBackgroundColor = {
+    DEFAULT: "",
+    BLACK: "blackBG",
+    RED: "redBG",
+    GREEN: "greenBG",
+    YELLOW: "yellowBG",
+    BLUE: "blueBG",
+    MAGENTA: "magentaBG",
+    CYAN: "cyanBG",
+    WHITE: "whiteBG",
+} as const;
+
+export type LogBackgroundColor = (typeof LogBackgroundColor)[keyof typeof LogBackgroundColor];

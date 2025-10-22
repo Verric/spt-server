@@ -26,8 +26,9 @@ export interface ISearchRequestData {
     reload: number;
 }
 
-export enum OfferOwnerType {
-    ANYOWNERTYPE = 0,
-    TRADEROWNERTYPE = 1,
-    PLAYEROWNERTYPE = 2,
-}
+export const OfferOwnerType = {
+    ANYOWNERTYPE: 0,
+    TRADEROWNERTYPE: 1,
+    PLAYEROWNERTYPE: 2,
+} as const;
+export type OfferOwnerType = (typeof OfferOwnerType)[keyof typeof OfferOwnerType];

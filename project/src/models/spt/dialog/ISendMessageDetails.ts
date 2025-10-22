@@ -41,13 +41,15 @@ export interface IProfileChangeEvent {
     entity?: string;
 }
 
-export enum ProfileChangeEventType {
-    TRADER_SALES_SUM = "TraderSalesSum",
-    TRADER_STANDING = "TraderStanding",
-    PROFILE_LEVEL = "ProfileLevel",
-    SKILL_POINTS = "SkillPoints",
-    EXAMINE_ALL_ITEMS = "ExamineAllItems",
-    UNLOCK_TRADER = "UnlockTrader",
-    ASSORT_UNLOCK_RULE = "AssortmentUnlockRule",
-    HIDEOUT_AREA_LEVEL = "HideoutAreaLevel",
-}
+export const ProfileChangeEventType = {
+    TRADER_SALES_SUM: "TraderSalesSum",
+    TRADER_STANDING: "TraderStanding",
+    PROFILE_LEVEL: "ProfileLevel",
+    SKILL_POINTS: "SkillPoints",
+    EXAMINE_ALL_ITEMS: "ExamineAllItems",
+    UNLOCK_TRADER: "UnlockTrader",
+    ASSORT_UNLOCK_RULE: "AssortmentUnlockRule",
+    HIDEOUT_AREA_LEVEL: "HideoutAreaLevel",
+} as const;
+
+export type ProfileChangeEventType = (typeof ProfileChangeEventType)[keyof typeof ProfileChangeEventType];

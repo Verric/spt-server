@@ -19,4 +19,4 @@ export const MessageType = {
     INITIAL_SUPPORT: 14,
     BTR_ITEMS_DELIVERY: 15,
 } as const;
-export type MessageTypec = (typeof MessageType)[keyof typeof MessageType];
+export type MessageType = (typeof MessageType)[keyof typeof MessageType];

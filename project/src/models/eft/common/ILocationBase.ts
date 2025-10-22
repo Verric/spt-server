@@ -381,10 +381,11 @@ export interface CrowdAttackSpawnParam {
     Weight: number;
 }
 
-export enum WildSpawnType {
-    ASSAULT = "assault",
-    MARKSMAN = "marksman",
-    PMCBOT = "pmcbot",
-    BOSSKILLA = "bosskilla",
-    BOSSKNIGHT = "bossknight",
-}
+export const WildSpawnType = {
+    ASSAULT: "assault",
+    MARKSMAN: "marksman",
+    PMCBOT: "pmcbot",
+    BOSSKILLA: "bosskilla",
+    BOSSKNIGHT: "bossknight",
+} as const;
+export type WildSpawnType = (typeof WildSpawnType)[keyof typeof WildSpawnType];

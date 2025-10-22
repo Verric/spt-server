@@ -3,10 +3,12 @@ export interface IFilterPlateModsForSlotByLevelResult {
     plateModTpls?: string[];
 }
 
-export enum Result {
-    UNKNOWN_FAILURE = -1,
-    SUCCESS = 1,
-    NO_DEFAULT_FILTER = 2,
-    NOT_PLATE_HOLDING_SLOT = 3,
-    LACKS_PLATE_WEIGHTS = 4,
-}
+export const Result = {
+    UNKNOWN_FAILURE: -1,
+    SUCCESS: 1,
+    NO_DEFAULT_FILTER: 2,
+    NOT_PLATE_HOLDING_SLOT: 3,
+    LACKS_PLATE_WEIGHTS: 4,
+} as const;
+
+export type Result = (typeof Result)[keyof typeof Result];

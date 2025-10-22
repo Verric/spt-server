@@ -608,7 +608,8 @@ export interface IShotsGroupSettings {
     StartShotIndex: number;
 }
 
-export enum ItemType {
-    NODE = "Node",
-    ITEM = "Item",
-}
+export const ItemType = {
+    NODE: "Node",
+    ITEM: "Item",
+} as const;
+export type ItemType = (typeof ItemType)[keyof typeof ItemType];

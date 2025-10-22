@@ -112,16 +112,16 @@ export interface IBan {
     dateTime: number;
 }
 
-export enum BanType {
-    CHAT = 0,
-    RAGFAIR = 1,
-    VOIP = 2,
-    TRADING = 3,
-    ONLINE = 4,
-    FRIENDS = 5,
-    CHANGE_NICKNAME = 6,
-}
-
+export const BanType = {
+    CHAT: 0,
+    RAGFAIR: 1,
+    VOIP: 2,
+    TRADING: 3,
+    ONLINE: 4,
+    FRIENDS: 5,
+    CHANGE_NICKNAME: 6,
+} as const;
+export type BanType = (typeof BanType)[keyof typeof BanType];
 export interface ICustomization {
     Head: string;
     Body: string;
@@ -446,14 +446,14 @@ export interface INotes {
     Notes: INote[];
 }
 
-export enum SurvivorClass {
-    UNKNOWN = 0,
-    NEUTRALIZER = 1,
-    MARAUDER = 2,
-    PARAMEDIC = 3,
-    SURVIVOR = 4,
-}
-
+export const SurvivorClass = {
+    UNKNOWN: 0,
+    NEUTRALIZER: 1,
+    MARAUDER: 2,
+    PARAMEDIC: 3,
+    SURVIVOR: 4,
+} as const;
+export type SurvivorClass = (typeof SurvivorClass)[keyof typeof SurvivorClass];
 export interface IQuestStatus {
     qid: string;
     startTime: number;

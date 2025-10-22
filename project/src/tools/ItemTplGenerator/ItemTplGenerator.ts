@@ -50,7 +50,7 @@ export class ItemTplGenerator {
         @inject("PrimaryLogger") protected logger: ILogger,
         @inject("ItemHelper") protected itemHelper: ItemHelper,
         @inject("FileSystemSync") protected fileSystemSync: FileSystemSync,
-        @injectAll("OnLoad") protected onLoadComponents: OnLoad[],
+        @injectAll("OnLoad") protected onLoadComponents: OnLoad[]
     ) {}
 
     async run(): Promise<void> {
@@ -143,12 +143,12 @@ export class ItemTplGenerator {
                     // If we still collide, log an error
                     if (Object.keys(itemsObject).includes(itemKey)) {
                         this.logger.error(
-                            `After rename, itemsObject already contains ${itemKey}  ${itemsObject[itemKey]} => ${item._id}`,
+                            `After rename, itemsObject already contains ${itemKey}  ${itemsObject[itemKey]} => ${item._id}`
                         );
                     }
                 } else {
                     this.logger.error(
-                        `New itemOverride entry required: itemsObject already contains ${itemKey}  ${itemsObject[itemKey]} => ${item._id}`,
+                        `New itemOverride entry required: itemsObject already contains ${itemKey}  ${itemsObject[itemKey]} => ${item._id}`
                     );
                     continue;
                 }
@@ -478,7 +478,7 @@ export class ItemTplGenerator {
         for (const [dataKey, dataValue] of Object.entries(data)) {
             if (originalEnumValues[dataValue] && originalEnumValues[dataValue] !== dataKey) {
                 this.logger.warning(
-                    `Enum ${enumName} key has changed for ${dataValue}, ${originalEnumValues[dataValue]} => ${dataKey}`,
+                    `Enum ${enumName} key has changed for ${dataValue}, ${originalEnumValues[dataValue]} => ${dataKey}`
                 );
             }
         }
@@ -488,13 +488,13 @@ export class ItemTplGenerator {
         let enumFileData = "// This is an auto generated file, do not modify. Re-generate with `npm run gen:items`";
 
         for (const [enumName, data] of Object.entries(enumEntries)) {
-            enumFileData += `\nexport enum ${enumName}\n{\n`;
+            enumFileData += `\nexport const ${enumName}\n = {\n`;
 
             for (const [key, value] of Object.entries(data)) {
-                enumFileData += `    ${key} = "${value}",\n`;
+                enumFileData += `    ${key}: "${value}",\n`;
             }
 
-            enumFileData += "}\n";
+            enumFileData += "} as const\n";
         }
 
         this.fileSystemSync.write(outputPath, enumFileData);

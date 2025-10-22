@@ -27,10 +27,12 @@ export class EncodingUtil {
     }
 }
 
-export enum EncodeType {
-    BASE64 = "base64",
-    HEX = "hex",
-    ASCII = "ascii",
-    BINARY = "binary",
-    UTF8 = "utf8",
-}
+export const EncodeType = {
+    BASE64: "base64",
+    HEX: "hex",
+    ASCII: "ascii",
+    BINARY: "binary",
+    UTF8: "utf8",
+} as const;
+
+export type EncodeType = (typeof EncodeType)[keyof typeof EncodeType];
