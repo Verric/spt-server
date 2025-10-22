@@ -31,7 +31,7 @@ export class HttpServer {
         @inject("ConfigServer") protected configServer: ConfigServer,
         @inject("ApplicationContext") protected applicationContext: ApplicationContext,
         @inject("WebSocketServer") protected webSocketServer: WebSocketServer,
-        @inject("FileSystem") fileSystem: FileSystem, // new dependency
+        @inject("FileSystem") fileSystem: FileSystem // new dependency
     ) {
         this.httpConfig = this.configServer.getConfig(ConfigTypes.HTTP);
         this.fileSystem = fileSystem;
@@ -55,7 +55,7 @@ export class HttpServer {
         httpsServer.listen(this.httpConfig.port, this.httpConfig.ip, () => {
             this.started = true;
             this.logger.success(
-                this.localisationService.getText("started_webserver_success", this.httpServerHelper.getBackendUrl()),
+                this.localisationService.getText("started_webserver_success", this.httpServerHelper.getBackendUrl())
             );
         });
 
@@ -146,8 +146,8 @@ export class HttpServer {
                     this.logger.info(
                         this.localisationService.getText("client_request_ip", {
                             ip: clientIp,
-                            url: req.url.replaceAll("/", "\\"), // Localisation service escapes `/` into hex code `&#x2f;`
-                        }),
+                            url: req.url!.replaceAll("/", "\\"), // Localisation service escapes `/` into hex code `&#x2f;`
+                        })
                     );
                 }
             }
@@ -186,7 +186,7 @@ export class HttpServer {
             for (const cookie of cookies.split(";")) {
                 const parts = cookie.split("=");
 
-                found[parts.shift().trim()] = decodeURI(parts.join("="));
+                found[parts.shift()!.trim()] = decodeURI(parts.join("="));
             }
         }
 

@@ -36,7 +36,7 @@ export class ProductionQuestsGen {
         @inject("DatabaseServer") protected databaseServer: DatabaseServer,
         @inject("PrimaryLogger") protected logger: ILogger,
         @inject("FileSystemSync") protected fileSystemSync: FileSystemSync,
-        @injectAll("OnLoad") protected onLoadComponents: OnLoad[],
+        @injectAll("OnLoad") protected onLoadComponents: OnLoad[]
     ) {}
 
     async run(): Promise<void> {
@@ -56,7 +56,7 @@ export class ProductionQuestsGen {
         const productionOutPath = path.join(hideoutDir, "production.json");
         this.fileSystemSync.write(
             productionOutPath,
-            JSON.stringify(this.databaseServer.getTables().hideout.production, null, 2),
+            JSON.stringify(this.databaseServer.getTables().hideout.production, null, 2)
         );
     }
 
@@ -76,7 +76,7 @@ export class ProductionQuestsGen {
 
             // Try to find the quest that matches this production
             const questProductionOutputs = this.questProductionOutputList.filter(
-                (output) => output.ItemTemplate === production.endProduct && output.Quantity === production.count,
+                (output) => output.ItemTemplate === production.endProduct && output.Quantity === production.count
             );
 
             // Make sure we found valid data
@@ -86,7 +86,7 @@ export class ProductionQuestsGen {
             this.questProductionMap[questProductionOutputs[0].QuestId] = production._id;
             questCompleteList[0].questId = questProductionOutputs[0].QuestId;
             this.logger.success(
-                `Updated ${production._id}, ${production.endProduct} with quantity ${production.count} to target quest ${questProductionOutputs[0].QuestId}`,
+                `Updated ${production._id}, ${production.endProduct} with quantity ${production.count} to target quest ${questProductionOutputs[0].QuestId}`
             );
         }
     }
@@ -94,30 +94,32 @@ export class ProductionQuestsGen {
     private isValidQuestProduction(
         production: IHideoutProduction,
         questProductionOutputs,
-        questComplete: IRequirement,
+        questComplete: IRequirement
     ): boolean {
         // A lot of error handling for edge cases
         if (questProductionOutputs.length === 0) {
             this.logger.error(
-                `Unable to find quest for production ${production._id}, endProduct ${production.endProduct} with quantity ${production.count}. Potential new or removed quest`,
+                `Unable to find quest for production ${production._id}, endProduct ${production.endProduct} with quantity ${production.count}. Potential new or removed quest`
             );
             return false;
         }
         if (questProductionOutputs.length > 1) {
             this.logger.error(
-                `Multiple quests match production ${production._id}, endProduct ${production.endProduct} with quantity ${production.count}`,
+                `Multiple quests match production ${production._id}, endProduct ${production.endProduct} with quantity ${production.count}`
             );
             return false;
         }
         if (questComplete.questId && questComplete.questId !== questProductionOutputs[0].QuestId) {
             this.logger.error(
-                `Multiple productions match quest. EndProduct ${production.endProduct} with quantity ${production.count}, existing quest ${questComplete.questId}`,
+                `Multiple productions match quest. EndProduct ${production.endProduct} with quantity ${production.count}, existing quest ${questComplete.questId}`
             );
             return false;
         }
         if (this.questProductionMap[questProductionOutputs[0].QuestId]) {
             this.logger.warning(
-                `Quest ${questProductionOutputs[0].QuestId} is already associated with production ${this.questProductionMap[questProductionOutputs[0].QuestId]}. Potential conflict`,
+                `Quest ${questProductionOutputs[0].QuestId} is already associated with production ${
+                    this.questProductionMap[questProductionOutputs[0].QuestId]
+                }. Potential conflict`
             );
         }
 
@@ -143,7 +145,7 @@ export class ProductionQuestsGen {
                         if (item.parentId) continue;
                         if (item._tpl !== output.ItemTemplate) {
                             this.logger.error(
-                                `Production scheme has multiple output items. ${output.ItemTemplate} !== ${item._tpl}`,
+                                `Production scheme has multiple output items. ${output.ItemTemplate} !== ${item._tpl}`
                             );
                             continue;
                         }
@@ -158,8 +160,8 @@ export class ProductionQuestsGen {
     }
 }
 
-class QuestProductionOutput {
-    public QuestId: string;
-    public ItemTemplate: string;
-    public Quantity: number;
+interface QuestProductionOutput {
+    QuestId: string;
+    ItemTemplate: string;
+    Quantity: number;
 }

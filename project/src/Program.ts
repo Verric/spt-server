@@ -1,5 +1,5 @@
 import { ErrorHandler } from "@spt/ErrorHandler";
-import { Container } from "@spt/di/Container";
+import * as Container from "@spt/di/Container";
 import type { PreSptModLoader } from "@spt/loaders/PreSptModLoader";
 import { App } from "@spt/utils/App";
 import { Watermark } from "@spt/utils/Watermark";

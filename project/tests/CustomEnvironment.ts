@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import path from "node:path";
-import { Container } from "@spt/di/Container";
+import * as Container from "@spt/di/Container";
 import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 import { DatabaseServer } from "@spt/servers/DatabaseServer";
 import { ImporterUtil } from "@spt/utils/ImporterUtil";
@@ -11,7 +11,7 @@ import type { Environment } from "vitest/environments";
 // Manually mock the logger.
 import { WinstonLogger } from "@tests/__mocks__/WinstonLogger.mock";
 
-export default (<Environment>{
+export default <Environment>{
     name: "spt-server",
     transformMode: "ssr",
     async setup() {
@@ -29,7 +29,7 @@ export default (<Environment>{
             async teardown() {},
         };
     },
-});
+};
 
 /**
  * Reads the database JSON files and imports them into memory.
