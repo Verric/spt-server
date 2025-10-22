@@ -10,7 +10,7 @@ import { inject, injectable } from "tsyringe";
 export class HttpResponseUtil {
     constructor(
         @inject("JsonUtil") protected jsonUtil: JsonUtil,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
+        @inject("LocalisationService") protected localisationService: LocalisationService
     ) {}
 
     protected clearString(s: string): any {
@@ -56,7 +56,7 @@ export class HttpResponseUtil {
         return this.clearString(this.getUnclearedBody(undefined, 0, undefined));
     }
 
-    public emptyArrayResponse(): IGetBodyResponseData<any[]> {
+    public emptyArrayResponse(): IGetBodyResponseData<[]> {
         return this.getBody([]);
     }
 
@@ -70,7 +70,7 @@ export class HttpResponseUtil {
     public appendErrorToOutput(
         output: IItemEventRouterResponse,
         message = this.localisationService.getText("http-unknown_error"),
-        errorCode = BackendErrorCodes.NONE,
+        errorCode = BackendErrorCodes.NONE
     ): IItemEventRouterResponse {
         if (output.warnings?.length > 0) {
             output.warnings.push({ index: output.warnings?.length - 1, errmsg: message, code: errorCode.toString() });

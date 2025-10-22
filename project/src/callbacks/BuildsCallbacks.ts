@@ -11,24 +11,28 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class BuildsCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected buildController: BuildController;
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("BuildController") protected buildController: BuildController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("BuildController") buildController: BuildController
+    ) {
+        this.httpResponse = httpResponse;
+        this.buildController = buildController;
+    }
 
     /**
      * Handle client/builds/list
      */
-    public getBuilds(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IUserBuilds> {
+    public getBuilds(_url: string, _info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IUserBuilds> {
         return this.httpResponse.getBody(this.buildController.getUserBuilds(sessionID));
     }
 
     /**
      * Handle client/builds/magazine/save
      */
-    public createMagazineTemplate(url: string, request: ISetMagazineRequest, sessionID: string): INullResponseData {
+    public createMagazineTemplate(_url: string, request: ISetMagazineRequest, sessionID: string): INullResponseData {
         this.buildController.createMagazineTemplate(sessionID, request);
-
         return this.httpResponse.nullResponse();
     }
 
@@ -44,7 +48,7 @@ export class BuildsCallbacks {
     /**
      * Handle client/builds/equipment/save
      */
-    public setEquipment(url: string, info: IPresetBuildActionRequestData, sessionID: string): INullResponseData {
+    public setEquipment(_url: string, info: IPresetBuildActionRequestData, sessionID: string): INullResponseData {
         this.buildController.saveEquipmentBuild(sessionID, info);
 
         return this.httpResponse.nullResponse();
@@ -53,7 +57,7 @@ export class BuildsCallbacks {
     /**
      * Handle client/builds/delete
      */
-    public deleteBuild(url: string, info: IRemoveBuildRequestData, sessionID: string): INullResponseData {
+    public deleteBuild(_url: string, info: IRemoveBuildRequestData, sessionID: string): INullResponseData {
         this.buildController.removeBuild(sessionID, info);
 
         return this.httpResponse.nullResponse();
