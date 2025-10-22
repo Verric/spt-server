@@ -15,7 +15,7 @@ export class BundleCallbacks {
     constructor(
         @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
         @inject("BundleLoader") bundleLoader: BundleLoader,
-        @inject("ConfigServer") configServer: ConfigServer
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
         this.configServer = configServer;
         this.httpConfig = this.configServer.getConfig(ConfigTypes.HTTP);

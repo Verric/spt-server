@@ -9,15 +9,21 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class LocationCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected locationController: LocationController;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("LocationController") protected locationController: LocationController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("LocationController") locationController: LocationController,
+    ) {
+        this.httpResponse = httpResponse;
+        this.locationController = locationController;
+    }
 
     /** Handle client/locations */
     public getLocationData(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<ILocationsGenerateAllResponse> {
         return this.httpResponse.getBody(this.locationController.generateAll(sessionID));
@@ -25,9 +31,9 @@ export class LocationCallbacks {
 
     /** Handle client/airdrop/loot */
     public getAirdropLoot(
-        url: string,
+        _url: string,
         info: IGetAirdropLootRequest,
-        sessionID: string,
+        _sessionID: string,
     ): IGetBodyResponseData<IGetAirdropLootResponse> {
         return this.httpResponse.getBody(this.locationController.getAirdropLoot(info));
     }

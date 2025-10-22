@@ -11,12 +11,22 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class NotifierCallbacks {
+    protected httpServerHelper: HttpServerHelper;
+    protected httpResponse: HttpResponseUtil;
+    protected jsonUtil: JsonUtil;
+    protected notifierController: NotifierController;
+
     constructor(
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("JsonUtil") protected jsonUtil: JsonUtil,
-        @inject("NotifierController") protected notifierController: NotifierController,
-    ) {}
+        @inject("HttpServerHelper") httpServerHelper: HttpServerHelper,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("JsonUtil") jsonUtil: JsonUtil,
+        @inject("NotifierController") notifierController: NotifierController,
+    ) {
+        this.httpServerHelper = httpServerHelper;
+        this.httpResponse = httpResponse;
+        this.jsonUtil = jsonUtil;
+        this.notifierController = notifierController;
+    }
 
     /**
      * If we don't have anything to send, it's ok to not send anything back
@@ -24,7 +34,7 @@ export class NotifierCallbacks {
      * until we actually have something to send because otherwise we'd spam the client
      * and the client would abort the connection due to spam.
      */
-    public sendNotification(sessionID: string, req: any, resp: any, data: any): void {
+    public sendNotification(_sessionID: string, req: any, resp: any, _data: any): void {
         const splittedUrl = req.url.split("/");
         const tmpSessionID = splittedUrl[splittedUrl.length - 1].split("?last_id")[0];
 
@@ -41,14 +51,14 @@ export class NotifierCallbacks {
     /** Handle push/notifier/get */
     /** Handle push/notifier/getwebsocket */
     // TODO: removed from client?
-    public getNotifier(url: string, info: any, sessionID: string): IGetBodyResponseData<any[]> {
+    public getNotifier(_url: string, _info: any, _sessionID: string): IGetBodyResponseData<[]> {
         return this.httpResponse.emptyArrayResponse();
     }
 
     /** Handle client/notifier/channel/create */
     public createNotifierChannel(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<INotifierChannel> {
         return this.httpResponse.getBody(this.notifierController.getChannel(sessionID));
@@ -59,14 +69,14 @@ export class NotifierCallbacks {
      * @returns ISelectProfileResponse
      */
     public selectProfile(
-        url: string,
-        info: IUIDRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IUIDRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<ISelectProfileResponse> {
         return this.httpResponse.getBody({ status: "ok" });
     }
 
-    public notify(url: string, info: any, sessionID: string): string {
+    public notify(_url: string, _info: any, _sessionID: string): string {
         return "NOTIFY";
     }
 }

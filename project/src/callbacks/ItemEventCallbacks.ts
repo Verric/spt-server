@@ -9,13 +9,19 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class ItemEventCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected itemEventRouter: ItemEventRouter;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ItemEventRouter") protected itemEventRouter: ItemEventRouter,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ItemEventRouter") itemEventRouter: ItemEventRouter,
+    ) {
+        this.httpResponse = httpResponse;
+        this.itemEventRouter = itemEventRouter;
+    }
 
     public async handleEvents(
-        url: string,
+        _url: string,
         info: IItemEventRouterRequest,
         sessionID: string,
     ): Promise<IGetBodyResponseData<IItemEventRouterResponse>> {

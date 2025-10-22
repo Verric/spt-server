@@ -16,11 +16,19 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class QuestCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected questController: QuestController;
+    protected repeatableQuestController: RepeatableQuestController;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("QuestController") protected questController: QuestController,
-        @inject("RepeatableQuestController") protected repeatableQuestController: RepeatableQuestController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("QuestController") questController: QuestController,
+        @inject("RepeatableQuestController") repeatableQuestController: RepeatableQuestController,
+    ) {
+        this.httpResponse = httpResponse;
+        this.questController = questController;
+        this.repeatableQuestController = repeatableQuestController;
+    }
 
     /**
      * Handle RepeatableQuestChange event
@@ -68,7 +76,7 @@ export class QuestCallbacks {
     /**
      * Handle client/quest/list
      */
-    public listQuests(url: string, info: IListQuestsRequestData, sessionID: string): IGetBodyResponseData<IQuest[]> {
+    public listQuests(_url: string, _info: IListQuestsRequestData, sessionID: string): IGetBodyResponseData<IQuest[]> {
         return this.httpResponse.getBody(this.questController.getClientQuests(sessionID));
     }
 
@@ -76,8 +84,8 @@ export class QuestCallbacks {
      * Handle client/repeatalbeQuests/activityPeriods
      */
     public activityPeriods(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IPmcDataRepeatableQuest[]> {
         return this.httpResponse.getBody(this.repeatableQuestController.getClientRepeatableQuests(sessionID));

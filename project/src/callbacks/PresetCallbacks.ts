@@ -4,7 +4,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class PresetCallbacks implements OnLoad {
-    constructor(@inject("PresetController") protected presetController: PresetController) {}
+    protected presetController: PresetController;
+
+    constructor(@inject("PresetController") presetController: PresetController) {
+        this.presetController = presetController;
+    }
 
     public async onLoad(): Promise<void> {
         this.presetController.initialize();

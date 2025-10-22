@@ -26,10 +26,10 @@ export class ApplicationContext {
     }
 
     public getValues(type: ContextVariableType): ContextVariable[] | undefined {
-        if (this.variables.has(type)) {
+        const variableType = this.variables.get(type);
+        if (variableType) {
             const res: ContextVariable[] = [];
-
-            for (const value of this.variables.get(type).values()) {
+            for (const value of variableType.values()) {
                 res.push(value);
             }
 

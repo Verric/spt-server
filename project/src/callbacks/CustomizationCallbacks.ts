@@ -14,19 +14,27 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class CustomizationCallbacks {
+    protected customizationController: CustomizationController;
+    protected saveServer: SaveServer;
+    protected httpResponse: HttpResponseUtil;
+
     constructor(
-        @inject("CustomizationController") protected customizationController: CustomizationController,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-    ) {}
+        @inject("CustomizationController") customizationController: CustomizationController,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+    ) {
+        this.customizationController = customizationController;
+        this.saveServer = saveServer;
+        this.httpResponse = httpResponse;
+    }
 
     /**
      * Handle client/trading/customization/storage
      * @returns IGetSuitsResponse
      */
     public getCustomisationUnlocks(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<ICustomisationStorage[]> {
         return this.httpResponse.getBody(this.saveServer.getProfile(sessionID).customisationUnlocks);
@@ -36,7 +44,7 @@ export class CustomizationCallbacks {
      * Handle client/trading/customization
      * @returns ISuit[]
      */
-    public getTraderSuits(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<ISuit[]> {
+    public getTraderSuits(url: string, _info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<ISuit[]> {
         const splittedUrl = url.split("/");
         const traderID = splittedUrl[splittedUrl.length - 3];
 
@@ -56,7 +64,7 @@ export class CustomizationCallbacks {
 
     /** Handle client/hideout/customization/offer/list */
     public getHideoutCustomisation(
-        url: string,
+        _url: string,
         info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IHideoutCustomisation> {
@@ -65,7 +73,7 @@ export class CustomizationCallbacks {
 
     /** Handle client/customization/storage */
     public getStorage(
-        url: string,
+        _url: string,
         request: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<ICustomisationStorage[]> {

@@ -4,7 +4,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HandbookCallbacks implements OnLoad {
-    constructor(@inject("HandbookController") protected handbookController: HandbookController) {}
+    protected handbookController: HandbookController;
+
+    constructor(@inject("HandbookController") handbookController: HandbookController) {
+        this.handbookController = handbookController;
+    }
 
     public async onLoad(): Promise<void> {
         this.handbookController.load();

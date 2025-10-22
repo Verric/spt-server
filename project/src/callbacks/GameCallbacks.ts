@@ -26,12 +26,22 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class GameCallbacks implements OnLoad {
+    protected httpResponse: HttpResponseUtil;
+    protected watermark: Watermark;
+    protected saveServer: SaveServer;
+    protected gameController: GameController;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("Watermark") protected watermark: Watermark,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("GameController") protected gameController: GameController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("Watermark") watermark: Watermark,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("GameController") gameController: GameController,
+    ) {
+        this.httpResponse = httpResponse;
+        this.watermark = watermark;
+        this.saveServer = saveServer;
+        this.gameController = gameController;
+    }
 
     public async onLoad(): Promise<void> {
         this.gameController.load();
@@ -45,7 +55,7 @@ export class GameCallbacks implements OnLoad {
      * Handle client/game/version/validate
      * @returns INullResponseData
      */
-    public versionValidate(url: string, info: IVersionValidateRequestData, sessionID: string): INullResponseData {
+    public versionValidate(_url: string, _info: IVersionValidateRequestData, _sessionID: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
@@ -70,8 +80,8 @@ export class GameCallbacks implements OnLoad {
      * @returns IGameLogoutResponseData
      */
     public async gameLogout(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): Promise<IGetBodyResponseData<IGameLogoutResponseData>> {
         await this.saveServer.saveProfile(sessionID);
@@ -83,8 +93,8 @@ export class GameCallbacks implements OnLoad {
      * @returns IGameConfigResponse
      */
     public getGameConfig(
-        url: string,
-        info: IGameEmptyCrcRequestData,
+        _url: string,
+        _info: IGameEmptyCrcRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGameConfigResponse> {
         return this.httpResponse.getBody(this.gameController.getGameConfig(sessionID));
@@ -95,7 +105,7 @@ export class GameCallbacks implements OnLoad {
      * @returns IGameModeResponse
      */
     public getGameMode(
-        url: string,
+        _url: string,
         info: IGameModeRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGameModeResponse> {
@@ -105,7 +115,11 @@ export class GameCallbacks implements OnLoad {
     /**
      * Handle client/server/list
      */
-    public getServer(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IServerDetails[]> {
+    public getServer(
+        _url: string,
+        _info: IEmptyRequestData,
+        sessionID: string,
+    ): IGetBodyResponseData<IServerDetails[]> {
         return this.httpResponse.getBody(this.gameController.getServer(sessionID));
     }
 
@@ -113,8 +127,8 @@ export class GameCallbacks implements OnLoad {
      * Handle client/match/group/current
      */
     public getCurrentGroup(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<ICurrentGroupResponse> {
         return this.httpResponse.getBody(this.gameController.getCurrentGroup(sessionID));
@@ -124,8 +138,8 @@ export class GameCallbacks implements OnLoad {
      * Handle client/checkVersion
      */
     public validateGameVersion(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<ICheckVersionResponse> {
         return this.httpResponse.getBody(this.gameController.getValidGameVersion(sessionID));
@@ -136,8 +150,8 @@ export class GameCallbacks implements OnLoad {
      * @returns IGameKeepAliveResponse
      */
     public gameKeepalive(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGameKeepAliveResponse> {
         return this.httpResponse.getBody(this.gameController.getKeepAlive(sessionID));
@@ -147,7 +161,7 @@ export class GameCallbacks implements OnLoad {
      * Handle singleplayer/settings/version
      * @returns string
      */
-    public getVersion(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getVersion(_url: string, _info: IEmptyRequestData, _sessionID: string): string {
         return this.httpResponse.noBody({ Version: this.watermark.getInGameVersionLabel() });
     }
 
@@ -155,7 +169,7 @@ export class GameCallbacks implements OnLoad {
      * Handle /client/report/send & /client/reports/lobby/send
      * @returns INullResponseData
      */
-    public reportNickname(url: string, info: IUIDRequestData, sessionID: string): INullResponseData {
+    public reportNickname(_url: string, _info: IUIDRequestData, _sessionID: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
@@ -163,7 +177,7 @@ export class GameCallbacks implements OnLoad {
      * Handle singleplayer/settings/getRaidTime
      * @returns string
      */
-    public getRaidTime(url: string, request: IGetRaidTimeRequest, sessionID: string): IGetRaidTimeResponse {
+    public getRaidTime(_url: string, request: IGetRaidTimeRequest, sessionID: string): IGetRaidTimeResponse {
         return this.httpResponse.noBody(this.gameController.getRaidTime(sessionID, request));
     }
 
@@ -172,8 +186,8 @@ export class GameCallbacks implements OnLoad {
      * @returns INullResponseData
      */
     public getSurvey(
-        url: string,
-        request: IEmptyRequestData,
+        _url: string,
+        _request: IEmptyRequestData,
         sessionId: string,
     ): INullResponseData | IGetBodyResponseData<ISurveyResponseData> {
         return this.httpResponse.getBody(this.gameController.getSurvey(sessionId));
@@ -183,7 +197,7 @@ export class GameCallbacks implements OnLoad {
      * Handle client/survey/view
      * @returns INullResponseData
      */
-    public getSurveyView(url: string, request: any, sessionId: string): INullResponseData {
+    public getSurveyView(_url: string, _request: any, _sessionId: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
@@ -191,7 +205,7 @@ export class GameCallbacks implements OnLoad {
      * Handle client/survey/opinion
      * @returns INullResponseData
      */
-    public sendSurveyOpinion(url: string, request: ISendSurveyOpinionRequest, sessionId: string): INullResponseData {
+    public sendSurveyOpinion(_url: string, _request: ISendSurveyOpinionRequest, _sessionId: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 }

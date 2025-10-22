@@ -8,7 +8,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class WishlistCallbacks {
-    constructor(@inject("WishlistController") protected wishlistController: WishlistController) {}
+    protected wishlistController: WishlistController;
+
+    constructor(@inject("WishlistController") wishlistController: WishlistController) {
+        this.wishlistController = wishlistController;
+    }
 
     /** Handle AddToWishList event */
     public addToWishlist(

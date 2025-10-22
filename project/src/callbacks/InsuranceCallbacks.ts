@@ -16,12 +16,21 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class InsuranceCallbacks implements OnUpdate {
     protected insuranceConfig: IInsuranceConfig;
+    protected insuranceController: InsuranceController;
+    protected insuranceService: InsuranceService;
+    protected httpResponse: HttpResponseUtil;
+    protected configServer: ConfigServer;
+
     constructor(
-        @inject("InsuranceController") protected insuranceController: InsuranceController,
-        @inject("InsuranceService") protected insuranceService: InsuranceService,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("InsuranceController") insuranceController: InsuranceController,
+        @inject("InsuranceService") insuranceService: InsuranceService,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.insuranceController = insuranceController;
+        this.insuranceService = insuranceService;
+        this.httpResponse = httpResponse;
+        this.configServer = configServer;
         this.insuranceConfig = this.configServer.getConfig(ConfigTypes.INSURANCE);
     }
 
@@ -30,7 +39,7 @@ export class InsuranceCallbacks implements OnUpdate {
      * @returns IGetInsuranceCostResponseData
      */
     public getInsuranceCost(
-        url: string,
+        _url: string,
         info: IGetInsuranceCostRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGetInsuranceCostResponseData> {

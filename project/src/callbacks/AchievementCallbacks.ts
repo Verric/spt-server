@@ -1,5 +1,4 @@
 import { AchievementController } from "@spt/controllers/AchievementController";
-import { ProfileController } from "@spt/controllers/ProfileController";
 import { IEmptyRequestData } from "@spt/models/eft/common/IEmptyRequestData";
 import { IGetBodyResponseData } from "@spt/models/eft/httpResponse/IGetBodyResponseData";
 import { ICompletedAchievementsResponse } from "@spt/models/eft/profile/ICompletedAchievementsResponse";

@@ -15,7 +15,7 @@ export class BuildsCallbacks {
     protected buildController: BuildController;
     constructor(
         @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
-        @inject("BuildController") buildController: BuildController
+        @inject("BuildController") buildController: BuildController,
     ) {
         this.httpResponse = httpResponse;
         this.buildController = buildController;
@@ -39,7 +39,7 @@ export class BuildsCallbacks {
     /**
      * Handle client/builds/weapon/save
      */
-    public setWeapon(url: string, info: IPresetBuildActionRequestData, sessionID: string): INullResponseData {
+    public setWeapon(_url: string, info: IPresetBuildActionRequestData, sessionID: string): INullResponseData {
         this.buildController.saveWeaponBuild(sessionID, info);
 
         return this.httpResponse.nullResponse();

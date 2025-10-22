@@ -7,7 +7,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class RepairCallbacks {
-    constructor(@inject("RepairController") protected repairController: RepairController) {}
+    protected repairController: RepairController;
+
+    constructor(@inject("RepairController") repairController: RepairController) {
+        this.repairController = repairController;
+    }
 
     /**
      * Handle TraderRepair event

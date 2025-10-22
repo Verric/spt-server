@@ -4,7 +4,6 @@ import { IPmcData } from "@spt/models/eft/common/IPmcData";
 import { IHealthTreatmentRequestData } from "@spt/models/eft/health/IHealthTreatmentRequestData";
 import { IOffraidEatRequestData } from "@spt/models/eft/health/IOffraidEatRequestData";
 import { IOffraidHealRequestData } from "@spt/models/eft/health/IOffraidHealRequestData";
-import { ISyncHealthRequestData } from "@spt/models/eft/health/ISyncHealthRequestData";
 import { IWorkoutData } from "@spt/models/eft/health/IWorkoutData";
 import { IGetBodyResponseData } from "@spt/models/eft/httpResponse/IGetBodyResponseData";
 import { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
@@ -13,11 +12,19 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HealthCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected profileHelper: ProfileHelper;
+    protected healthController: HealthController;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("HealthController") protected healthController: HealthController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("HealthController") healthController: HealthController,
+    ) {
+        this.httpResponse = httpResponse;
+        this.profileHelper = profileHelper;
+        this.healthController = healthController;
+    }
 
     /**
      * Custom spt server request found in modules/QTEPatch.cs
@@ -26,8 +33,8 @@ export class HealthCallbacks {
      * @param sessionID session id
      * @returns empty response, no data sent back to client
      */
-    public handleWorkoutEffects(url: string, info: IWorkoutData, sessionID: string): IGetBodyResponseData<string> {
-        this.healthController.applyWorkoutChanges(this.profileHelper.getPmcProfile(sessionID), info, sessionID);
+    public handleWorkoutEffects(_url: string, info: IWorkoutData, sessionID: string): IGetBodyResponseData<string> {
+        this.healthController.applyWorkoutChanges(this.profileHelper.getPmcProfile(sessionID)!, info, sessionID);
         return this.httpResponse.emptyResponse();
     }
 

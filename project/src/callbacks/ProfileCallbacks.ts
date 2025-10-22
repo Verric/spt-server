@@ -23,20 +23,30 @@ import { inject, injectable } from "tsyringe";
 /** Handle profile related client events */
 @injectable()
 export class ProfileCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected timeUtil: TimeUtil;
+    protected profileController: ProfileController;
+    protected profileHelper: ProfileHelper;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("ProfileController") protected profileController: ProfileController,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("ProfileController") profileController: ProfileController,
+        @inject("ProfileHelper") profileHelper: ProfileHelper
+    ) {
+        this.httpResponse = httpResponse;
+        this.timeUtil = timeUtil;
+        this.profileController = profileController;
+        this.profileHelper = profileHelper;
+    }
 
     /**
      * Handle client/game/profile/create
      */
     public async createProfile(
-        url: string,
+        _url: string,
         info: IProfileCreateRequestData,
-        sessionID: string,
+        sessionID: string
     ): Promise<IGetBodyResponseData<ICreateProfileResponse>> {
         return this.httpResponse.getBody({ uid: await this.profileController.createProfile(info, sessionID) });
     }
@@ -45,7 +55,7 @@ export class ProfileCallbacks {
      * Handle client/game/profile/list
      * Get the complete player profile (scav + pmc character)
      */
-    public getProfileData(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IPmcData[]> {
+    public getProfileData(_url: string, _info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IPmcData[]> {
         return this.httpResponse.getBody(this.profileController.getCompleteProfile(sessionID));
     }
 
@@ -58,14 +68,14 @@ export class ProfileCallbacks {
      * @param sessionID Session id
      * @returns Profile object
      */
-    public regenerateScav(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IPmcData[]> {
+    public regenerateScav(_url: string, _info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IPmcData[]> {
         return this.httpResponse.getBody([this.profileController.generatePlayerScav(sessionID)]);
     }
 
     /**
      * Handle client/game/profile/voice/change event
      */
-    public changeVoice(url: string, info: IProfileChangeVoiceRequestData, sessionID: string): INullResponseData {
+    public changeVoice(_url: string, info: IProfileChangeVoiceRequestData, sessionID: string): INullResponseData {
         this.profileController.changeVoice(info, sessionID);
         return this.httpResponse.nullResponse();
     }
@@ -75,9 +85,9 @@ export class ProfileCallbacks {
      * Client allows player to adjust their profile name
      */
     public changeNickname(
-        url: string,
+        _url: string,
         info: IProfileChangeNicknameRequestData,
-        sessionID: string,
+        sessionID: string
     ): IGetBodyResponseData<any> {
         const output = this.profileController.changeNickname(info, sessionID);
 
@@ -96,9 +106,9 @@ export class ProfileCallbacks {
      * Handle client/game/profile/nickname/validate
      */
     public validateNickname(
-        url: string,
+        _url: string,
         info: IValidateNicknameRequestData,
-        sessionID: string,
+        sessionID: string
     ): IGetBodyResponseData<any> {
         const output = this.profileController.validateNickname(info, sessionID);
 
@@ -116,10 +126,13 @@ export class ProfileCallbacks {
     /**
      * Handle client/game/profile/nickname/reserved
      */
-    public getReservedNickname(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<string> {
+    public getReservedNickname(
+        _url: string,
+        _info: IEmptyRequestData,
+        sessionID: string
+    ): IGetBodyResponseData<string> {
         const fullProfile = this.profileHelper.getFullProfile(sessionID);
-        if (fullProfile?.info?.username)
-        {
+        if (fullProfile?.info?.username) {
             return this.httpResponse.getBody(fullProfile.info.username);
         }
 
@@ -131,9 +144,9 @@ export class ProfileCallbacks {
      * Called when creating a character when choosing a character face/voice
      */
     public getProfileStatus(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        sessionID: string
     ): IGetBodyResponseData<IGetProfileStatusResponseData> {
         return this.httpResponse.getBody(this.profileController.getProfileStatus(sessionID));
     }
@@ -143,9 +156,9 @@ export class ProfileCallbacks {
      * Called when viewing another players profile
      */
     public getOtherProfile(
-        url: string,
+        _url: string,
         request: IGetOtherProfileRequest,
-        sessionID: string,
+        sessionID: string
     ): IGetBodyResponseData<IGetOtherProfileResponse> {
         return this.httpResponse.getBody(this.profileController.getOtherProfile(sessionID, request));
     }
@@ -154,9 +167,9 @@ export class ProfileCallbacks {
      * Handle client/profile/settings
      */
     public getProfileSettings(
-        url: string,
+        _url: string,
         info: IGetProfileSettingsRequest,
-        sessionId: string,
+        sessionId: string
     ): IGetBodyResponseData<boolean> {
         return this.httpResponse.getBody(this.profileController.setChosenProfileIcon(sessionId, info));
     }
@@ -165,9 +178,9 @@ export class ProfileCallbacks {
      * Handle client/game/profile/search
      */
     public searchFriend(
-        url: string,
+        _url: string,
         info: ISearchFriendRequestData,
-        sessionID: string,
+        sessionID: string
     ): IGetBodyResponseData<ISearchFriendResponse[]> {
         return this.httpResponse.getBody(this.profileController.getFriends(info, sessionID));
     }
@@ -175,14 +188,14 @@ export class ProfileCallbacks {
     /**
      * Handle launcher/profile/info
      */
-    public getMiniProfile(url: string, info: IGetMiniProfileRequestData, sessionID: string): string {
+    public getMiniProfile(_url: string, _info: IGetMiniProfileRequestData, sessionID: string): string {
         return this.httpResponse.noBody(this.profileController.getMiniProfile(sessionID));
     }
 
     /**
      * Handle /launcher/profiles
      */
-    public getAllMiniProfiles(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getAllMiniProfiles(_url: string, _info: IEmptyRequestData, _sessionID: string): string {
         return this.httpResponse.noBody(this.profileController.getMiniProfiles());
     }
 }

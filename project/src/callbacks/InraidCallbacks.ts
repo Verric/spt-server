@@ -11,10 +11,16 @@ import { inject, injectable } from "tsyringe";
  */
 @injectable()
 export class InraidCallbacks {
+    protected inraidController: InraidController;
+    protected httpResponse: HttpResponseUtil;
+
     constructor(
-        @inject("InraidController") protected inraidController: InraidController,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-    ) {}
+        @inject("InraidController") inraidController: InraidController,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+    ) {
+        this.inraidController = inraidController;
+        this.httpResponse = httpResponse;
+    }
 
     /**
      * Handle client/location/getLocalloot
@@ -24,7 +30,7 @@ export class InraidCallbacks {
      * @param sessionID Session id
      * @returns Null http response
      */
-    public registerPlayer(url: string, info: IRegisterPlayerRequestData, sessionID: string): INullResponseData {
+    public registerPlayer(_url: string, info: IRegisterPlayerRequestData, sessionID: string): INullResponseData {
         this.inraidController.addPlayer(sessionID, info);
         return this.httpResponse.nullResponse();
     }
@@ -36,7 +42,7 @@ export class InraidCallbacks {
      * @param sessionID Session id
      * @returns Null http response
      */
-    public saveProgress(url: string, info: IScavSaveRequestData, sessionID: string): INullResponseData {
+    public saveProgress(_url: string, info: IScavSaveRequestData, sessionID: string): INullResponseData {
         this.inraidController.savePostRaidProfileForScav(info, sessionID);
         return this.httpResponse.nullResponse();
     }
@@ -49,11 +55,11 @@ export class InraidCallbacks {
         return this.httpResponse.noBody(this.inraidController.getInraidConfig().raidMenuSettings);
     }
 
-    public getTraitorScavHostileChance(url: string, info: IEmptyRequestData, sessionId: string): string {
+    public getTraitorScavHostileChance(url: string, _info: IEmptyRequestData, sessionId: string): string {
         return this.httpResponse.noBody(this.inraidController.getTraitorScavHostileChance(url, sessionId));
     }
 
-    public getBossTypes(url: string, info: IEmptyRequestData, sessionId: string): string {
+    public getBossTypes(url: string, _info: IEmptyRequestData, sessionId: string): string {
         return this.httpResponse.noBody(this.inraidController.getBossTypes(url, sessionId));
     }
 }

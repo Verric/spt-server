@@ -4,7 +4,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HttpCallbacks implements OnLoad {
-    constructor(@inject("HttpServer") protected httpServer: HttpServer) {}
+    protected httpServer: HttpServer;
+
+    constructor(@inject("HttpServer") httpServer: HttpServer) {
+        this.httpServer = httpServer;
+    }
 
     public async onLoad(): Promise<void> {
         await this.httpServer.load();

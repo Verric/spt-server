@@ -21,20 +21,38 @@ import { inject, injectable } from "tsyringe";
  */
 @injectable()
 export class DataCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected timeUtil: TimeUtil;
+    protected traderHelper: TraderHelper;
+    protected databaseService: DatabaseService;
+    protected traderController: TraderController;
+    protected hideoutController: HideoutController;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("TraderController") protected traderController: TraderController,
-        @inject("HideoutController") protected hideoutController: HideoutController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("TraderController") traderController: TraderController,
+        @inject("HideoutController") hideoutController: HideoutController,
+    ) {
+        this.httpResponse = httpResponse;
+        this.timeUtil = timeUtil;
+        this.traderHelper = traderHelper;
+        this.databaseService = databaseService;
+        this.traderController = traderController;
+        this.hideoutController = hideoutController;
+    }
 
     /**
      * Handle client/settings
      * @returns ISettingsBase
      */
-    public getSettings(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<ISettingsBase> {
+    public getSettings(
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
+    ): IGetBodyResponseData<ISettingsBase> {
         return this.httpResponse.getBody(this.databaseService.getSettings());
     }
 
@@ -42,8 +60,8 @@ export class DataCallbacks {
      * Handle client/globals
      * @returns IGlobals
      */
-    public getGlobals(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IGlobals> {
-        const globals = this.databaseService.getGlobals();
+    public getGlobals(_url: string, _info: IEmptyRequestData, _sessionID: string): IGetBodyResponseData<IGlobals> {
+        const _globals = this.databaseService.getGlobals();
 
         return this.httpResponse.getBody(this.databaseService.getGlobals());
     }
@@ -52,7 +70,7 @@ export class DataCallbacks {
      * Handle client/items
      * @returns string
      */
-    public getTemplateItems(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getTemplateItems(_url: string, _info: IEmptyRequestData, _sessionID: string): string {
         return this.httpResponse.getUnclearedBody(this.databaseService.getItems());
     }
 
@@ -61,9 +79,9 @@ export class DataCallbacks {
      * @returns IHandbookBase
      */
     public getTemplateHandbook(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<IHandbookBase> {
         return this.httpResponse.getBody(this.databaseService.getHandbook());
     }
@@ -73,9 +91,9 @@ export class DataCallbacks {
      * @returns Record<string, ICustomizationItem
      */
     public getTemplateSuits(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<Record<string, ICustomizationItem>> {
         return this.httpResponse.getBody(this.databaseService.getTemplates().customization);
     }
@@ -85,9 +103,9 @@ export class DataCallbacks {
      * @returns string[]
      */
     public getTemplateCharacter(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<string[]> {
         return this.httpResponse.getBody(this.databaseService.getTemplates().character);
     }
@@ -97,25 +115,25 @@ export class DataCallbacks {
      * @returns IHideoutSettingsBase
      */
     public getHideoutSettings(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<IHideoutSettingsBase> {
         return this.httpResponse.getBody(this.databaseService.getHideout().settings);
     }
 
     public getHideoutAreas(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<IHideoutArea[]> {
         return this.httpResponse.getBody(this.databaseService.getHideout().areas);
     }
 
     public getHideoutProduction(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<IHideoutProductionData> {
         return this.httpResponse.getBody(this.databaseService.getHideout().production);
     }
@@ -124,9 +142,9 @@ export class DataCallbacks {
      * Handle client/languages
      */
     public getLocalesLanguages(
-        url: string,
-        info: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<Record<string, string>> {
         return this.httpResponse.getBody(this.databaseService.getLocales().languages);
     }
@@ -134,7 +152,7 @@ export class DataCallbacks {
     /**
      * Handle client/menu/locale
      */
-    public getLocalesMenu(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<string> {
+    public getLocalesMenu(url: string, _info: IEmptyRequestData, _sessionID: string): IGetBodyResponseData<string> {
         const localeId = url.replace("/client/menu/locale/", "");
         const locales = this.databaseService.getLocales();
         let result = locales.menu[localeId];
@@ -151,7 +169,7 @@ export class DataCallbacks {
     /**
      * Handle client/locale
      */
-    public getLocalesGlobal(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getLocalesGlobal(url: string, _info: IEmptyRequestData, _sessionID: string): string {
         const localeId = url.replace("/client/locale/", "");
         const locales = this.databaseService.getLocales();
         let result = locales.global[localeId];
@@ -166,7 +184,7 @@ export class DataCallbacks {
     /**
      * Handle client/hideout/qte/list
      */
-    public getQteList(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getQteList(_url: string, _info: IEmptyRequestData, sessionID: string): string {
         return this.httpResponse.getUnclearedBody(this.hideoutController.getQteList(sessionID));
     }
 
@@ -176,7 +194,7 @@ export class DataCallbacks {
      */
     public getItemPrices(
         url: string,
-        info: IEmptyRequestData,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGetItemPricesResponse> {
         const traderId = url.replace("/client/items/prices/", "");

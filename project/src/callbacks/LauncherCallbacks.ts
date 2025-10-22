@@ -11,43 +11,53 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class LauncherCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected launcherController: LauncherController;
+    protected saveServer: SaveServer;
+    protected watermark: Watermark;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("LauncherController") protected launcherController: LauncherController,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("Watermark") protected watermark: Watermark,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("LauncherController") launcherController: LauncherController,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("Watermark") watermark: Watermark,
+    ) {
+        this.httpResponse = httpResponse;
+        this.launcherController = launcherController;
+        this.saveServer = saveServer;
+        this.watermark = watermark;
+    }
 
     public connect(): string {
         return this.httpResponse.noBody(this.launcherController.connect());
     }
 
-    public login(url: string, info: ILoginRequestData, sessionID: string): string {
+    public login(_url: string, info: ILoginRequestData, _sessionID: string): string {
         const output = this.launcherController.login(info);
         return !output ? "FAILED" : output;
     }
 
-    public async register(url: string, info: IRegisterData, sessionID: string): Promise<"FAILED" | "OK"> {
+    public async register(_url: string, info: IRegisterData, _sessionID: string): Promise<"FAILED" | "OK"> {
         const output = await this.launcherController.register(info);
         return !output ? "FAILED" : "OK";
     }
 
-    public get(url: string, info: ILoginRequestData, sessionID: string): string {
+    public get(_url: string, info: ILoginRequestData, _sessionID: string): string {
         const output = this.launcherController.find(this.launcherController.login(info));
         return this.httpResponse.noBody(output);
     }
 
-    public changeUsername(url: string, info: IChangeRequestData, sessionID: string): "FAILED" | "OK" {
+    public changeUsername(_url: string, info: IChangeRequestData, _sessionID: string): "FAILED" | "OK" {
         const output = this.launcherController.changeUsername(info);
         return !output ? "FAILED" : "OK";
     }
 
-    public changePassword(url: string, info: IChangeRequestData, sessionID: string): "FAILED" | "OK" {
+    public changePassword(_url: string, info: IChangeRequestData, _sessionID: string): "FAILED" | "OK" {
         const output = this.launcherController.changePassword(info);
         return !output ? "FAILED" : "OK";
     }
 
-    public wipe(url: string, info: IRegisterData, sessionID: string): "FAILED" | "OK" {
+    public wipe(_url: string, info: IRegisterData, _sessionID: string): "FAILED" | "OK" {
         const output = this.launcherController.wipe(info);
         return !output ? "FAILED" : "OK";
     }
@@ -56,11 +66,11 @@ export class LauncherCallbacks {
         return this.httpResponse.noBody(this.watermark.getVersionTag());
     }
 
-    public ping(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public ping(_url: string, _info: IEmptyRequestData, _sessionID: string): string {
         return this.httpResponse.noBody("pong!");
     }
 
-    public async removeProfile(url: string, info: IRemoveProfileData, sessionID: string): Promise<string> {
+    public async removeProfile(_url: string, _info: IRemoveProfileData, sessionID: string): Promise<string> {
         return this.httpResponse.noBody(await this.saveServer.removeProfile(sessionID));
     }
 
@@ -72,7 +82,7 @@ export class LauncherCallbacks {
         return this.httpResponse.noBody(this.launcherController.getLoadedServerMods());
     }
 
-    public getServerModsProfileUsed(url: string, info: IEmptyRequestData, sessionId: string): string {
+    public getServerModsProfileUsed(_url: string, _info: IEmptyRequestData, sessionId: string): string {
         return this.httpResponse.noBody(this.launcherController.getServerModsProfileUsed(sessionId));
     }
 }

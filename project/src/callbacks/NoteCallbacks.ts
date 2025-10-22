@@ -6,7 +6,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class NoteCallbacks {
-    constructor(@inject("NoteController") protected noteController: NoteController) {}
+    protected noteController: NoteController;
+
+    constructor(@inject("NoteController") noteController: NoteController) {
+        this.noteController = noteController;
+    }
 
     /** Handle AddNote event */
     public addNote(pmcData: IPmcData, body: INoteActionData, sessionID: string): IItemEventRouterResponse {

@@ -8,7 +8,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class TradeCallbacks {
-    constructor(@inject("TradeController") protected tradeController: TradeController) {}
+    protected tradeController: TradeController;
+
+    constructor(@inject("TradeController") tradeController: TradeController) {
+        this.tradeController = tradeController;
+    }
 
     /**
      * Handle client/game/profile/items/moving TradingConfirm event

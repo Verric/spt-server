@@ -27,11 +27,15 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class HideoutCallbacks implements OnUpdate {
     protected hideoutConfig: IHideoutConfig;
+    protected hideoutController: HideoutController;
+    protected configServer: ConfigServer;
 
     constructor(
-        @inject("HideoutController") protected hideoutController: HideoutController, // TODO: delay needed
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("HideoutController") hideoutController: HideoutController, // TODO: delay needed
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.hideoutController = hideoutController;
+        this.configServer = configServer;
         this.hideoutConfig = this.configServer.getConfig(ConfigTypes.HIDEOUT);
     }
 

@@ -31,14 +31,24 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class RagfairCallbacks implements OnLoad, OnUpdate {
     protected ragfairConfig: IRagfairConfig;
+    protected httpResponse: HttpResponseUtil;
+    protected ragfairServer: RagfairServer;
+    protected ragfairController: RagfairController;
+    protected ragfairTaxService: RagfairTaxService;
+    protected configServer: ConfigServer;
 
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("RagfairServer") protected ragfairServer: RagfairServer,
-        @inject("RagfairController") protected ragfairController: RagfairController,
-        @inject("RagfairTaxService") protected ragfairTaxService: RagfairTaxService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("RagfairServer") ragfairServer: RagfairServer,
+        @inject("RagfairController") ragfairController: RagfairController,
+        @inject("RagfairTaxService") ragfairTaxService: RagfairTaxService,
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.httpResponse = httpResponse;
+        this.ragfairServer = ragfairServer;
+        this.ragfairController = ragfairController;
+        this.ragfairTaxService = ragfairTaxService;
+        this.configServer = configServer;
         this.ragfairConfig = this.configServer.getConfig(ConfigTypes.RAGFAIR);
     }
 
@@ -70,15 +80,15 @@ export class RagfairCallbacks implements OnLoad, OnUpdate {
      * Handle client/ragfair/search
      * Handle client/ragfair/find
      */
-    public search(url: string, info: ISearchRequestData, sessionID: string): IGetBodyResponseData<IGetOffersResult> {
+    public search(_url: string, info: ISearchRequestData, sessionID: string): IGetBodyResponseData<IGetOffersResult> {
         return this.httpResponse.getBody(this.ragfairController.getOffers(sessionID, info));
     }
 
     /** Handle client/ragfair/itemMarketPrice */
     public getMarketPrice(
-        url: string,
+        _url: string,
         info: IGetMarketPriceRequestData,
-        sessionID: string,
+        _sessionID: string,
     ): IGetBodyResponseData<IGetItemPriceResult> {
         return this.httpResponse.getBody(this.ragfairController.getItemMinAvgMaxFleaPriceValues(info));
     }
@@ -89,12 +99,12 @@ export class RagfairCallbacks implements OnLoad, OnUpdate {
     }
 
     /** Handle RagFairRemoveOffer event */
-    public removeOffer(pmcData: IPmcData, info: IRemoveOfferRequestData, sessionID: string): IItemEventRouterResponse {
+    public removeOffer(_pmcData: IPmcData, info: IRemoveOfferRequestData, sessionID: string): IItemEventRouterResponse {
         return this.ragfairController.removeOffer(info, sessionID);
     }
 
     /** Handle RagFairRenewOffer event */
-    public extendOffer(pmcData: IPmcData, info: IExtendOfferRequestData, sessionID: string): IItemEventRouterResponse {
+    public extendOffer(_pmcData: IPmcData, info: IExtendOfferRequestData, sessionID: string): IItemEventRouterResponse {
         return this.ragfairController.extendOffer(info, sessionID);
     }
 
@@ -103,20 +113,20 @@ export class RagfairCallbacks implements OnLoad, OnUpdate {
      * Called when clicking an item to list on flea
      */
     public getFleaPrices(
-        url: string,
-        request: IEmptyRequestData,
-        sessionID: string,
+        _url: string,
+        _request: IEmptyRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<Record<string, number>> {
         return this.httpResponse.getBody(this.ragfairController.getAllFleaPrices());
     }
 
     /** Handle client/reports/ragfair/send */
-    public sendReport(url: string, info: ISendRagfairReportRequestData, sessionID: string): INullResponseData {
+    public sendReport(_url: string, _info: ISendRagfairReportRequestData, _sessionID: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
     public storePlayerOfferTaxAmount(
-        url: string,
+        _url: string,
         request: IStorePlayerOfferTaxAmountRequestData,
         sessionId: string,
     ): INullResponseData {
@@ -126,10 +136,10 @@ export class RagfairCallbacks implements OnLoad, OnUpdate {
 
     /** Handle client/ragfair/offer/findbyid */
     public getFleaOfferById(
-        url: string,
+        _url: string,
         request: IGetRagfairOfferByIdRequest,
         sessionID: string,
     ): IGetBodyResponseData<IRagfairOffer> {
-        return this.httpResponse.getBody(this.ragfairController.getOfferById(sessionID, request));
+        return this.httpResponse.getBody(this.ragfairController.getOfferById(sessionID, request)!); //trust me bro
     }
 }

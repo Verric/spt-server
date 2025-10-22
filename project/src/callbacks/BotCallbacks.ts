@@ -12,13 +12,13 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class BotCallbacks {
-    private botController: BotController;
-    private httpResponse: HttpResponseUtil;
-    private applicationContext: ApplicationContext;
+    protected botController: BotController;
+    protected httpResponse: HttpResponseUtil;
+    protected applicationContext: ApplicationContext;
     constructor(
         @inject("BotController") botController: BotController,
         @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
-        @inject("ApplicationContext") applicationContext: ApplicationContext
+        @inject("ApplicationContext") applicationContext: ApplicationContext,
     ) {
         this.botController = botController;
         this.httpResponse = httpResponse;
@@ -40,7 +40,7 @@ export class BotCallbacks {
      * Handle singleplayer/settings/bot/difficulty
      * @returns string
      */
-    public getBotDifficulty(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getBotDifficulty(url: string, _info: IEmptyRequestData, _sessionID: string): string {
         const splittedUrl = url.split("/");
         const type = splittedUrl[splittedUrl.length - 2].toLowerCase();
         const difficulty = splittedUrl[splittedUrl.length - 1];
@@ -62,7 +62,7 @@ export class BotCallbacks {
     public getAllBotDifficulties(
         _url: string,
         _info: IEmptyRequestData,
-        _sessionID: string
+        _sessionID: string,
     ): Record<string, IDifficulties> {
         return this.httpResponse.noBody(this.botController.getAllBotDifficulties());
     }
@@ -74,7 +74,7 @@ export class BotCallbacks {
     public async generateBots(
         _url: string,
         info: IGenerateBotsRequestData,
-        sessionID: string
+        sessionID: string,
     ): Promise<IGetBodyResponseData<IBotBase[]>> {
         return this.httpResponse.getBody(await this.botController.generate(sessionID, info));
     }
@@ -83,7 +83,7 @@ export class BotCallbacks {
      * Handle singleplayer/settings/bot/maxCap
      * @returns string
      */
-    public getBotCap(url: string, info: IEmptyRequestData, sessionID: string): string {
+    public getBotCap(url: string, _info: IEmptyRequestData, _sessionID: string): string {
         const splitUrl = url.split("/");
         const location = splitUrl[splitUrl.length - 1];
         return this.httpResponse.noBody(this.botController.getBotCap(location));

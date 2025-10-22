@@ -8,23 +8,29 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class WeatherCallbacks {
+    protected httpResponse: HttpResponseUtil;
+    protected weatherController: WeatherController;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("WeatherController") protected weatherController: WeatherController,
-    ) {}
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("WeatherController") weatherController: WeatherController,
+    ) {
+        this.httpResponse = httpResponse;
+        this.weatherController = weatherController;
+    }
 
     /**
      * Handle client/weather
      * @returns IWeatherData
      */
-    public getWeather(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IWeatherData> {
+    public getWeather(_url: string, _info: IEmptyRequestData, _sessionID: string): IGetBodyResponseData<IWeatherData> {
         return this.httpResponse.getBody(this.weatherController.generate());
     }
 
     /** Handle client/localGame/weather */
     public getLocalWeather(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGetLocalWeatherResponseData> {
         return this.httpResponse.getBody(this.weatherController.generateLocal(sessionID));

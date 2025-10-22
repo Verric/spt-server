@@ -1,4 +1,3 @@
-import { ProgramStatics } from "@spt/ProgramStatics";
 import { ClientLogController } from "@spt/controllers/ClientLogController";
 import { ModLoadOrder } from "@spt/loaders/ModLoadOrder";
 import { INullResponseData } from "@spt/models/eft/httpResponse/INullResponseData";
@@ -9,6 +8,7 @@ import { IBsgLogging, ICoreConfig, IRelease } from "@spt/models/spt/config/ICore
 import { IInsuranceConfig } from "@spt/models/spt/config/IInsuranceConfig";
 import { IPmcConfig } from "@spt/models/spt/config/IPmcConfig";
 import { IClientLogRequest } from "@spt/models/spt/logging/IClientLogRequest";
+import { ProgramStatics } from "@spt/ProgramStatics";
 import { ConfigServer } from "@spt/servers/ConfigServer";
 import { LocalisationService } from "@spt/services/LocalisationService";
 import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
@@ -21,13 +21,24 @@ export class ClientLogCallbacks {
     protected pmcConfig: IPmcConfig;
     protected insuranceConfig: IInsuranceConfig;
 
+    protected httpResponse: HttpResponseUtil;
+    protected clientLogController: ClientLogController;
+    protected configServer: ConfigServer;
+    protected localisationService: LocalisationService;
+    protected modLoadOrder: ModLoadOrder;
+
     constructor(
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ClientLogController") protected clientLogController: ClientLogController,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ModLoadOrder") protected modLoadOrder: ModLoadOrder,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ClientLogController") clientLogController: ClientLogController,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ModLoadOrder") modLoadOrder: ModLoadOrder,
     ) {
+        this.httpResponse = httpResponse;
+        this.clientLogController = clientLogController;
+        this.configServer = configServer;
+        this.localisationService = localisationService;
+        this.modLoadOrder = modLoadOrder;
         this.botConfig = this.configServer.getConfig(ConfigTypes.BOT);
         this.pmcConfig = this.configServer.getConfig(ConfigTypes.PMC);
         this.insuranceConfig = this.configServer.getConfig(ConfigTypes.INSURANCE);
@@ -36,7 +47,7 @@ export class ClientLogCallbacks {
     /**
      * Handle /singleplayer/log
      */
-    public clientLog(url: string, info: IClientLogRequest, sessionID: string): INullResponseData {
+    public clientLog(_url: string, info: IClientLogRequest, _sessionID: string): INullResponseData {
         if (info.Message === "-1") {
             this.handleClientLog();
         }

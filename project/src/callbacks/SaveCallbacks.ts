@@ -10,12 +10,18 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class SaveCallbacks implements OnLoad, OnUpdate {
     protected coreConfig: ICoreConfig;
+    protected saveServer: SaveServer;
+    protected configServer: ConfigServer;
+    protected backupService: BackupService;
 
     constructor(
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("BackupService") protected backupService: BackupService,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("BackupService") backupService: BackupService,
     ) {
+        this.saveServer = saveServer;
+        this.configServer = configServer;
+        this.backupService = backupService;
         this.coreConfig = this.configServer.getConfig(ConfigTypes.CORE);
     }
 

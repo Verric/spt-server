@@ -25,7 +25,6 @@ import { IGetMailDialogViewRequestData } from "@spt/models/eft/dialog/IGetMailDi
 import { IGetMailDialogViewResponseData } from "@spt/models/eft/dialog/IGetMailDialogViewResponseData";
 import { IPinDialogRequestData } from "@spt/models/eft/dialog/IPinDialogRequestData";
 import { IRemoveDialogRequestData } from "@spt/models/eft/dialog/IRemoveDialogRequestData";
-import { IRemoveMailMessageRequest } from "@spt/models/eft/dialog/IRemoveMailMessageRequest";
 import { IRemoveUserGroupMailRequest } from "@spt/models/eft/dialog/IRemoveUserGroupMailRequest";
 import { ISendMessageRequest } from "@spt/models/eft/dialog/ISendMessageRequest";
 import { ISetDialogReadRequestData } from "@spt/models/eft/dialog/ISetDialogReadRequestData";
@@ -39,20 +38,30 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class DialogueCallbacks implements OnUpdate {
+    protected hashUtil: HashUtil;
+    protected timeUtil: TimeUtil;
+    protected httpResponse: HttpResponseUtil;
+    protected dialogueController: DialogueController;
+
     constructor(
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("DialogueController") protected dialogueController: DialogueController,
-    ) {}
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("DialogueController") dialogueController: DialogueController,
+    ) {
+        this.hashUtil = hashUtil;
+        this.timeUtil = timeUtil;
+        this.httpResponse = httpResponse;
+        this.dialogueController = dialogueController;
+    }
 
     /**
      * Handle client/friend/list
      * @returns IGetFriendListDataResponse
      */
     public getFriendList(
-        url: string,
-        info: IEmptyRequestData,
+        _url: string,
+        _info: IEmptyRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGetFriendListDataResponse> {
         return this.httpResponse.getBody(this.dialogueController.getFriendList(sessionID));
@@ -63,9 +72,9 @@ export class DialogueCallbacks implements OnUpdate {
      * @returns IChatServer[]
      */
     public getChatServerList(
-        url: string,
-        info: IGetChatServerListRequestData,
-        sessionID: string,
+        _url: string,
+        _info: IGetChatServerListRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<IChatServer[]> {
         const chatServer: IChatServer = {
             _id: this.hashUtil.generate(),
@@ -84,8 +93,8 @@ export class DialogueCallbacks implements OnUpdate {
 
     /** Handle client/mail/dialog/list */
     public getMailDialogList(
-        url: string,
-        info: IGetMailDialogListRequestData,
+        _url: string,
+        _info: IGetMailDialogListRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IDialogueInfo[]> {
         return this.httpResponse.getBody(this.dialogueController.generateDialogueList(sessionID), 0, undefined, false);
@@ -93,7 +102,7 @@ export class DialogueCallbacks implements OnUpdate {
 
     /** Handle client/mail/dialog/view */
     public getMailDialogView(
-        url: string,
+        _url: string,
         info: IGetMailDialogViewRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGetMailDialogViewResponseData> {
@@ -107,7 +116,7 @@ export class DialogueCallbacks implements OnUpdate {
 
     /** Handle client/mail/dialog/info */
     public getMailDialogInfo(
-        url: string,
+        _url: string,
         info: IGetMailDialogInfoRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IDialogueInfo> {
@@ -115,25 +124,25 @@ export class DialogueCallbacks implements OnUpdate {
     }
 
     /** Handle client/mail/dialog/remove */
-    public removeDialog(url: string, info: IRemoveDialogRequestData, sessionID: string): IGetBodyResponseData<any[]> {
+    public removeDialog(_url: string, info: IRemoveDialogRequestData, sessionID: string): IGetBodyResponseData<[]> {
         this.dialogueController.removeDialogue(info.dialogId, sessionID);
         return this.httpResponse.emptyArrayResponse();
     }
 
     /** Handle client/mail/dialog/pin */
-    public pinDialog(url: string, info: IPinDialogRequestData, sessionID: string): IGetBodyResponseData<any[]> {
+    public pinDialog(_url: string, info: IPinDialogRequestData, sessionID: string): IGetBodyResponseData<[]> {
         this.dialogueController.setDialoguePin(info.dialogId, true, sessionID);
         return this.httpResponse.emptyArrayResponse();
     }
 
     /** Handle client/mail/dialog/unpin */
-    public unpinDialog(url: string, info: IPinDialogRequestData, sessionID: string): IGetBodyResponseData<any[]> {
+    public unpinDialog(_url: string, info: IPinDialogRequestData, sessionID: string): IGetBodyResponseData<[]> {
         this.dialogueController.setDialoguePin(info.dialogId, false, sessionID);
         return this.httpResponse.emptyArrayResponse();
     }
 
     /** Handle client/mail/dialog/read */
-    public setRead(url: string, info: ISetDialogReadRequestData, sessionID: string): IGetBodyResponseData<any[]> {
+    public setRead(_url: string, info: ISetDialogReadRequestData, sessionID: string): IGetBodyResponseData<[]> {
         this.dialogueController.setRead(info.dialogs, sessionID);
         return this.httpResponse.emptyArrayResponse();
     }
@@ -143,7 +152,7 @@ export class DialogueCallbacks implements OnUpdate {
      * @returns IGetAllAttachmentsResponse
      */
     public getAllAttachments(
-        url: string,
+        _url: string,
         info: IGetAllAttachmentsRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IGetAllAttachmentsResponse | undefined> {
@@ -151,19 +160,19 @@ export class DialogueCallbacks implements OnUpdate {
     }
 
     /** Handle client/mail/msg/send */
-    public sendMessage(url: string, request: ISendMessageRequest, sessionID: string): IGetBodyResponseData<string> {
+    public sendMessage(_url: string, request: ISendMessageRequest, sessionID: string): IGetBodyResponseData<string> {
         return this.httpResponse.getBody(this.dialogueController.sendMessage(sessionID, request));
     }
 
     /** Handle client/friend/request/list/outbox */
-    public listOutbox(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<any[]> {
+    public listOutbox(_url: string, _info: IEmptyRequestData, _sessionID: string): IGetBodyResponseData<[]> {
         return this.httpResponse.getBody([]);
     }
 
     /**
      * Handle client/friend/request/list/inbox
      */
-    public listInbox(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<any[]> {
+    public listInbox(_url: string, _info: IEmptyRequestData, _sessionID: string): IGetBodyResponseData<[]> {
         return this.httpResponse.getBody([]);
     }
 
@@ -171,7 +180,7 @@ export class DialogueCallbacks implements OnUpdate {
      * Handle client/friend/request/send
      */
     public sendFriendRequest(
-        url: string,
+        _url: string,
         request: IFriendRequestData,
         sessionID: string,
     ): IGetBodyResponseData<IFriendRequestSendResponse> {
@@ -181,7 +190,7 @@ export class DialogueCallbacks implements OnUpdate {
     /**
      * Handle client/friend/request/accept-all
      */
-    public acceptAllFriendRequests(url: string, request: IEmptyRequestData, sessionID: string): INullResponseData {
+    public acceptAllFriendRequests(_url: string, _request: IEmptyRequestData, _sessionID: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
@@ -189,9 +198,9 @@ export class DialogueCallbacks implements OnUpdate {
      * Handle client/friend/request/accept
      */
     public acceptFriendRequest(
-        url: string,
-        request: IAcceptFriendRequestData,
-        sessionID: string,
+        _url: string,
+        _request: IAcceptFriendRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<boolean> {
         return this.httpResponse.getBody(true);
     }
@@ -200,9 +209,9 @@ export class DialogueCallbacks implements OnUpdate {
      * Handle client/friend/request/decline
      */
     public declineFriendRequest(
-        url: string,
-        request: IDeclineFriendRequestData,
-        sessionID: string,
+        _url: string,
+        _request: IDeclineFriendRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<boolean> {
         return this.httpResponse.getBody(true);
     }
@@ -211,58 +220,62 @@ export class DialogueCallbacks implements OnUpdate {
      * Handle client/friend/request/cancel
      */
     public cancelFriendRequest(
-        url: string,
-        request: ICancelFriendRequestData,
-        sessionID: string,
+        _url: string,
+        _request: ICancelFriendRequestData,
+        _sessionID: string,
     ): IGetBodyResponseData<boolean> {
         return this.httpResponse.getBody(true);
     }
 
     /** Handle client/friend/delete */
-    public deleteFriend(url: string, request: IDeleteFriendRequest, sessionID: string): INullResponseData {
+    public deleteFriend(_url: string, request: IDeleteFriendRequest, sessionID: string): INullResponseData {
         this.dialogueController.deleteFriend(sessionID, request);
         return this.httpResponse.nullResponse();
     }
 
     /** Handle client/friend/ignore/set */
-    public ignoreFriend(url: string, request: IUIDRequestData, sessionID: string): INullResponseData {
+    public ignoreFriend(_url: string, _request: IUIDRequestData, _sessionID: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
     /** Handle client/friend/ignore/remove */
-    public unIgnoreFriend(url: string, request: IUIDRequestData, sessionID: string): INullResponseData {
+    public unIgnoreFriend(_url: string, _request: IUIDRequestData, _sessionID: string): INullResponseData {
         return this.httpResponse.nullResponse();
     }
 
-    public clearMail(url: string, request: IClearMailMessageRequest, sessionID: string): IGetBodyResponseData<any[]> {
+    public clearMail(_url: string, _request: IClearMailMessageRequest, _sessionID: string): IGetBodyResponseData<[]> {
         return this.httpResponse.emptyArrayResponse();
     }
 
-    public createGroupMail(url: string, info: ICreateGroupMailRequest, sessionID: string): IGetBodyResponseData<any[]> {
+    public createGroupMail(_url: string, _info: ICreateGroupMailRequest, _sessionID: string): IGetBodyResponseData<[]> {
         return this.httpResponse.emptyArrayResponse();
     }
 
     public changeMailGroupOwner(
-        url: string,
-        info: IChangeGroupMailOwnerRequest,
-        sessionID: string,
-    ): IGetBodyResponseData<any[]> {
+        _url: string,
+        _info: IChangeGroupMailOwnerRequest,
+        _sessionID: string,
+    ): IGetBodyResponseData<never> {
         throw new Error("Method not implemented.");
     }
 
-    public addUserToMail(url: string, info: IAddUserGroupMailRequest, sessionID: string): IGetBodyResponseData<any[]> {
+    public addUserToMail(
+        _url: string,
+        _info: IAddUserGroupMailRequest,
+        _sessionID: string,
+    ): IGetBodyResponseData<never> {
         throw new Error("Method not implemented.");
     }
 
     public removeUserFromMail(
-        url: string,
-        info: IRemoveUserGroupMailRequest,
-        sessionID: string,
-    ): IGetBodyResponseData<any[]> {
+        _url: string,
+        _info: IRemoveUserGroupMailRequest,
+        _sessionID: string,
+    ): IGetBodyResponseData<never> {
         throw new Error("Method not implemented.");
     }
 
-    public async onUpdate(timeSinceLastRun: number): Promise<boolean> {
+    public async onUpdate(_timeSinceLastRun: number): Promise<boolean> {
         this.dialogueController.update();
         return true;
     }

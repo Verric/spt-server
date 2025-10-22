@@ -27,10 +27,16 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class InventoryCallbacks {
+    protected inventoryController: InventoryController;
+    protected questController: QuestController;
+
     constructor(
-        @inject("InventoryController") protected inventoryController: InventoryController,
-        @inject("QuestController") protected questController: QuestController,
-    ) {}
+        @inject("InventoryController") inventoryController: InventoryController,
+        @inject("QuestController") questController: QuestController,
+    ) {
+        this.inventoryController = inventoryController;
+        this.questController = questController;
+    }
 
     /** Handle client/game/profile/items/moving Move event */
     public moveItem(

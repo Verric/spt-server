@@ -10,20 +10,28 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class PrestigeCallbacks {
+    protected httpServerHelper: HttpServerHelper;
+    protected httpResponse: HttpResponseUtil;
+    protected prestigeController: PrestigeController;
+
     constructor(
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("PrestigeController") protected prestigeController: PrestigeController,
-    ) {}
+        @inject("HttpServerHelper") httpServerHelper: HttpServerHelper,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("PrestigeController") prestigeController: PrestigeController,
+    ) {
+        this.httpServerHelper = httpServerHelper;
+        this.httpResponse = httpResponse;
+        this.prestigeController = prestigeController;
+    }
 
     /** Handle client/prestige/list */
-    public getPrestige(url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IPrestige> {
+    public getPrestige(_url: string, info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IPrestige> {
         return this.httpResponse.getBody(this.prestigeController.getPrestige(sessionID, info));
     }
 
     /** Handle client/prestige/obtain */
     public async obtainPrestige(
-        url: string,
+        _url: string,
         info: IObtainPrestigeRequest[],
         sessionID: string,
     ): Promise<INullResponseData> {
