@@ -1,21 +1,26 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-    "organizeImports": {
-        "enabled": true
+    "$schema": "https://biomejs.dev/schemas/2.2.6/schema.json",
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
     },
     "files": {
-        "ignore": [
-            ".editorconfig",
-            ".git/*",
-            ".pkg-cache/*",
-            "assets/database/*",
-            "build/*",
-            "node_modules/*",
-            "obj/*",
-            "tests/__cache__/*",
-            "tests/__coverage__/*",
-            "types/*",
-            "user/*"
+        "includes": [
+            "**",
+            "!**/.editorconfig",
+            "!**/.git/**/*",
+            "!**/.pkg-cache/**/*",
+            "!**/assets/database/**/*",
+            "!**/build/**/*",
+            "!**/node_modules/**/*",
+            "!**/obj/**/*",
+            "!**/tests/__cache__/**/*",
+            "!**/tests/__coverage__/**/*",
+            "!**/types/**/*",
+            "!**/user/**/*"
         ]
     },
     "linter": {
@@ -60,7 +65,9 @@
     },
     "overrides": [
         {
-            "include": ["tests/*"],
+            "includes": [
+                "**/tests/**/*"
+            ],
             "linter": {
                 "rules": {
                     "suspicious": {

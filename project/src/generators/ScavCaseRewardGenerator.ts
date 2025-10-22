@@ -40,7 +40,7 @@ export class ScavCaseRewardGenerator {
         @inject("RagfairPriceService") protected ragfairPriceService: RagfairPriceService,
         @inject("SeasonalEventService") protected seasonalEventService: SeasonalEventService,
         @inject("ItemFilterService") protected itemFilterService: ItemFilterService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("ConfigServer") protected configServer: ConfigServer
     ) {
         this.scavCaseConfig = this.configServer.getConfig(ConfigTypes.SCAVCASE);
     }
@@ -68,13 +68,13 @@ export class ScavCaseRewardGenerator {
         const randomlyPickedCommonRewards = this.pickRandomRewards(
             commonPricedItems,
             rewardItemCounts.Common,
-            "common",
+            "common"
         );
         const randomlyPickedRareRewards = this.pickRandomRewards(rarePricedItems, rewardItemCounts.Rare, "rare");
         const randomlyPickedSuperRareRewards = this.pickRandomRewards(
             superRarePricedItems,
             rewardItemCounts.Superrare,
-            "superrare",
+            "superrare"
         );
 
         // Add randomised stack sizes to ammo and money rewards
@@ -197,7 +197,7 @@ export class ScavCaseRewardGenerator {
     protected pickRandomRewards(
         items: ITemplateItem[],
         itemFilters: IRewardCountAndPriceDetails,
-        rarity: string,
+        rarity: string
     ): ITemplateItem[] {
         const result: ITemplateItem[] = [];
 
@@ -338,13 +338,11 @@ export class ScavCaseRewardGenerator {
      */
     protected getFilteredItemsByPrice(
         dbItems: ITemplateItem[],
-        itemFilters: IRewardCountAndPriceDetails,
+        itemFilters: IRewardCountAndPriceDetails
     ): ITemplateItem[] {
         return dbItems.filter((item) => {
             const handbookPrice = this.ragfairPriceService.getStaticPriceForItem(item._id);
-            if (handbookPrice >= itemFilters.minPriceRub && handbookPrice <= itemFilters.maxPriceRub) {
-                return true;
-            }
+            return handbookPrice >= itemFilters.minPriceRub && handbookPrice <= itemFilters.maxPriceRub;
         });
     }
 
@@ -381,32 +379,32 @@ export class ScavCaseRewardGenerator {
         if (itemToCalculate._parent === BaseClasses.AMMO) {
             amountToGive = this.randomUtil.getInt(
                 this.scavCaseConfig.ammoRewards.minStackSize,
-                itemToCalculate._props.StackMaxSize,
+                itemToCalculate._props.StackMaxSize
             );
         } else if (itemToCalculate._parent === BaseClasses.MONEY) {
             switch (itemToCalculate._id) {
                 case Money.ROUBLES:
                     amountToGive = this.randomUtil.getInt(
                         this.scavCaseConfig.moneyRewards.rubCount[rarity].min,
-                        this.scavCaseConfig.moneyRewards.rubCount[rarity].max,
+                        this.scavCaseConfig.moneyRewards.rubCount[rarity].max
                     );
                     break;
                 case Money.EUROS:
                     amountToGive = this.randomUtil.getInt(
                         this.scavCaseConfig.moneyRewards.eurCount[rarity].min,
-                        this.scavCaseConfig.moneyRewards.eurCount[rarity].max,
+                        this.scavCaseConfig.moneyRewards.eurCount[rarity].max
                     );
                     break;
                 case Money.DOLLARS:
                     amountToGive = this.randomUtil.getInt(
                         this.scavCaseConfig.moneyRewards.usdCount[rarity].min,
-                        this.scavCaseConfig.moneyRewards.usdCount[rarity].max,
+                        this.scavCaseConfig.moneyRewards.usdCount[rarity].max
                     );
                     break;
                 case Money.GP:
                     amountToGive = this.randomUtil.getInt(
                         this.scavCaseConfig.moneyRewards.gpCount[rarity].min,
-                        this.scavCaseConfig.moneyRewards.gpCount[rarity].max,
+                        this.scavCaseConfig.moneyRewards.gpCount[rarity].max
                     );
             }
         }

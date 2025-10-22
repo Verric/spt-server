@@ -50,7 +50,7 @@ export class BotController {
         @inject("ConfigServer") protected configServer: ConfigServer,
         @inject("ApplicationContext") protected applicationContext: ApplicationContext,
         @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryCloner") protected cloner: ICloner
     ) {
         this.botConfig = this.configServer.getConfig(ConfigTypes.BOT);
         this.pmcConfig = this.configServer.getConfig(ConfigTypes.PMC);
@@ -95,13 +95,13 @@ export class BotController {
         type: string,
         diffLevel: string,
         raidConfig?: IGetRaidConfigurationRequestData,
-        ignoreRaidSettings = false,
+        ignoreRaidSettings = false
     ): IDifficultyCategories {
         let difficulty = diffLevel.toLowerCase();
 
         if (!(raidConfig || ignoreRaidSettings)) {
             this.logger.error(
-                this.localisationService.getText("bot-missing_application_context", "RAID_CONFIGURATION"),
+                this.localisationService.getText("bot-missing_application_context", "RAID_CONFIGURATION")
             );
         }
 
@@ -187,12 +187,12 @@ export class BotController {
     protected async generateAndCacheBots(
         request: IGenerateBotsRequestData,
         pmcProfile: IPmcData | undefined,
-        sessionId: string,
+        sessionId: string
     ): Promise<void> {
         const raidSettings = this.getMostRecentRaidSettings();
 
         const allPmcsHaveSameNameAsPlayer = this.randomUtil.getChance100(
-            this.pmcConfig.allPMCsHavePlayerNameWithRandomPrefixChance,
+            this.pmcConfig.allPMCsHavePlayerNameWithRandomPrefixChance
         );
 
         // Map conditions to promises for bot generation
@@ -211,7 +211,7 @@ export class BotController {
                 raidSettings,
                 // Spawn the higher of the preset cache amount, or the requested amount
                 Math.max(this.getBotPresetGenerationLimit(condition.Role), condition.Limit),
-                this.botHelper.isBotPmc(condition.Role),
+                this.botHelper.isBotPmc(condition.Role)
             );
 
             // Generate bots for the current condition
@@ -262,7 +262,7 @@ export class BotController {
         allPmcsHaveSameNameAsPlayer: boolean,
         raidSettings: IGetRaidConfigurationRequestData,
         botCountToGenerate: number,
-        generateAsPmc: boolean,
+        generateAsPmc: boolean
     ): IBotGenerationDetails {
         return {
             isPmc: generateAsPmc,
@@ -299,21 +299,21 @@ export class BotController {
     protected async generateWithBotDetails(
         condition: ICondition,
         botGenerationDetails: IBotGenerationDetails,
-        sessionId: string,
+        sessionId: string
     ): Promise<void> {
         const isEventBot = condition.Role.toLowerCase().includes("event");
         if (isEventBot) {
             // Add eventRole data + reassign role property to be base type
             botGenerationDetails.eventRole = condition.Role;
             botGenerationDetails.role = this.seasonalEventService.getBaseRoleForEventBot(
-                botGenerationDetails.eventRole,
+                botGenerationDetails.eventRole
             );
         }
 
         // Create a compound key to store bots in cache against
         const cacheKey = this.botGenerationCacheService.createCacheKey(
             botGenerationDetails.eventRole ?? botGenerationDetails.role,
-            botGenerationDetails.botDifficulty,
+            botGenerationDetails.botDifficulty
         );
 
         // Get number of bots we have in cache
@@ -346,7 +346,7 @@ export class BotController {
         this.logger.debug(
             `Generated ${botGenerationDetails.botCountToGenerate} ${botGenerationDetails.role} (${
                 botGenerationDetails.eventRole ?? botGenerationDetails.role ?? ""
-            }) ${botGenerationDetails.botDifficulty} bots`,
+            }) ${botGenerationDetails.botDifficulty} bots`
         );
     }
 
@@ -360,7 +360,7 @@ export class BotController {
     protected async generateSingleBotAndStoreInCache(
         botGenerationDetails: IBotGenerationDetails,
         sessionId: string,
-        cacheKey: string,
+        cacheKey: string
     ): Promise<void> {
         const botToCache = await this.botGenerator.prepareAndGenerateBot(sessionId, botGenerationDetails);
 
@@ -386,7 +386,7 @@ export class BotController {
         const desiredBots: IBotBase[] = [];
 
         // We can assume that during this call, we have enough bots cached to cover the request
-        request.conditions.map((requestedBot) => {
+        request.conditions.forEach((requestedBot) => {
             // Create a compound key to store bots in cache against
             const cacheKey = this.botGenerationCacheService.createCacheKey(requestedBot.Role, requestedBot.Difficulty);
 
@@ -435,14 +435,14 @@ export class BotController {
      */
     public getBotCap(location: string): number {
         const botCap = this.botConfig.maxBotCap[location.toLowerCase()];
-        
+
         if (!botCap) {
             return this.botConfig.maxBotCap.default;
         }
 
         if (location === "default") {
             this.logger.warning(
-                this.localisationService.getText("bot-no_bot_cap_found_for_location", location.toLowerCase()),
+                this.localisationService.getText("bot-no_bot_cap_found_for_location", location.toLowerCase())
             );
         }
 

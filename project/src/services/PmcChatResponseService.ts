@@ -33,7 +33,7 @@ export class PmcChatResponseService {
         @inject("LocaleService") protected localeService: LocaleService,
         @inject("GiftService") protected giftService: GiftService,
         @inject("WeightedRandomHelper") protected weightedRandomHelper: WeightedRandomHelper,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("ConfigServer") protected configServer: ConfigServer
     ) {
         this.pmcResponsesConfig = this.configServer.getConfig(ConfigTypes.PMC_CHAT_RESPONSE);
         this.giftConfig = this.configServer.getConfig(ConfigTypes.GIFTS);
@@ -53,7 +53,7 @@ export class PmcChatResponseService {
 
             if (!victim.Name) {
                 this.logger.warning(
-                    `Victim: ${victim.ProfileId} does not have a nickname, skipping pmc response message send`,
+                    `Victim: ${victim.ProfileId} does not have a nickname, skipping pmc response message send`
                 );
 
                 continue;
@@ -66,7 +66,7 @@ export class PmcChatResponseService {
                     sessionId,
                     victimDetails,
                     message,
-                    MessageType.USER_MESSAGE,
+                    MessageType.USER_MESSAGE
                 );
             }
         }
@@ -100,7 +100,7 @@ export class PmcChatResponseService {
 
         // Because we've cached PMC sides as "Savage" for the client, we need to figure out
         // what side it really is
-        const side = killerDetailsInCache.Info.Settings.Role == "pmcUSEC" ? "Usec" : "Bear";
+        const side = killerDetailsInCache.Info.Settings.Role === "pmcUSEC" ? "Usec" : "Bear";
 
         const killerDetails: IUserDialogInfo = {
             _id: killerDetailsInCache._id,
@@ -160,7 +160,7 @@ export class PmcChatResponseService {
 
         if (this.appendSuffixToMessageEnd(isVictim)) {
             const suffixText = this.localisationService.getText(
-                this.randomUtil.getArrayValue(this.getResponseSuffixLocaleKeys()),
+                this.randomUtil.getArrayValue(this.getResponseSuffixLocaleKeys())
             );
             responseText += ` ${suffixText}`;
         }

@@ -1,8 +1,8 @@
-import buildInfo from "@spt/entry/build.json" assert { type: "json" };
+import buildInfo from "@spt/entry/build.json" with { type: "json" };
 import fs from "fs-extra";
 import { EntryType } from "./models/enums/EntryType";
 
-// biome-ignore lint/complexity/noStaticOnlyClass:
+// biome-ignore lint/complexity/noStaticOnlyClass: no static only class.... static only class
 export class ProgramStatics {
     private static _ENTRY_TYPE: EntryType;
 
