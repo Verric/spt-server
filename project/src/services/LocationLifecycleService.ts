@@ -92,7 +92,7 @@ export class LocationLifecycleService {
         @inject("ApplicationContext") protected applicationContext: ApplicationContext,
         @inject("LocationLootGenerator") protected locationLootGenerator: LocationLootGenerator,
         @inject("PmcWaveGenerator") protected pmcWaveGenerator: PmcWaveGenerator,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryCloner") protected cloner: ICloner
     ) {
         this.inRaidConfig = this.configServer.getConfig(ConfigTypes.IN_RAID);
         this.traderConfig = this.configServer.getConfig(ConfigTypes.TRADER);
@@ -153,7 +153,7 @@ export class LocationLifecycleService {
             result.transition.visitedLocations.push(transitionData.sptLastVisitedLocation);
 
             // Complete, clean up as no longer needed
-            this.applicationContext.clearValues(ContextVariableType.TRANSIT_INFO);
+            this.applicationContext.clearValue(ContextVariableType.TRANSIT_INFO);
         }
 
         // Apply changes from pmcConfig to bot hostility values
@@ -202,13 +202,13 @@ export class LocationLifecycleService {
         for (const botId in this.pmcConfig.hostilitySettings) {
             const configHostilityChanges = this.pmcConfig.hostilitySettings[botId];
             const locationBotHostilityDetails = location.BotLocationModifier.AdditionalHostilitySettings.find(
-                (botSettings) => botSettings.BotRole.toLowerCase() === botId,
+                (botSettings) => botSettings.BotRole.toLowerCase() === botId
             );
 
             // No matching bot in config, skip
             if (!locationBotHostilityDetails) {
                 this.logger.warning(
-                    `No bot: ${botId} hostility values found on: ${location.Id}, can only edit existing. Skipping`,
+                    `No bot: ${botId} hostility values found on: ${location.Id}, can only edit existing. Skipping`
                 );
 
                 continue;
@@ -228,7 +228,7 @@ export class LocationLifecycleService {
                 locationBotHostilityDetails.ChancedEnemies ||= [];
                 for (const chanceDetailsToApply of configHostilityChanges.chancedEnemies) {
                     const locationBotDetails = locationBotHostilityDetails.ChancedEnemies.find(
-                        (botChance) => botChance.Role === chanceDetailsToApply.Role,
+                        (botChance) => botChance.Role === chanceDetailsToApply.Role
                     );
                     if (locationBotDetails) {
                         // Existing
@@ -319,7 +319,7 @@ export class LocationLifecycleService {
         const dynamicSpawnPoints = this.locationLootGenerator.generateDynamicLoot(
             dynamicLootDistClone,
             staticAmmoDist,
-            name.toLowerCase(),
+            name.toLowerCase()
         );
 
         // Push chosen spawn points into returned object
@@ -329,7 +329,7 @@ export class LocationLifecycleService {
 
         // Done generating, log results
         this.logger.success(
-            this.localisationService.getText("location-dynamic_items_spawned_success", dynamicSpawnPoints.length),
+            this.localisationService.getText("location-dynamic_items_spawned_success", dynamicSpawnPoints.length)
         );
         this.logger.success(this.localisationService.getText("location-generated_success", name));
 
@@ -339,7 +339,7 @@ export class LocationLifecycleService {
             this.locationConfig.staticLootMultiplier = locationConfigClone.staticLootMultiplier;
             this.locationConfig.looseLootMultiplier = locationConfigClone.looseLootMultiplier;
 
-            this.applicationContext.clearValues(ContextVariableType.RAID_ADJUSTMENTS);
+            this.applicationContext.clearValue(ContextVariableType.RAID_ADJUSTMENTS);
         }
 
         return locationBaseClone;
@@ -401,7 +401,7 @@ export class LocationLifecycleService {
             isSurvived,
             isTransfer,
             request,
-            locationName,
+            locationName
         );
 
         // Handle car extracts
@@ -458,7 +458,7 @@ export class LocationLifecycleService {
         const newFenceStanding = this.getFenceStandingAfterExtract(
             pmcData,
             this.inRaidConfig.carExtractBaseStandingGain,
-            pmcData.CarExtractCounts[extractName],
+            pmcData.CarExtractCounts[extractName]
         );
         const fenceId: string = Traders.FENCE;
         pmcData.TradersInfo[fenceId].standing = newFenceStanding;
@@ -468,7 +468,7 @@ export class LocationLifecycleService {
         pmcData.TradersInfo[fenceId].loyaltyLevel = Math.max(pmcData.TradersInfo[fenceId].loyaltyLevel, 1);
 
         this.logger.debug(
-            `Car extract: ${extractName} used, total times taken: ${pmcData.CarExtractCounts[extractName]}`,
+            `Car extract: ${extractName} used, total times taken: ${pmcData.CarExtractCounts[extractName]}`
         );
 
         // Copy updated fence rep values into scav profile to ensure consistency
@@ -498,7 +498,7 @@ export class LocationLifecycleService {
         const newFenceStanding = this.getFenceStandingAfterExtract(
             pmcData,
             this.inRaidConfig.coopExtractBaseStandingGain,
-            pmcData.CoopExtractCounts[extractName],
+            pmcData.CoopExtractCounts[extractName]
         );
         const fenceId: string = Traders.FENCE;
         pmcData.TradersInfo[fenceId].standing = newFenceStanding;
@@ -553,7 +553,7 @@ export class LocationLifecycleService {
             MessageType.MESSAGE_WITH_ITEMS,
             this.randomUtil.getArrayValue(this.traderConfig.fence.coopExtractGift.messageLocaleIds),
             mailableLoot,
-            this.timeUtil.getHoursAsSeconds(this.traderConfig.fence.coopExtractGift.giftExpiryHours),
+            this.timeUtil.getHoursAsSeconds(this.traderConfig.fence.coopExtractGift.giftExpiryHours)
         );
     }
 
@@ -577,7 +577,7 @@ export class LocationLifecycleService {
         scavProfile: IPmcData,
         isDead: boolean,
         isTransfer: boolean,
-        request: IEndLocalRaidRequestData,
+        request: IEndLocalRaidRequestData
     ): void {
         const postRaidProfile = request.results.profile;
 
@@ -655,7 +655,7 @@ export class LocationLifecycleService {
         isSurvived: boolean,
         isTransfer: boolean,
         request: IEndLocalRaidRequestData,
-        locationName: string,
+        locationName: string
     ): void {
         const pmcProfile = fullProfile.characters.pmc;
         const postRaidProfile = request.results.profile;
@@ -729,7 +729,7 @@ export class LocationLifecycleService {
         this.matchBotDetailsCacheService.clearCache();
 
         const victims = postRaidProfile.Stats.Eft.Victims.filter(
-            (victim) => ["pmcbear", "pmcusec"].includes(victim.Role.toLowerCase()), // TODO replace with enum
+            (victim) => ["pmcbear", "pmcusec"].includes(victim.Role.toLowerCase()) // TODO replace with enum
         );
         if (victims?.length > 0) {
             // Player killed PMCs, send some mail responses to them
@@ -748,7 +748,7 @@ export class LocationLifecycleService {
         const preRaidAchievementIds = Object.keys(fullProfile.characters.pmc.Achievements);
         const postRaidAchievementIds = Object.keys(postRaidAchievements);
         const achievementIdsAcquiredThisRaid = postRaidAchievementIds.filter(
-            (id) => !preRaidAchievementIds.includes(id),
+            (id) => !preRaidAchievementIds.includes(id)
         );
 
         // Get achievement data from db
@@ -756,7 +756,7 @@ export class LocationLifecycleService {
 
         // Map the achievement ids player obtained in raid with matching achievement data from db
         const achievements = achievementIdsAcquiredThisRaid.map((achievementId) =>
-            achievementsDb.find((achievementDb) => achievementDb.id === achievementId),
+            achievementsDb.find((achievementDb) => achievementDb.id === achievementId)
         );
         if (!achievements) {
             // No achievements found
@@ -769,7 +769,7 @@ export class LocationLifecycleService {
                 CustomisationSource.ACHIEVEMENT,
                 fullProfile,
                 pmcProfile,
-                achievement.id,
+                achievement.id
             );
             if (rewardItems?.length > 0) {
                 this.mailSendService.sendLocalisedSystemMessageToPlayer(
@@ -777,7 +777,7 @@ export class LocationLifecycleService {
                     "670547bb5fa0b1a7c30d5836 0",
                     rewardItems,
                     [],
-                    this.timeUtil.getHoursAsSeconds(24 * 7),
+                    this.timeUtil.getHoursAsSeconds(24 * 7)
                 );
             }
         }
@@ -793,7 +793,7 @@ export class LocationLifecycleService {
     protected checkForAndFixPickupQuestsAfterDeath(
         sessionId: string,
         lostQuestItems: IItem[],
-        profileQuests: IQuestStatus[],
+        profileQuests: IQuestStatus[]
     ) {
         // Exclude completed quests
         const activeQuestIdsInProfile = profileQuests
@@ -802,7 +802,7 @@ export class LocationLifecycleService {
 
         // Get db details of quests we found above
         const questDb = Object.values(this.databaseService.getQuests()).filter((quest) =>
-            activeQuestIdsInProfile.includes(quest._id),
+            activeQuestIdsInProfile.includes(quest._id)
         );
 
         for (const lostItem of lostQuestItems) {
@@ -811,7 +811,7 @@ export class LocationLifecycleService {
             const matchingQuests = questDb.filter((quest) => {
                 const matchingCondition = quest.conditions.AvailableForFinish.find(
                     (questCondition) =>
-                        questCondition.conditionType === "FindItem" && questCondition.target.includes(lostItem._tpl),
+                        questCondition.conditionType === "FindItem" && questCondition.target.includes(lostItem._tpl)
                 );
                 if (!matchingCondition) {
                     // Quest doesnt have a matching condition
@@ -826,7 +826,7 @@ export class LocationLifecycleService {
             // Fail if multiple were found
             if (matchingQuests.length !== 1) {
                 this.logger.error(
-                    `Unable to fix quest item: ${lostItem}, ${matchingQuests.length} matching quests found, expected 1`,
+                    `Unable to fix quest item: ${lostItem}, ${matchingQuests.length} matching quests found, expected 1`
                 );
 
                 continue;
@@ -842,7 +842,7 @@ export class LocationLifecycleService {
 
             // Filter out the matching condition we found
             profileQuestToUpdate.completedConditions = profileQuestToUpdate.completedConditions.filter(
-                (conditionId) => conditionId !== matchingConditionId,
+                (conditionId) => conditionId !== matchingConditionId
             );
         }
     }
@@ -860,7 +860,7 @@ export class LocationLifecycleService {
         sessionId: string,
         postRaidQuests: IQuestStatus[],
         preRaidQuests: IQuestStatus[],
-        pmcProfile: IPmcData,
+        pmcProfile: IPmcData
     ): void {
         // LK quests that were not completed before raid but now are
         const newlyCompletedLightkeeperQuests = postRaidQuests.filter(
@@ -868,9 +868,9 @@ export class LocationLifecycleService {
                 postRaidQuest.status === QuestStatus.Success &&
                 preRaidQuests.find(
                     (preRaidQuest) =>
-                        preRaidQuest.qid === postRaidQuest.qid && preRaidQuest.status !== QuestStatus.Success,
+                        preRaidQuest.qid === postRaidQuest.qid && preRaidQuest.status !== QuestStatus.Success
                 ) &&
-                this.databaseService.getQuests()[postRaidQuest.qid]?.traderId === Traders.LIGHTHOUSEKEEPER,
+                this.databaseService.getQuests()[postRaidQuest.qid]?.traderId === Traders.LIGHTHOUSEKEEPER
         );
 
         // Run server complete quest process to ensure player gets rewards
@@ -878,7 +878,7 @@ export class LocationLifecycleService {
             this.questHelper.completeQuest(
                 pmcProfile,
                 { Action: "CompleteQuest", qid: questToComplete.qid, removeExcessItems: false },
-                sessionId,
+                sessionId
             );
         }
     }
@@ -927,7 +927,7 @@ export class LocationLifecycleService {
      */
     protected applyTraderStandingAdjustments(
         tradersServerProfile: Record<string, ITraderInfo>,
-        tradersClientProfile: Record<string, ITraderInfo>,
+        tradersClientProfile: Record<string, ITraderInfo>
     ): void {
         for (const traderId in tradersClientProfile) {
             const serverProfileTrader = tradersServerProfile[traderId];
@@ -972,7 +972,7 @@ export class LocationLifecycleService {
         const dialogueTemplates = this.databaseService.getTrader(traderId).dialogue;
         if (!dialogueTemplates) {
             this.logger.error(
-                this.localisationService.getText("inraid-unable_to_deliver_item_no_trader_found", traderId),
+                this.localisationService.getText("inraid-unable_to_deliver_item_no_trader_found", traderId)
             );
 
             return;
@@ -984,7 +984,7 @@ export class LocationLifecycleService {
         // This is to stop items being duplicated by being returned from both item delivery and insurance
         const deliveredItemIds = items.map((item) => item._id);
         pmcData.InsuredItems = pmcData.InsuredItems.filter(
-            (insuredItem) => !deliveredItemIds.includes(insuredItem.itemId),
+            (insuredItem) => !deliveredItemIds.includes(insuredItem.itemId)
         );
 
         // Send the items to the player
@@ -994,7 +994,7 @@ export class LocationLifecycleService {
             MessageType.BTR_ITEMS_DELIVERY,
             messageId,
             items,
-            messageStoreTime,
+            messageStoreTime
         );
     }
 
@@ -1002,13 +1002,13 @@ export class LocationLifecycleService {
         sessionId: string,
         preRaidPmcProfile: IPmcData,
         request: IEndLocalRaidRequestData,
-        locationName: string,
+        locationName: string
     ): void {
         if (request.lostInsuredItems?.length > 0) {
             const mappedItems = this.insuranceService.mapInsuredItemsToTrader(
                 sessionId,
                 request.lostInsuredItems,
-                preRaidPmcProfile,
+                preRaidPmcProfile
             );
 
             // Is possible to have items in lostInsuredItems but removed before reaching mappedItems
@@ -1168,15 +1168,15 @@ export class LocationLifecycleService {
                 this.logger.warning(
                     this.localisationService.getText(
                         "inraid-unable_to_migrate_pmc_quest_not_found_in_profile",
-                        scavQuest.qid,
-                    ),
+                        scavQuest.qid
+                    )
                 );
                 continue;
             }
 
             // Get counters related to scav quest
             const matchingCounters = Object.values(scavProfile.TaskConditionCounters).filter(
-                (counter) => counter.sourceId === scavQuest.qid,
+                (counter) => counter.sourceId === scavQuest.qid
             );
 
             if (!matchingCounters) {

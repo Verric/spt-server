@@ -39,12 +39,7 @@ export class ApplicationContext {
     }
 
     public addValue(type: ContextVariableType, value: any): void {
-        let list: LinkedList<ContextVariable>;
-        if (this.variables.has(type)) {
-            list = this.variables.get(type);
-        } else {
-            list = new LinkedList<ContextVariable>();
-        }
+        const list = this.variables.get(type) ?? new LinkedList<ContextVariable>();
 
         if (list.length >= ApplicationContext.holderMaxSize) {
             list.shift();
@@ -54,7 +49,7 @@ export class ApplicationContext {
         this.variables.set(type, list);
     }
 
-    public clearValues(type: ContextVariableType): void {
+    public clearValue(type: ContextVariableType): void {
         if (this.variables.has(type)) {
             this.variables.delete(type);
         }

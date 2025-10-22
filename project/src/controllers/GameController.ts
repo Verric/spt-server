@@ -23,7 +23,6 @@ import { IGameKeepAliveResponse } from "@spt/models/eft/game/IGameKeepAliveRespo
 import { IGameModeRequestData } from "@spt/models/eft/game/IGameModeRequestData";
 import { ESessionMode, IGameModeResponse } from "@spt/models/eft/game/IGameModeResponse";
 import { IGetRaidTimeRequest } from "@spt/models/eft/game/IGetRaidTimeRequest";
-import { IGetRaidTimeResponse } from "@spt/models/eft/game/IGetRaidTimeResponse";
 import { IServerDetails } from "@spt/models/eft/game/IServerDetails";
 import { ISurveyResponseData } from "@spt/models/eft/game/ISurveyResponseData";
 import { ISptProfile } from "@spt/models/eft/profile/ISptProfile";
@@ -92,7 +91,7 @@ export class GameController {
         @inject("ProfileActivityService") protected profileActivityService: ProfileActivityService,
         @inject("ApplicationContext") protected applicationContext: ApplicationContext,
         @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryCloner") protected cloner: ICloner
     ) {
         this.httpConfig = this.configServer.getConfig(ConfigTypes.HTTP);
         this.coreConfig = this.configServer.getConfig(ConfigTypes.CORE);
@@ -113,7 +112,7 @@ export class GameController {
         // Store client start time in app context
         this.applicationContext.addValue(
             ContextVariableType.CLIENT_START_TIMESTAMP,
-            `${sessionID}_${startTimeStampMS}`,
+            `${sessionID}_${startTimeStampMS}`
         );
 
         // repeatableQuests are stored by in profile.Quests due to the responses of the client (e.g. Quests in
@@ -237,7 +236,7 @@ export class GameController {
                 if (
                     !this.profileActivityService.activeWithinLastMinutes(
                         sessionID,
-                        this.hideoutConfig.updateProfileHideoutWhenActiveWithinMinutes,
+                        this.hideoutConfig.updateProfileHideoutWhenActiveWithinMinutes
                     )
                 ) {
                     this.hideoutHelper.updatePlayerHideout(sessionID);
@@ -394,7 +393,7 @@ export class GameController {
 
                 // Only hand out the new hideout customization rewards.
                 rewards = rewards.filter(
-                    (achievementReward) => achievementReward.type === RewardType.CUSTOMIZATION_DIRECT,
+                    (achievementReward) => achievementReward.type === RewardType.CUSTOMIZATION_DIRECT
                 );
 
                 this.rewardHelper.applyRewards(
@@ -402,7 +401,7 @@ export class GameController {
                     CustomisationSource.ACHIEVEMENT,
                     fullProfile,
                     fullProfile.characters.pmc,
-                    achievementId,
+                    achievementId
                 );
             }
         }
@@ -429,7 +428,7 @@ export class GameController {
 
         // Equipment area
         const equipmentArea = fullProfile.characters.pmc.Hideout.Areas.find(
-            (area) => area.type === HideoutAreas.EQUIPMENT_PRESETS_STAND,
+            (area) => area.type === HideoutAreas.EQUIPMENT_PRESETS_STAND
         );
         if (!equipmentArea) {
             this.logger.warning("Migration: Added equipment preset stand hideout area to profile, level 0");
@@ -447,7 +446,7 @@ export class GameController {
 
         // Cultist circle area
         const circleArea = fullProfile.characters.pmc.Hideout.Areas.find(
-            (area) => area.type === HideoutAreas.CIRCLE_OF_CULTISTS,
+            (area) => area.type === HideoutAreas.CIRCLE_OF_CULTISTS
         );
         if (!circleArea) {
             this.logger.warning("Migration: Added cultist circle hideout area to profile, level 0");
@@ -506,7 +505,7 @@ export class GameController {
         const profile = this.profileHelper.getPmcProfile(sessionID);
         const gameTime =
             profile.Stats?.Eft.OverallCounters.Items?.find(
-                (counter) => counter.Key.includes("LifeTime") && counter.Key.includes("Pmc"),
+                (counter) => counter.Key.includes("LifeTime") && counter.Key.includes("Pmc")
             )?.Value ?? 0;
 
         const config: IGameConfigResponse = {
@@ -611,14 +610,14 @@ export class GameController {
 
             // Set new values, whatever is smallest
             energyRegenPerHour += pmcProfile.Bonuses.filter(
-                (bonus) => bonus.type === BonusType.ENERGY_REGENERATION,
+                (bonus) => bonus.type === BonusType.ENERGY_REGENERATION
             ).reduce((sum, curr) => sum + (curr.value ?? 0), 0);
             hydrationRegenPerHour += pmcProfile.Bonuses.filter(
-                (bonus) => bonus.type === BonusType.HYDRATION_REGENERATION,
+                (bonus) => bonus.type === BonusType.HYDRATION_REGENERATION
             ).reduce((sum, curr) => sum + (curr.value ?? 0), 0);
             hpRegenPerHour += pmcProfile.Bonuses.filter((bonus) => bonus.type === BonusType.HEALTH_REGENERATION).reduce(
                 (sum, curr) => sum + (curr.value ?? 0),
-                0,
+                0
             );
 
             // Player has energy deficit
@@ -725,7 +724,7 @@ export class GameController {
                     (mod) =>
                         mod.author === modDetails.author &&
                         mod.name === modDetails.name &&
-                        mod.version === modDetails.version,
+                        mod.version === modDetails.version
                 )
             ) {
                 // Exists already, skip
@@ -786,7 +785,7 @@ export class GameController {
     protected logProfileDetails(fullProfile: ISptProfile): void {
         this.logger.debug(`Profile made with: ${fullProfile.spt.version}`);
         this.logger.debug(
-            `Server version: ${ProgramStatics.SPT_VERSION || this.coreConfig.sptVersion} ${ProgramStatics.COMMIT}`,
+            `Server version: ${ProgramStatics.SPT_VERSION || this.coreConfig.sptVersion} ${ProgramStatics.COMMIT}`
         );
         this.logger.debug(`Debug enabled: ${ProgramStatics.DEBUG}`);
         this.logger.debug(`Mods enabled: ${ProgramStatics.MODS}`);
