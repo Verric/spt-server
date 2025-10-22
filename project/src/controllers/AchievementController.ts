@@ -11,7 +11,7 @@ import { inject, injectable } from "tsyringe";
 export class AchievementController {
     constructor(
         @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
+        @inject("DatabaseService") protected databaseService: DatabaseService
     ) {}
 
     /**
@@ -29,16 +29,14 @@ export class AchievementController {
      * @param sessionId Session id
      * @returns ICompletedAchievementsResponse
      */
-    public getAchievementStatistics(sessionId: string): ICompletedAchievementsResponse {
+    public getAchievementStatistics(_sessionId: string): ICompletedAchievementsResponse {
         const achievements = this.databaseService.getAchievements();
-        const stats = {};
+        const stats: Record<string, number> = {};
 
         for (const achievement of achievements) {
             stats[achievement.id] = 0;
         }
 
-        return {
-            elements: stats,
-        };
+        return { elements: stats };
     }
 }

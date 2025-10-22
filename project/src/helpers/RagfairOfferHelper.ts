@@ -68,7 +68,7 @@ export class RagfairOfferHelper {
         @inject("LocaleService") protected localeService: LocaleService,
         @inject("LocalisationService") protected localisationService: LocalisationService,
         @inject("MailSendService") protected mailSendService: MailSendService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("ConfigServer") protected configServer: ConfigServer
     ) {
         this.ragfairConfig = this.configServer.getConfig(ConfigTypes.RAGFAIR);
         this.questConfig = this.configServer.getConfig(ConfigTypes.QUEST);
@@ -87,7 +87,7 @@ export class RagfairOfferHelper {
         searchRequest: ISearchRequestData,
         itemsToAdd: string[],
         traderAssorts: Record<string, ITraderAssort>,
-        pmcData: IPmcData,
+        pmcData: IPmcData
     ): IRagfairOffer[] {
         const playerIsFleaBanned = this.profileHelper.playerIsFleaBanned(pmcData);
         const tieredFlea = this.ragfairConfig.tieredFlea;
@@ -103,7 +103,7 @@ export class RagfairOfferHelper {
                 traderAssorts,
                 offer,
                 pmcData,
-                playerIsFleaBanned,
+                playerIsFleaBanned
             );
 
             if (!isDisplayable) {
@@ -130,7 +130,7 @@ export class RagfairOfferHelper {
         tieredFlea: ITieredFlea,
         offer: IRagfairOffer,
         tieredFleaLimitTypes: string[],
-        playerLevel: number,
+        playerLevel: number
     ): void {
         const offerItemTpl = offer.items[0]._tpl;
         if (tieredFlea.ammoTplUnlocks && this.itemHelper.isOfBaseclass(offerItemTpl, BaseClasses.AMMO)) {
@@ -208,7 +208,7 @@ export class RagfairOfferHelper {
         searchRequest: ISearchRequestData,
         itemsToAdd: string[],
         traderAssorts: Record<string, ITraderAssort>,
-        pmcData: IPmcData,
+        pmcData: IPmcData
     ): IRagfairOffer[] {
         const offersMap = new Map<string, IRagfairOffer[]>();
         const offersToReturn: IRagfairOffer[] = [];
@@ -239,7 +239,7 @@ export class RagfairOfferHelper {
                         traderAssorts,
                         offer,
                         pmcData,
-                        playerIsFleaBanned,
+                        playerIsFleaBanned
                     )
                 ) {
                     continue;
@@ -269,7 +269,7 @@ export class RagfairOfferHelper {
                         tieredFlea,
                         offer,
                         tieredFleaLimitTypes,
-                        pmcData.Info.Level,
+                        pmcData.Info.Level
                     );
 
                     // Do not add offer to build if user does not have access to it
@@ -353,7 +353,7 @@ export class RagfairOfferHelper {
      */
     public traderOfferItemQuestLocked(offer: IRagfairOffer, traderAssorts: Record<string, ITraderAssort>): boolean {
         return offer.items?.some((i) =>
-            traderAssorts[offer.user.id].barter_scheme[i._id]?.some((bs1) => bs1?.some((bs2) => bs2.sptQuestLocked)),
+            traderAssorts[offer.user.id].barter_scheme[i._id]?.some((bs1) => bs1?.some((bs2) => bs2.sptQuestLocked))
         );
     }
 
@@ -385,8 +385,8 @@ export class RagfairOfferHelper {
         if (!assortData) {
             this.logger.warning(
                 `Unable to find trader: ${offer.user.nickname} assort for item: ${this.itemHelper.getItemName(
-                    offer.items[0]._tpl,
-                )} ${offer.items[0]._tpl}, cannot check if buy restriction reached`,
+                    offer.items[0]._tpl
+                )} ${offer.items[0]._tpl}, cannot check if buy restriction reached`
             );
 
             return false;
@@ -541,7 +541,7 @@ export class RagfairOfferHelper {
     public completeOffer(
         offerOwnerSessionId: string,
         offer: IRagfairOffer,
-        boughtAmount: number,
+        boughtAmount: number
     ): IItemEventRouterResponse {
         const itemTpl = offer.items[0]._tpl;
         let paymentItemsToSendToPlayer: IItem[] = [];
@@ -595,7 +595,7 @@ export class RagfairOfferHelper {
             paymentItemsToSendToPlayer,
             this.timeUtil.getHoursAsSeconds(this.questHelper.getMailItemRedeemTimeHoursForProfile(sellerProfile)),
             undefined,
-            ragfairDetails,
+            ragfairDetails
         );
 
         // Adjust sellers sell sum values
@@ -619,8 +619,8 @@ export class RagfairOfferHelper {
             this.logger.error(
                 this.localisationService.getText(
                     "ragfair-unable_to_find_locale_by_key",
-                    RagfairOfferHelper.goodSoldTemplate,
-                ),
+                    RagfairOfferHelper.goodSoldTemplate
+                )
             );
         }
 
@@ -648,7 +648,7 @@ export class RagfairOfferHelper {
     protected passesSearchFilterCriteria(
         searchRequest: ISearchRequestData,
         offer: IRagfairOffer,
-        pmcData: IPmcData,
+        pmcData: IPmcData
     ): boolean {
         const isDefaultUserOffer = offer.user.memberType === MemberCategory.DEFAULT;
         const offerRootItem = offer.items[0];
@@ -774,7 +774,7 @@ export class RagfairOfferHelper {
         traderAssorts: Record<string, ITraderAssort>,
         offer: IRagfairOffer,
         pmcProfile: IPmcData,
-        playerIsFleaBanned?: boolean,
+        playerIsFleaBanned?: boolean
     ): boolean {
         const offerRootItem = offer.items[0];
         /** Currency offer is sold for */

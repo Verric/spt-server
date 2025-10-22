@@ -5,5 +5,5 @@ export interface ICircleCraftDetails {
     time: number;
     rewardType: CircleRewardType;
     rewardAmountRoubles: number;
-    rewardDetails?: ICraftTimeThreshhold;
+    rewardDetails?: ICraftTimeThreshhold | null;
 }

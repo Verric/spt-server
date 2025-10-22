@@ -1,3 +1,3 @@
-export enum QteType {
-    SHRINKING_CIRCLE = 0,
-}
+export const QteType = { SHRINKING_CIRCLE: 0 } as const;
+
+export type QteType = (typeof QteType)[keyof typeof QteType];
