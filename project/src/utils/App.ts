@@ -15,7 +15,7 @@ import { inject, injectAll, injectable } from "tsyringe";
 
 @injectable()
 export class App {
-    protected onUpdateLastRun = {};
+    protected onUpdateLastRun: Record<string, number> = {}; //taking guesses on type here
     protected coreConfig: ICoreConfig;
 
     constructor(
@@ -27,7 +27,7 @@ export class App {
         @inject("HttpServer") protected httpServer: HttpServer,
         @inject("DatabaseService") protected databaseService: DatabaseService,
         @injectAll("OnLoad") protected onLoadComponents: OnLoad[],
-        @injectAll("OnUpdate") protected onUpdateComponents: OnUpdate[],
+        @injectAll("OnUpdate") protected onUpdateComponents: OnUpdate[]
     ) {
         this.coreConfig = this.configServer.getConfig(ConfigTypes.CORE);
     }
@@ -46,7 +46,7 @@ export class App {
         const nodeVersion = process.version.replace(/^v/, "");
         if (ProgramStatics.EXPECTED_NODE && nodeVersion !== ProgramStatics.EXPECTED_NODE) {
             this.logger.error(
-                `Node version mismatch. Required: ${ProgramStatics.EXPECTED_NODE} | Current: ${nodeVersion}`,
+                `Node version mismatch. Required: ${ProgramStatics.EXPECTED_NODE} | Current: ${nodeVersion}`
             );
             process.exit(1);
         }
@@ -92,9 +92,9 @@ export class App {
                 /* temporary for debug */
                 const warnTime = 20 * 60;
 
-                if (success === void 0 && !(secondsSinceLastRun % warnTime)) {
+                if (success === undefined && !(secondsSinceLastRun % warnTime)) {
                     this.logger.debug(
-                        this.localisationService.getText("route_onupdate_no_response", updateable.getRoute()),
+                        this.localisationService.getText("route_onupdate_no_response", updateable.getRoute())
                     );
                 }
             }
