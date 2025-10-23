@@ -23,16 +23,30 @@ import { inject, injectable } from "tsyringe";
 export class MatchController {
     protected matchConfig: IMatchConfig;
     protected pmcConfig: IPmcConfig;
+    protected logger: ILogger;
+    protected saveServer: SaveServer;
+    protected matchLocationService: MatchLocationService;
+    protected configServer: ConfigServer;
+    protected applicationContext: ApplicationContext;
+    protected locationLifecycleService: LocationLifecycleService;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("MatchLocationService") protected matchLocationService: MatchLocationService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("ApplicationContext") protected applicationContext: ApplicationContext,
-        @inject("LocationLifecycleService") protected locationLifecycleService: LocationLifecycleService,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("MatchLocationService") matchLocationService: MatchLocationService,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("ApplicationContext") applicationContext: ApplicationContext,
+        @inject("LocationLifecycleService") locationLifecycleService: LocationLifecycleService,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.saveServer = saveServer;
+        this.matchLocationService = matchLocationService;
+        this.configServer = configServer;
+        this.applicationContext = applicationContext;
+        this.locationLifecycleService = locationLifecycleService;
+        this.cloner = cloner;
         this.matchConfig = this.configServer.getConfig(ConfigTypes.MATCH);
         this.pmcConfig = this.configServer.getConfig(ConfigTypes.PMC);
     }
@@ -47,7 +61,7 @@ export class MatchController {
     }
 
     /** Handle match/group/start_game */
-    public joinMatch(info: IMatchGroupStartGameRequest, sessionId: string): IProfileStatusResponse {
+    public joinMatch(_info: IMatchGroupStartGameRequest, _sessionId: string): IProfileStatusResponse {
         const output: IProfileStatusResponse = { maxPveCountExceeded: false, profiles: [] };
 
         // get list of players joining into the match
@@ -70,7 +84,7 @@ export class MatchController {
     }
 
     /** Handle client/match/group/status */
-    public getGroupStatus(info: IMatchGroupStatusRequest): IMatchGroupStatusResponse {
+    public getGroupStatus(_info: IMatchGroupStatusRequest): IMatchGroupStatusResponse {
         return { players: [], maxPveCountExceeded: false };
     }
 
@@ -79,7 +93,7 @@ export class MatchController {
      * @param request Raid config request
      * @param sessionID Session id
      */
-    public configureOfflineRaid(request: IGetRaidConfigurationRequestData, sessionID: string): void {
+    public configureOfflineRaid(request: IGetRaidConfigurationRequestData, _sessionID: string): void {
         // Store request data for access during bot generation
         this.applicationContext.addValue(ContextVariableType.RAID_CONFIGURATION, request);
 

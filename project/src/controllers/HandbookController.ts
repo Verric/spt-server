@@ -4,10 +4,16 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HandbookController {
+    protected databaseServer: DatabaseServer;
+    protected handbookHelper: HandbookHelper;
+
     constructor(
-        @inject("DatabaseServer") protected databaseServer: DatabaseServer,
-        @inject("HandbookHelper") protected handbookHelper: HandbookHelper,
-    ) {}
+        @inject("DatabaseServer") databaseServer: DatabaseServer,
+        @inject("HandbookHelper") handbookHelper: HandbookHelper,
+    ) {
+        this.databaseServer = databaseServer;
+        this.handbookHelper = handbookHelper;
+    }
 
     public load(): void {
         return;

@@ -17,18 +17,37 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class RepairController {
     protected repairConfig: IRepairConfig;
+    protected logger: ILogger;
+    protected eventOutputHolder: EventOutputHolder;
+    protected databaseService: DatabaseService;
+    protected questHelper: QuestHelper;
+    protected traderHelper: TraderHelper;
+    protected paymentService: PaymentService;
+    protected repairHelper: RepairHelper;
+    protected repairService: RepairService;
+    protected profileHelper: ProfileHelper;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("QuestHelper") protected questHelper: QuestHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("PaymentService") protected paymentService: PaymentService,
-        @inject("RepairHelper") protected repairHelper: RepairHelper,
-        @inject("RepairService") protected repairService: RepairService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-    ) {}
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("QuestHelper") questHelper: QuestHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("PaymentService") paymentService: PaymentService,
+        @inject("RepairHelper") repairHelper: RepairHelper,
+        @inject("RepairService") repairService: RepairService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+    ) {
+        this.logger = logger;
+        this.eventOutputHolder = eventOutputHolder;
+        this.databaseService = databaseService;
+        this.questHelper = questHelper;
+        this.traderHelper = traderHelper;
+        this.paymentService = paymentService;
+        this.repairHelper = repairHelper;
+        this.repairService = repairService;
+        this.profileHelper = profileHelper;
+    }
 
     /**
      * Handle TraderRepair event

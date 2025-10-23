@@ -6,11 +6,19 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class PresetController {
+    protected logger: ILogger;
+    protected presetHelper: PresetHelper;
+    protected databaseService: DatabaseService;
+
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("PresetHelper") protected presetHelper: PresetHelper,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-    ) {}
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("PresetHelper") presetHelper: PresetHelper,
+        @inject("DatabaseService") databaseService: DatabaseService,
+    ) {
+        this.logger = logger;
+        this.presetHelper = presetHelper;
+        this.databaseService = databaseService;
+    }
 
     public initialize(): void {
         const presets: [string, IPreset][] = Object.entries(this.databaseService.getGlobals().ItemPresets);

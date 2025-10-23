@@ -25,33 +25,63 @@ import { DatabaseService } from "@spt/services/DatabaseService";
 import { LocalisationService } from "@spt/services/LocalisationService";
 import { MatchBotDetailsCacheService } from "@spt/services/MatchBotDetailsCacheService";
 import { SeasonalEventService } from "@spt/services/SeasonalEventService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { ProgressWriter } from "@spt/utils/ProgressWriter";
 import { RandomUtil } from "@spt/utils/RandomUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class BotController {
     protected botConfig: IBotConfig;
     protected pmcConfig: IPmcConfig;
+    protected logger: ILogger;
+    protected databaseService: DatabaseService;
+    protected botGenerator: BotGenerator;
+    protected botHelper: BotHelper;
+    protected botDifficultyHelper: BotDifficultyHelper;
+    protected weightedRandomHelper: WeightedRandomHelper;
+    protected botGenerationCacheService: BotGenerationCacheService;
+    protected matchBotDetailsCacheService: MatchBotDetailsCacheService;
+    protected localisationService: LocalisationService;
+    protected seasonalEventService: SeasonalEventService;
+    protected profileHelper: ProfileHelper;
+    protected configServer: ConfigServer;
+    protected applicationContext: ApplicationContext;
+    protected randomUtil: RandomUtil;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("BotGenerator") protected botGenerator: BotGenerator,
-        @inject("BotHelper") protected botHelper: BotHelper,
-        @inject("BotDifficultyHelper") protected botDifficultyHelper: BotDifficultyHelper,
-        @inject("WeightedRandomHelper") protected weightedRandomHelper: WeightedRandomHelper,
-        @inject("BotGenerationCacheService") protected botGenerationCacheService: BotGenerationCacheService,
-        @inject("MatchBotDetailsCacheService") protected matchBotDetailsCacheService: MatchBotDetailsCacheService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("SeasonalEventService") protected seasonalEventService: SeasonalEventService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("ApplicationContext") protected applicationContext: ApplicationContext,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("PrimaryCloner") protected cloner: ICloner
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("BotGenerator") botGenerator: BotGenerator,
+        @inject("BotHelper") botHelper: BotHelper,
+        @inject("BotDifficultyHelper") botDifficultyHelper: BotDifficultyHelper,
+        @inject("WeightedRandomHelper") weightedRandomHelper: WeightedRandomHelper,
+        @inject("BotGenerationCacheService") botGenerationCacheService: BotGenerationCacheService,
+        @inject("MatchBotDetailsCacheService") matchBotDetailsCacheService: MatchBotDetailsCacheService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("SeasonalEventService") seasonalEventService: SeasonalEventService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("ApplicationContext") applicationContext: ApplicationContext,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.databaseService = databaseService;
+        this.botGenerator = botGenerator;
+        this.botHelper = botHelper;
+        this.botDifficultyHelper = botDifficultyHelper;
+        this.weightedRandomHelper = weightedRandomHelper;
+        this.botGenerationCacheService = botGenerationCacheService;
+        this.matchBotDetailsCacheService = matchBotDetailsCacheService;
+        this.localisationService = localisationService;
+        this.seasonalEventService = seasonalEventService;
+        this.profileHelper = profileHelper;
+        this.configServer = configServer;
+        this.applicationContext = applicationContext;
+        this.randomUtil = randomUtil;
+        this.cloner = cloner;
         this.botConfig = this.configServer.getConfig(ConfigTypes.BOT);
         this.pmcConfig = this.configServer.getConfig(ConfigTypes.PMC);
     }
@@ -95,13 +125,13 @@ export class BotController {
         type: string,
         diffLevel: string,
         raidConfig?: IGetRaidConfigurationRequestData,
-        ignoreRaidSettings = false
+        ignoreRaidSettings = false,
     ): IDifficultyCategories {
         let difficulty = diffLevel.toLowerCase();
 
         if (!(raidConfig || ignoreRaidSettings)) {
             this.logger.error(
-                this.localisationService.getText("bot-missing_application_context", "RAID_CONFIGURATION")
+                this.localisationService.getText("bot-missing_application_context", "RAID_CONFIGURATION"),
             );
         }
 
@@ -121,7 +151,8 @@ export class BotController {
         const result = {};
 
         const botTypesDb = this.databaseService.getBots().types;
-        const botTypes = Object.keys(WildSpawnTypeNumber).filter((v) => Number.isNaN(Number(v)));
+        //idk, WildSpawnTypeNumber was orgininally an enum type. I think it would have been best as a union literal type....
+        const botTypes = Object.keys(WildSpawnTypeNumber) as unknown as keyof typeof WildSpawnTypeNumber;
         for (let botType of botTypes) {
             const enumType = botType.toLowerCase();
             // pmcBEAR/pmcUSEC need to be converted into `usec`/`bear` so we can read difficulty settings from bots/types
@@ -187,12 +218,12 @@ export class BotController {
     protected async generateAndCacheBots(
         request: IGenerateBotsRequestData,
         pmcProfile: IPmcData | undefined,
-        sessionId: string
+        sessionId: string,
     ): Promise<void> {
         const raidSettings = this.getMostRecentRaidSettings();
 
         const allPmcsHaveSameNameAsPlayer = this.randomUtil.getChance100(
-            this.pmcConfig.allPMCsHavePlayerNameWithRandomPrefixChance
+            this.pmcConfig.allPMCsHavePlayerNameWithRandomPrefixChance,
         );
 
         // Map conditions to promises for bot generation
@@ -211,7 +242,7 @@ export class BotController {
                 raidSettings,
                 // Spawn the higher of the preset cache amount, or the requested amount
                 Math.max(this.getBotPresetGenerationLimit(condition.Role), condition.Limit),
-                this.botHelper.isBotPmc(condition.Role)
+                this.botHelper.isBotPmc(condition.Role),
             );
 
             // Generate bots for the current condition
@@ -262,7 +293,7 @@ export class BotController {
         allPmcsHaveSameNameAsPlayer: boolean,
         raidSettings: IGetRaidConfigurationRequestData,
         botCountToGenerate: number,
-        generateAsPmc: boolean
+        generateAsPmc: boolean,
     ): IBotGenerationDetails {
         return {
             isPmc: generateAsPmc,
@@ -299,21 +330,21 @@ export class BotController {
     protected async generateWithBotDetails(
         condition: ICondition,
         botGenerationDetails: IBotGenerationDetails,
-        sessionId: string
+        sessionId: string,
     ): Promise<void> {
         const isEventBot = condition.Role.toLowerCase().includes("event");
         if (isEventBot) {
             // Add eventRole data + reassign role property to be base type
             botGenerationDetails.eventRole = condition.Role;
             botGenerationDetails.role = this.seasonalEventService.getBaseRoleForEventBot(
-                botGenerationDetails.eventRole
+                botGenerationDetails.eventRole,
             );
         }
 
         // Create a compound key to store bots in cache against
         const cacheKey = this.botGenerationCacheService.createCacheKey(
             botGenerationDetails.eventRole ?? botGenerationDetails.role,
-            botGenerationDetails.botDifficulty
+            botGenerationDetails.botDifficulty,
         );
 
         // Get number of bots we have in cache
@@ -346,7 +377,7 @@ export class BotController {
         this.logger.debug(
             `Generated ${botGenerationDetails.botCountToGenerate} ${botGenerationDetails.role} (${
                 botGenerationDetails.eventRole ?? botGenerationDetails.role ?? ""
-            }) ${botGenerationDetails.botDifficulty} bots`
+            }) ${botGenerationDetails.botDifficulty} bots`,
         );
     }
 
@@ -360,7 +391,7 @@ export class BotController {
     protected async generateSingleBotAndStoreInCache(
         botGenerationDetails: IBotGenerationDetails,
         sessionId: string,
-        cacheKey: string
+        cacheKey: string,
     ): Promise<void> {
         const botToCache = await this.botGenerator.prepareAndGenerateBot(sessionId, botGenerationDetails);
 
@@ -442,7 +473,7 @@ export class BotController {
 
         if (location === "default") {
             this.logger.warning(
-                this.localisationService.getText("bot-no_bot_cap_found_for_location", location.toLowerCase())
+                this.localisationService.getText("bot-no_bot_cap_found_for_location", location.toLowerCase()),
             );
         }
 

@@ -9,16 +9,24 @@ import type { IEmptyRequestData } from "../models/eft/common/IEmptyRequestData";
 
 @injectable()
 export class PrestigeController {
+    protected saveServer: SaveServer;
+    protected databaseService: DatabaseService;
+    protected profileHelper: ProfileHelper;
+
     constructor(
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-    ) {}
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+    ) {
+        this.saveServer = saveServer;
+        this.databaseService = databaseService;
+        this.profileHelper = profileHelper;
+    }
 
     /**
      * Handle /client/prestige/list
      */
-    public getPrestige(sessionID: string, info: IEmptyRequestData): IPrestige {
+    public getPrestige(_sessionID: string, _info: IEmptyRequestData): IPrestige {
         return this.databaseService.getTemplates().prestige;
     }
 

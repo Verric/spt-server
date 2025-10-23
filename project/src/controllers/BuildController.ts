@@ -10,23 +10,43 @@ import { EventOutputHolder } from "@spt/routers/EventOutputHolder";
 import { SaveServer } from "@spt/servers/SaveServer";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { LocalisationService } from "@spt/services/LocalisationService";
-import { HashUtil } from "@spt/utils/HashUtil";
 import type { ICloner } from "@spt/utils/cloners/ICloner";
+import { HashUtil } from "@spt/utils/HashUtil";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class BuildController {
+    protected logger: ILogger;
+    protected hashUtil: HashUtil;
+    protected eventOutputHolder: EventOutputHolder;
+    protected databaseService: DatabaseService;
+    protected profileHelper: ProfileHelper;
+    protected localisationService: LocalisationService;
+    protected itemHelper: ItemHelper;
+    protected saveServer: SaveServer;
+    protected cloner: ICloner;
+
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
-    ) {}
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("PrimaryCloner") cloner: ICloner,
+    ) {
+        this.logger = logger;
+        this.hashUtil = hashUtil;
+        this.eventOutputHolder = eventOutputHolder;
+        this.databaseService = databaseService;
+        this.profileHelper = profileHelper;
+        this.localisationService = localisationService;
+        this.itemHelper = itemHelper;
+        this.saveServer = saveServer;
+        this.cloner = cloner;
+    }
 
     /** Handle client/handbook/builds/my/list */
     public getUserBuilds(sessionID: string): IUserBuilds {

@@ -33,17 +33,34 @@ export class CustomizationController {
         lowerParentId: "5cd944d01388ce000a659df9",
         upperParentId: "5cd944ca1388ce03a44dc2a4",
     };
+    protected logger: ILogger;
+    protected eventOutputHolder: EventOutputHolder;
+    protected databaseService: DatabaseService;
+    protected saveServer: SaveServer;
+    protected localisationService: LocalisationService;
+    protected profileHelper: ProfileHelper;
+    protected paymentService: PaymentService;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("PaymentService") protected paymentService: PaymentService,
-        @inject("PrimaryCloner") protected cloner: ICloner,
-    ) {}
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("PaymentService") paymentService: PaymentService,
+        @inject("PrimaryCloner") cloner: ICloner,
+    ) {
+        this.logger = logger;
+        this.eventOutputHolder = eventOutputHolder;
+        this.databaseService = databaseService;
+        this.saveServer = saveServer;
+        this.localisationService = localisationService;
+        this.profileHelper = profileHelper;
+        this.paymentService = paymentService;
+        this.cloner = cloner;
+    }
 
     /**
      * Get purchasable clothing items from trader that match players side (usec/bear)
@@ -188,12 +205,12 @@ export class CustomizationController {
     }
 
     /** Handle client/hideout/customization/offer/list */
-    public getHideoutCustomisation(sessionID: string, info: IEmptyRequestData): IHideoutCustomisation {
+    public getHideoutCustomisation(_sessionID: string, _info: IEmptyRequestData): IHideoutCustomisation {
         return this.databaseService.getHideout().customisation;
     }
 
     /** Handle client/customization/storage */
-    public getCustomisationStorage(sessionID: string, info: IEmptyRequestData): ICustomisationStorage[] {
+    public getCustomisationStorage(sessionID: string, _info: IEmptyRequestData): ICustomisationStorage[] {
         const customisationResultsClone = this.cloner.clone(this.databaseService.getTemplates().customisationStorage);
 
         const profile = this.profileHelper.getFullProfile(sessionID);

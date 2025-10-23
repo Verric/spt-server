@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import { ProgramStatics } from "@spt/ProgramStatics";
 import { ApplicationContext } from "@spt/context/ApplicationContext";
 import { ContextVariableType } from "@spt/context/ContextVariableType";
 import { HideoutHelper } from "@spt/helpers/HideoutHelper";
@@ -39,6 +38,7 @@ import { IHttpConfig } from "@spt/models/spt/config/IHttpConfig";
 import { IRagfairConfig } from "@spt/models/spt/config/IRagfairConfig";
 import { IRaidChanges } from "@spt/models/spt/location/IRaidChanges";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
+import { ProgramStatics } from "@spt/ProgramStatics";
 import { ConfigServer } from "@spt/servers/ConfigServer";
 import { CreateProfileService } from "@spt/services/CreateProfileService";
 import { CustomLocationWaveService } from "@spt/services/CustomLocationWaveService";
@@ -52,10 +52,10 @@ import { ProfileActivityService } from "@spt/services/ProfileActivityService";
 import { ProfileFixerService } from "@spt/services/ProfileFixerService";
 import { RaidTimeAdjustmentService } from "@spt/services/RaidTimeAdjustmentService";
 import { SeasonalEventService } from "@spt/services/SeasonalEventService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { HashUtil } from "@spt/utils/HashUtil";
 import { RandomUtil } from "@spt/utils/RandomUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
@@ -65,34 +65,84 @@ export class GameController {
     protected ragfairConfig: IRagfairConfig;
     protected hideoutConfig: IHideoutConfig;
     protected botConfig: IBotConfig;
+    protected logger: ILogger;
+    protected databaseService: DatabaseService;
+    protected timeUtil: TimeUtil;
+    protected hashUtil: HashUtil;
+    protected preSptModLoader: PreSptModLoader;
+    protected httpServerHelper: HttpServerHelper;
+    protected inventoryHelper: InventoryHelper;
+    protected rewardHelper: RewardHelper;
+    protected randomUtil: RandomUtil;
+    protected hideoutHelper: HideoutHelper;
+    protected profileHelper: ProfileHelper;
+    protected profileFixerService: ProfileFixerService;
+    protected localisationService: LocalisationService;
+    protected postDbLoadService: PostDbLoadService;
+    protected createProfileService: CreateProfileService;
+    protected customLocationWaveService: CustomLocationWaveService;
+    protected openZoneService: OpenZoneService;
+    protected seasonalEventService: SeasonalEventService;
+    protected itemBaseClassService: ItemBaseClassService;
+    protected giftService: GiftService;
+    protected raidTimeAdjustmentService: RaidTimeAdjustmentService;
+    protected profileActivityService: ProfileActivityService;
+    protected applicationContext: ApplicationContext;
+    protected configServer: ConfigServer;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("PreSptModLoader") protected preSptModLoader: PreSptModLoader,
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper,
-        @inject("InventoryHelper") protected inventoryHelper: InventoryHelper,
-        @inject("RewardHelper") protected rewardHelper: RewardHelper,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("HideoutHelper") protected hideoutHelper: HideoutHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("ProfileFixerService") protected profileFixerService: ProfileFixerService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("PostDbLoadService") protected postDbLoadService: PostDbLoadService,
-        @inject("CreateProfileService") protected createProfileService: CreateProfileService,
-        @inject("CustomLocationWaveService") protected customLocationWaveService: CustomLocationWaveService,
-        @inject("OpenZoneService") protected openZoneService: OpenZoneService,
-        @inject("SeasonalEventService") protected seasonalEventService: SeasonalEventService,
-        @inject("ItemBaseClassService") protected itemBaseClassService: ItemBaseClassService,
-        @inject("GiftService") protected giftService: GiftService,
-        @inject("RaidTimeAdjustmentService") protected raidTimeAdjustmentService: RaidTimeAdjustmentService,
-        @inject("ProfileActivityService") protected profileActivityService: ProfileActivityService,
-        @inject("ApplicationContext") protected applicationContext: ApplicationContext,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("PreSptModLoader") preSptModLoader: PreSptModLoader,
+        @inject("HttpServerHelper") httpServerHelper: HttpServerHelper,
+        @inject("InventoryHelper") inventoryHelper: InventoryHelper,
+        @inject("RewardHelper") rewardHelper: RewardHelper,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("HideoutHelper") hideoutHelper: HideoutHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("ProfileFixerService") profileFixerService: ProfileFixerService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("PostDbLoadService") postDbLoadService: PostDbLoadService,
+        @inject("CreateProfileService") createProfileService: CreateProfileService,
+        @inject("CustomLocationWaveService") customLocationWaveService: CustomLocationWaveService,
+        @inject("OpenZoneService") openZoneService: OpenZoneService,
+        @inject("SeasonalEventService") seasonalEventService: SeasonalEventService,
+        @inject("ItemBaseClassService") itemBaseClassService: ItemBaseClassService,
+        @inject("GiftService") giftService: GiftService,
+        @inject("RaidTimeAdjustmentService") raidTimeAdjustmentService: RaidTimeAdjustmentService,
+        @inject("ProfileActivityService") profileActivityService: ProfileActivityService,
+        @inject("ApplicationContext") applicationContext: ApplicationContext,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.databaseService = databaseService;
+        this.timeUtil = timeUtil;
+        this.hashUtil = hashUtil;
+        this.preSptModLoader = preSptModLoader;
+        this.httpServerHelper = httpServerHelper;
+        this.inventoryHelper = inventoryHelper;
+        this.rewardHelper = rewardHelper;
+        this.randomUtil = randomUtil;
+        this.hideoutHelper = hideoutHelper;
+        this.profileHelper = profileHelper;
+        this.profileFixerService = profileFixerService;
+        this.localisationService = localisationService;
+        this.postDbLoadService = postDbLoadService;
+        this.createProfileService = createProfileService;
+        this.customLocationWaveService = customLocationWaveService;
+        this.openZoneService = openZoneService;
+        this.seasonalEventService = seasonalEventService;
+        this.itemBaseClassService = itemBaseClassService;
+        this.giftService = giftService;
+        this.raidTimeAdjustmentService = raidTimeAdjustmentService;
+        this.profileActivityService = profileActivityService;
+        this.applicationContext = applicationContext;
+        this.configServer = configServer;
+        this.cloner = cloner;
         this.httpConfig = this.configServer.getConfig(ConfigTypes.HTTP);
         this.coreConfig = this.configServer.getConfig(ConfigTypes.CORE);
         this.ragfairConfig = this.configServer.getConfig(ConfigTypes.RAGFAIR);
@@ -112,7 +162,7 @@ export class GameController {
         // Store client start time in app context
         this.applicationContext.addValue(
             ContextVariableType.CLIENT_START_TIMESTAMP,
-            `${sessionID}_${startTimeStampMS}`
+            `${sessionID}_${startTimeStampMS}`,
         );
 
         // repeatableQuests are stored by in profile.Quests due to the responses of the client (e.g. Quests in
@@ -236,7 +286,7 @@ export class GameController {
                 if (
                     !this.profileActivityService.activeWithinLastMinutes(
                         sessionID,
-                        this.hideoutConfig.updateProfileHideoutWhenActiveWithinMinutes
+                        this.hideoutConfig.updateProfileHideoutWhenActiveWithinMinutes,
                     )
                 ) {
                     this.hideoutHelper.updatePlayerHideout(sessionID);
@@ -393,7 +443,7 @@ export class GameController {
 
                 // Only hand out the new hideout customization rewards.
                 rewards = rewards.filter(
-                    (achievementReward) => achievementReward.type === RewardType.CUSTOMIZATION_DIRECT
+                    (achievementReward) => achievementReward.type === RewardType.CUSTOMIZATION_DIRECT,
                 );
 
                 this.rewardHelper.applyRewards(
@@ -401,7 +451,7 @@ export class GameController {
                     CustomisationSource.ACHIEVEMENT,
                     fullProfile,
                     fullProfile.characters.pmc,
-                    achievementId
+                    achievementId,
                 );
             }
         }
@@ -428,7 +478,7 @@ export class GameController {
 
         // Equipment area
         const equipmentArea = fullProfile.characters.pmc.Hideout.Areas.find(
-            (area) => area.type === HideoutAreas.EQUIPMENT_PRESETS_STAND
+            (area) => area.type === HideoutAreas.EQUIPMENT_PRESETS_STAND,
         );
         if (!equipmentArea) {
             this.logger.warning("Migration: Added equipment preset stand hideout area to profile, level 0");
@@ -446,7 +496,7 @@ export class GameController {
 
         // Cultist circle area
         const circleArea = fullProfile.characters.pmc.Hideout.Areas.find(
-            (area) => area.type === HideoutAreas.CIRCLE_OF_CULTISTS
+            (area) => area.type === HideoutAreas.CIRCLE_OF_CULTISTS,
         );
         if (!circleArea) {
             this.logger.warning("Migration: Added cultist circle hideout area to profile, level 0");
@@ -505,7 +555,7 @@ export class GameController {
         const profile = this.profileHelper.getPmcProfile(sessionID);
         const gameTime =
             profile.Stats?.Eft.OverallCounters.Items?.find(
-                (counter) => counter.Key.includes("LifeTime") && counter.Key.includes("Pmc")
+                (counter) => counter.Key.includes("LifeTime") && counter.Key.includes("Pmc"),
             )?.Value ?? 0;
 
         const config: IGameConfigResponse = {
@@ -525,7 +575,7 @@ export class GameController {
                 RagFair: this.httpServerHelper.getBackendUrl(),
             },
             useProtobuf: false,
-            utc_time: new Date().getTime() / 1000,
+            utc_time: Date.now() / 1000,
             totalInGame: gameTime,
             sessionMode: "pve",
             purchasedGames: {
@@ -541,28 +591,28 @@ export class GameController {
     /**
      * Handle client/game/mode
      */
-    public getGameMode(sessionID: string, info: IGameModeRequestData): IGameModeResponse {
+    public getGameMode(_sessionID: string, _info: IGameModeRequestData): IGameModeResponse {
         return { gameMode: ESessionMode.PVE, backendUrl: this.httpServerHelper.getBackendUrl() };
     }
 
     /**
      * Handle client/server/list
      */
-    public getServer(sessionId: string): IServerDetails[] {
+    public getServer(_sessionId: string): IServerDetails[] {
         return [{ ip: this.httpConfig.backendIp, port: this.httpConfig.backendPort }];
     }
 
     /**
      * Handle client/match/group/current
      */
-    public getCurrentGroup(sessionId: string): ICurrentGroupResponse {
+    public getCurrentGroup(_sessionId: string): ICurrentGroupResponse {
         return { squad: [] };
     }
 
     /**
      * Handle client/checkVersion
      */
-    public getValidGameVersion(sessionId: string): ICheckVersionResponse {
+    public getValidGameVersion(_sessionId: string): ICheckVersionResponse {
         return { isvalid: true, latestVersion: this.coreConfig.compatibleTarkovVersion };
     }
 
@@ -571,7 +621,7 @@ export class GameController {
      */
     public getKeepAlive(sessionId: string): IGameKeepAliveResponse {
         this.profileActivityService.setActivityTimestamp(sessionId);
-        return { msg: "OK", utc_time: new Date().getTime() / 1000 };
+        return { msg: "OK", utc_time: Date.now() / 1000 };
     }
 
     /**
@@ -610,14 +660,14 @@ export class GameController {
 
             // Set new values, whatever is smallest
             energyRegenPerHour += pmcProfile.Bonuses.filter(
-                (bonus) => bonus.type === BonusType.ENERGY_REGENERATION
+                (bonus) => bonus.type === BonusType.ENERGY_REGENERATION,
             ).reduce((sum, curr) => sum + (curr.value ?? 0), 0);
             hydrationRegenPerHour += pmcProfile.Bonuses.filter(
-                (bonus) => bonus.type === BonusType.HYDRATION_REGENERATION
+                (bonus) => bonus.type === BonusType.HYDRATION_REGENERATION,
             ).reduce((sum, curr) => sum + (curr.value ?? 0), 0);
             hpRegenPerHour += pmcProfile.Bonuses.filter((bonus) => bonus.type === BonusType.HEALTH_REGENERATION).reduce(
                 (sum, curr) => sum + (curr.value ?? 0),
-                0
+                0,
             );
 
             // Player has energy deficit
@@ -724,7 +774,7 @@ export class GameController {
                     (mod) =>
                         mod.author === modDetails.author &&
                         mod.name === modDetails.name &&
-                        mod.version === modDetails.version
+                        mod.version === modDetails.version,
                 )
             ) {
                 // Exists already, skip
@@ -785,13 +835,13 @@ export class GameController {
     protected logProfileDetails(fullProfile: ISptProfile): void {
         this.logger.debug(`Profile made with: ${fullProfile.spt.version}`);
         this.logger.debug(
-            `Server version: ${ProgramStatics.SPT_VERSION || this.coreConfig.sptVersion} ${ProgramStatics.COMMIT}`
+            `Server version: ${ProgramStatics.SPT_VERSION || this.coreConfig.sptVersion} ${ProgramStatics.COMMIT}`,
         );
         this.logger.debug(`Debug enabled: ${ProgramStatics.DEBUG}`);
         this.logger.debug(`Mods enabled: ${ProgramStatics.MODS}`);
     }
 
-    public getSurvey(sessionId: string): ISurveyResponseData {
+    public getSurvey(_sessionId: string): ISurveyResponseData {
         return this.coreConfig.survey;
     }
 }

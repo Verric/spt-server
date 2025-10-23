@@ -22,35 +22,67 @@ import { DatabaseService } from "@spt/services/DatabaseService";
 import { LocalisationService } from "@spt/services/LocalisationService";
 import { PaymentService } from "@spt/services/PaymentService";
 import { ProfileFixerService } from "@spt/services/ProfileFixerService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { HashUtil } from "@spt/utils/HashUtil";
 import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import { RandomUtil } from "@spt/utils/RandomUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class RepeatableQuestController {
     protected questConfig: IQuestConfig;
+    protected logger: ILogger;
+    protected hashUtil: HashUtil;
+    protected databaseService: DatabaseService;
+    protected timeUtil: TimeUtil;
+    protected randomUtil: RandomUtil;
+    protected httpResponse: HttpResponseUtil;
+    protected profileHelper: ProfileHelper;
+    protected profileFixerService: ProfileFixerService;
+    protected localisationService: LocalisationService;
+    protected eventOutputHolder: EventOutputHolder;
+    protected paymentService: PaymentService;
+    protected repeatableQuestGenerator: RepeatableQuestGenerator;
+    protected repeatableQuestHelper: RepeatableQuestHelper;
+    protected questHelper: QuestHelper;
+    protected configServer: ConfigServer;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("ProfileFixerService") protected profileFixerService: ProfileFixerService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("PaymentService") protected paymentService: PaymentService,
-        @inject("RepeatableQuestGenerator") protected repeatableQuestGenerator: RepeatableQuestGenerator,
-        @inject("RepeatableQuestHelper") protected repeatableQuestHelper: RepeatableQuestHelper,
-        @inject("QuestHelper") protected questHelper: QuestHelper,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("ProfileFixerService") profileFixerService: ProfileFixerService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("PaymentService") paymentService: PaymentService,
+        @inject("RepeatableQuestGenerator") repeatableQuestGenerator: RepeatableQuestGenerator,
+        @inject("RepeatableQuestHelper") repeatableQuestHelper: RepeatableQuestHelper,
+        @inject("QuestHelper") questHelper: QuestHelper,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.hashUtil = hashUtil;
+        this.databaseService = databaseService;
+        this.timeUtil = timeUtil;
+        this.randomUtil = randomUtil;
+        this.httpResponse = httpResponse;
+        this.profileHelper = profileHelper;
+        this.profileFixerService = profileFixerService;
+        this.localisationService = localisationService;
+        this.eventOutputHolder = eventOutputHolder;
+        this.paymentService = paymentService;
+        this.repeatableQuestGenerator = repeatableQuestGenerator;
+        this.repeatableQuestHelper = repeatableQuestHelper;
+        this.questHelper = questHelper;
+        this.configServer = configServer;
+        this.cloner = cloner;
         this.questConfig = this.configServer.getConfig(ConfigTypes.QUEST);
     }
 
@@ -124,7 +156,7 @@ export class RepeatableQuestController {
 
             // Add repeatable quests of this loops sub-type (daily/weekly)
             for (let i = 0; i < this.getQuestCount(repeatableConfig, fullProfile); i++) {
-                let quest: IRepeatableQuest | undefined = undefined;
+                let quest: IRepeatableQuest | undefined;
                 let lifeline = 0;
                 while (!quest && questTypePool.types.length > 0) {
                     quest = this.repeatableQuestGenerator.generateRepeatableQuest(
@@ -275,7 +307,9 @@ export class RepeatableQuestController {
             this.profileHelper.hasEliteSkillLevel(SkillTypes.CHARISMA, fullProfile.characters.pmc)
         ) {
             // Elite charisma skill gives extra daily quest(s)
-            questCount += this.databaseService.getGlobals().config.SkillsSettings.Charisma.BonusSettings.EliteBonusSettings.RepeatableQuestExtraCount
+            questCount +=
+                this.databaseService.getGlobals().config.SkillsSettings.Charisma.BonusSettings.EliteBonusSettings
+                    .RepeatableQuestExtraCount;
         }
 
         // Add any extra repeatable quests the profile has unlocked
@@ -668,7 +702,7 @@ export class RepeatableQuestController {
         repeatableConfig: IRepeatableQuestConfig,
     ): IRepeatableQuest {
         const maxAttempts = 10;
-        let newRepeatableQuest: IRepeatableQuest = undefined;
+        let newRepeatableQuest: IRepeatableQuest;
         let attempts = 0;
         while (attempts < maxAttempts && questTypePool.types.length > 0) {
             newRepeatableQuest = this.repeatableQuestGenerator.generateRepeatableQuest(

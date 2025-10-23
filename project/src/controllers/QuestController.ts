@@ -8,7 +8,7 @@ import { TraderHelper } from "@spt/helpers/TraderHelper";
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
 import { IItem } from "@spt/models/eft/common/tables/IItem";
 import { IQuest, IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
-import { IPmcDataRepeatableQuest, IRepeatableQuest } from "@spt/models/eft/common/tables/IRepeatableQuests";
+import { IRepeatableQuest } from "@spt/models/eft/common/tables/IRepeatableQuests";
 import { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
 import { IAcceptQuestRequestData } from "@spt/models/eft/quests/IAcceptQuestRequestData";
 import { ICompleteQuestRequestData } from "@spt/models/eft/quests/ICompleteQuestRequestData";
@@ -26,35 +26,71 @@ import { LocaleService } from "@spt/services/LocaleService";
 import { LocalisationService } from "@spt/services/LocalisationService";
 import { MailSendService } from "@spt/services/MailSendService";
 import { PlayerService } from "@spt/services/PlayerService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class QuestController {
     protected questConfig: IQuestConfig;
+    protected logger: ILogger;
+    protected timeUtil: TimeUtil;
+    protected httpResponseUtil: HttpResponseUtil;
+    protected eventOutputHolder: EventOutputHolder;
+    protected databaseService: DatabaseService;
+    protected itemHelper: ItemHelper;
+    protected dialogueHelper: DialogueHelper;
+    protected mailSendService: MailSendService;
+    protected profileHelper: ProfileHelper;
+    protected traderHelper: TraderHelper;
+    protected questHelper: QuestHelper;
+    protected questRewardHelper: QuestRewardHelper;
+    protected questConditionHelper: QuestConditionHelper;
+    protected playerService: PlayerService;
+    protected localeService: LocaleService;
+    protected localisationService: LocalisationService;
+    protected configServer: ConfigServer;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("HttpResponseUtil") protected httpResponseUtil: HttpResponseUtil,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("DialogueHelper") protected dialogueHelper: DialogueHelper,
-        @inject("MailSendService") protected mailSendService: MailSendService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("QuestHelper") protected questHelper: QuestHelper,
-        @inject("QuestRewardHelper") protected questRewardHelper: QuestRewardHelper,
-        @inject("QuestConditionHelper") protected questConditionHelper: QuestConditionHelper,
-        @inject("PlayerService") protected playerService: PlayerService,
-        @inject("LocaleService") protected localeService: LocaleService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("HttpResponseUtil") httpResponseUtil: HttpResponseUtil,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("DialogueHelper") dialogueHelper: DialogueHelper,
+        @inject("MailSendService") mailSendService: MailSendService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("QuestHelper") questHelper: QuestHelper,
+        @inject("QuestRewardHelper") questRewardHelper: QuestRewardHelper,
+        @inject("QuestConditionHelper") questConditionHelper: QuestConditionHelper,
+        @inject("PlayerService") playerService: PlayerService,
+        @inject("LocaleService") localeService: LocaleService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.timeUtil = timeUtil;
+        this.httpResponseUtil = httpResponseUtil;
+        this.eventOutputHolder = eventOutputHolder;
+        this.databaseService = databaseService;
+        this.itemHelper = itemHelper;
+        this.dialogueHelper = dialogueHelper;
+        this.mailSendService = mailSendService;
+        this.profileHelper = profileHelper;
+        this.traderHelper = traderHelper;
+        this.questHelper = questHelper;
+        this.questRewardHelper = questRewardHelper;
+        this.questConditionHelper = questConditionHelper;
+        this.playerService = playerService;
+        this.localeService = localeService;
+        this.localisationService = localisationService;
+        this.configServer = configServer;
+        this.cloner = cloner;
         this.questConfig = this.configServer.getConfig(ConfigTypes.QUEST);
     }
 
@@ -296,7 +332,7 @@ export class QuestController {
                 condition.id === handoverQuestRequest.conditionId &&
                 handoverQuestTypes.includes(condition.conditionType)
             ) {
-                handedInCount = Number.parseInt(<string>condition.value);
+                handedInCount = Number.parseInt(<string>condition.value, 10);
                 isItemHandoverQuest = condition.conditionType === handoverQuestTypes[0];
                 handoverRequirements = condition;
 

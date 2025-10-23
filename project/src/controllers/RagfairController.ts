@@ -49,34 +49,84 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class RagfairController {
     protected ragfairConfig: IRagfairConfig;
+    protected logger: ILogger;
+    protected timeUtil: TimeUtil;
+    protected httpResponse: HttpResponseUtil;
+    protected eventOutputHolder: EventOutputHolder;
+    protected ragfairServer: RagfairServer;
+    protected ragfairPriceService: RagfairPriceService;
+    protected databaseService: DatabaseService;
+    protected itemHelper: ItemHelper;
+    protected saveServer: SaveServer;
+    protected ragfairSellHelper: RagfairSellHelper;
+    protected ragfairTaxService: RagfairTaxService;
+    protected ragfairSortHelper: RagfairSortHelper;
+    protected ragfairOfferHelper: RagfairOfferHelper;
+    protected profileHelper: ProfileHelper;
+    protected paymentService: PaymentService;
+    protected handbookHelper: HandbookHelper;
+    protected paymentHelper: PaymentHelper;
+    protected inventoryHelper: InventoryHelper;
+    protected traderHelper: TraderHelper;
+    protected ragfairHelper: RagfairHelper;
+    protected ragfairOfferService: RagfairOfferService;
+    protected ragfairRequiredItemsService: RagfairRequiredItemsService;
+    protected ragfairOfferGenerator: RagfairOfferGenerator;
+    protected localisationService: LocalisationService;
+    protected configServer: ConfigServer;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("RagfairServer") protected ragfairServer: RagfairServer,
-        @inject("RagfairPriceService") protected ragfairPriceService: RagfairPriceService,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("RagfairSellHelper") protected ragfairSellHelper: RagfairSellHelper,
-        @inject("RagfairTaxService") protected ragfairTaxService: RagfairTaxService,
-        @inject("RagfairSortHelper") protected ragfairSortHelper: RagfairSortHelper,
-        @inject("RagfairOfferHelper") protected ragfairOfferHelper: RagfairOfferHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("PaymentService") protected paymentService: PaymentService,
-        @inject("HandbookHelper") protected handbookHelper: HandbookHelper,
-        @inject("PaymentHelper") protected paymentHelper: PaymentHelper,
-        @inject("InventoryHelper") protected inventoryHelper: InventoryHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("RagfairHelper") protected ragfairHelper: RagfairHelper,
-        @inject("RagfairOfferService") protected ragfairOfferService: RagfairOfferService,
-        @inject("RagfairRequiredItemsService") protected ragfairRequiredItemsService: RagfairRequiredItemsService,
-        @inject("RagfairOfferGenerator") protected ragfairOfferGenerator: RagfairOfferGenerator,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("RagfairServer") ragfairServer: RagfairServer,
+        @inject("RagfairPriceService") ragfairPriceService: RagfairPriceService,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("RagfairSellHelper") ragfairSellHelper: RagfairSellHelper,
+        @inject("RagfairTaxService") ragfairTaxService: RagfairTaxService,
+        @inject("RagfairSortHelper") ragfairSortHelper: RagfairSortHelper,
+        @inject("RagfairOfferHelper") ragfairOfferHelper: RagfairOfferHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("PaymentService") paymentService: PaymentService,
+        @inject("HandbookHelper") handbookHelper: HandbookHelper,
+        @inject("PaymentHelper") paymentHelper: PaymentHelper,
+        @inject("InventoryHelper") inventoryHelper: InventoryHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("RagfairHelper") ragfairHelper: RagfairHelper,
+        @inject("RagfairOfferService") ragfairOfferService: RagfairOfferService,
+        @inject("RagfairRequiredItemsService") ragfairRequiredItemsService: RagfairRequiredItemsService,
+        @inject("RagfairOfferGenerator") ragfairOfferGenerator: RagfairOfferGenerator,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.logger = logger;
+        this.timeUtil = timeUtil;
+        this.httpResponse = httpResponse;
+        this.eventOutputHolder = eventOutputHolder;
+        this.ragfairServer = ragfairServer;
+        this.ragfairPriceService = ragfairPriceService;
+        this.databaseService = databaseService;
+        this.itemHelper = itemHelper;
+        this.saveServer = saveServer;
+        this.ragfairSellHelper = ragfairSellHelper;
+        this.ragfairTaxService = ragfairTaxService;
+        this.ragfairSortHelper = ragfairSortHelper;
+        this.ragfairOfferHelper = ragfairOfferHelper;
+        this.profileHelper = profileHelper;
+        this.paymentService = paymentService;
+        this.handbookHelper = handbookHelper;
+        this.paymentHelper = paymentHelper;
+        this.inventoryHelper = inventoryHelper;
+        this.traderHelper = traderHelper;
+        this.ragfairHelper = ragfairHelper;
+        this.ragfairOfferService = ragfairOfferService;
+        this.ragfairRequiredItemsService = ragfairRequiredItemsService;
+        this.ragfairOfferGenerator = ragfairOfferGenerator;
+        this.localisationService = localisationService;
+        this.configServer = configServer;
         this.ragfairConfig = this.configServer.getConfig(ConfigTypes.RAGFAIR);
     }
 
@@ -147,7 +197,7 @@ export class RagfairController {
      * @param request Request data
      * @returns IRagfairOffer
      */
-    public getOfferById(sessionId: string, request: IGetRagfairOfferByIdRequest): IRagfairOffer | undefined {
+    public getOfferById(_sessionId: string, request: IGetRagfairOfferByIdRequest): IRagfairOffer | undefined {
         const offers = this.ragfairOfferService.getOffers();
         const offerToReturn = offers.find((offer) => offer.intId === request.id);
 
@@ -376,7 +426,7 @@ export class RagfairController {
      * @returns IItemEventRouterResponse
      */
     public addPlayerOffer(
-        pmcData: IPmcData,
+        _pmcData: IPmcData,
         offerRequest: IAddOfferRequestData,
         sessionID: string,
     ): IItemEventRouterResponse {
@@ -419,7 +469,7 @@ export class RagfairController {
         output: IItemEventRouterResponse,
     ): IItemEventRouterResponse {
         const pmcData = fullProfile.characters.pmc;
-        const itemsToListCount = offerRequest.items.length; // Does not count stack size, only items
+        const _itemsToListCount = offerRequest.items.length; // Does not count stack size, only items
 
         // Find items to be listed on flea from player inventory
         const { items: itemsAndChildrenInInventoryToList, errorMessage: itemsInInventoryError } =
@@ -510,7 +560,7 @@ export class RagfairController {
         output: IItemEventRouterResponse,
     ): IItemEventRouterResponse {
         const pmcData = fullProfile.characters.pmc;
-        const itemsToListCount = offerRequest.items.length; // Does not count stack size, only items
+        const _itemsToListCount = offerRequest.items.length; // Does not count stack size, only items
 
         // multi-offers are all the same item,
         // Get first item and its children and use as template
@@ -616,7 +666,7 @@ export class RagfairController {
         output: IItemEventRouterResponse,
     ): IItemEventRouterResponse {
         const pmcData = fullProfile.characters.pmc;
-        const itemsToListCount = offerRequest.items.length; // Does not count stack size, only items
+        const _itemsToListCount = offerRequest.items.length; // Does not count stack size, only items
 
         // multi-offers are all the same item,
         // Get first item and its children and use as template
@@ -781,7 +831,7 @@ export class RagfairController {
      * @param errorMessage message to show to player when offer is invalid
      * @returns Is offer valid
      */
-    protected isValidPlayerOfferRequest(offerRequest: IAddOfferRequestData, errorMessage: string): boolean {
+    protected isValidPlayerOfferRequest(offerRequest: IAddOfferRequestData, _errorMessage: string): boolean {
         if (!offerRequest?.items || offerRequest.items.length === 0) {
             this.logger.error(this.localisationService.getText("ragfair-invalid_player_offer_request"));
 
@@ -829,7 +879,7 @@ export class RagfairController {
         itemIdsFromFleaOfferRequest: string[],
     ): { items: IItem[][] | undefined; errorMessage: string | undefined } {
         const itemsToReturn: IItem[][] = [];
-        let errorMessage: string | undefined = undefined;
+        let errorMessage: string | undefined;
 
         // Count how many items are being sold and multiply the requested amount accordingly
         for (const itemId of itemIdsFromFleaOfferRequest) {

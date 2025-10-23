@@ -15,7 +15,6 @@ import { IProcessSellTradeRequestData } from "@spt/models/eft/trade/IProcessSell
 import { ISellScavItemsToFenceRequestData } from "@spt/models/eft/trade/ISellScavItemsToFenceRequestData";
 import { BackendErrorCodes } from "@spt/models/enums/BackendErrorCodes";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
-import { MemberCategory } from "@spt/models/enums/MemberCategory";
 import { MessageType } from "@spt/models/enums/MessageType";
 import { Money } from "@spt/models/enums/Money";
 import { Traders } from "@spt/models/enums/Traders";
@@ -39,26 +38,60 @@ import { inject, injectable } from "tsyringe";
 export class TradeController {
     protected ragfairConfig: IRagfairConfig;
     protected traderConfig: ITraderConfig;
+    protected logger: ILogger;
+    protected databaseService: DatabaseService;
+    protected eventOutputHolder: EventOutputHolder;
+    protected tradeHelper: TradeHelper;
+    protected timeUtil: TimeUtil;
+    protected randomUtil: RandomUtil;
+    protected hashUtil: HashUtil;
+    protected itemHelper: ItemHelper;
+    protected profileHelper: ProfileHelper;
+    protected ragfairOfferHelper: RagfairOfferHelper;
+    protected traderHelper: TraderHelper;
+    protected ragfairServer: RagfairServer;
+    protected httpResponse: HttpResponseUtil;
+    protected localisationService: LocalisationService;
+    protected ragfairPriceService: RagfairPriceService;
+    protected mailSendService: MailSendService;
+    protected configServer: ConfigServer;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("TradeHelper") protected tradeHelper: TradeHelper,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("RagfairOfferHelper") protected ragfairOfferHelper: RagfairOfferHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("RagfairServer") protected ragfairServer: RagfairServer,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("RagfairPriceService") protected ragfairPriceService: RagfairPriceService,
-        @inject("MailSendService") protected mailSendService: MailSendService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("TradeHelper") tradeHelper: TradeHelper,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("RagfairOfferHelper") ragfairOfferHelper: RagfairOfferHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("RagfairServer") ragfairServer: RagfairServer,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("RagfairPriceService") ragfairPriceService: RagfairPriceService,
+        @inject("MailSendService") mailSendService: MailSendService,
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.logger = logger;
+        this.databaseService = databaseService;
+        this.eventOutputHolder = eventOutputHolder;
+        this.tradeHelper = tradeHelper;
+        this.timeUtil = timeUtil;
+        this.randomUtil = randomUtil;
+        this.hashUtil = hashUtil;
+        this.itemHelper = itemHelper;
+        this.profileHelper = profileHelper;
+        this.ragfairOfferHelper = ragfairOfferHelper;
+        this.traderHelper = traderHelper;
+        this.ragfairServer = ragfairServer;
+        this.httpResponse = httpResponse;
+        this.localisationService = localisationService;
+        this.ragfairPriceService = ragfairPriceService;
+        this.mailSendService = mailSendService;
+        this.configServer = configServer;
         this.ragfairConfig = this.configServer.getConfig(ConfigTypes.RAGFAIR);
         this.traderConfig = this.configServer.getConfig(ConfigTypes.TRADER);
     }
@@ -264,7 +297,7 @@ export class TradeController {
 
     /** Handle SellAllFromSavage event */
     public sellScavItemsToFence(
-        pmcData: IPmcData,
+        _pmcData: IPmcData,
         request: ISellScavItemsToFenceRequestData,
         sessionId: string,
     ): IItemEventRouterResponse {

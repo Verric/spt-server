@@ -8,12 +8,19 @@ import { inject, injectable } from "tsyringe";
 export class NotifierController {
     protected pollInterval = 300;
     protected timeout = 15000;
+    protected notifierHelper: NotifierHelper;
+    protected httpServerHelper: HttpServerHelper;
+    protected notificationService: NotificationService;
 
     constructor(
-        @inject("NotifierHelper") protected notifierHelper: NotifierHelper,
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper,
-        @inject("NotificationService") protected notificationService: NotificationService,
-    ) {}
+        @inject("NotifierHelper") notifierHelper: NotifierHelper,
+        @inject("HttpServerHelper") httpServerHelper: HttpServerHelper,
+        @inject("NotificationService") notificationService: NotificationService,
+    ) {
+        this.notifierHelper = notifierHelper;
+        this.httpServerHelper = httpServerHelper;
+        this.notificationService = notificationService;
+    }
 
     /**
      * Resolve an array of session notifications.

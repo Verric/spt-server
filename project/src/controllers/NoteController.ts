@@ -7,7 +7,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class NoteController {
-    constructor(@inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder) {}
+    protected eventOutputHolder: EventOutputHolder;
+
+    constructor(@inject("EventOutputHolder") eventOutputHolder: EventOutputHolder) {
+        this.eventOutputHolder = eventOutputHolder;
+    }
 
     public addNote(pmcData: IPmcData, body: INoteActionData, sessionID: string): IItemEventRouterResponse {
         const newNote: INote = { Time: body.note.Time, Text: body.note.Text };

@@ -7,7 +7,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class ClientLogController {
-    constructor(@inject("PrimaryLogger") protected logger: ILogger) {}
+    protected logger: ILogger;
+
+    constructor(@inject("PrimaryLogger") logger: ILogger) {
+        this.logger = logger;
+    }
 
     /**
      * Handle /singleplayer/log

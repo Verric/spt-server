@@ -19,15 +19,27 @@ import { inject, injectable } from "tsyringe";
 export class InraidController {
     protected inRaidConfig: IInRaidConfig;
     protected botConfig: IBotConfig;
+    protected logger: ILogger;
+    protected saveServer: SaveServer;
+    protected profileHelper: ProfileHelper;
+    protected localisationService: LocalisationService;
+    protected applicationContext: ApplicationContext;
+    protected configServer: ConfigServer;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ApplicationContext") protected applicationContext: ApplicationContext,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ApplicationContext") applicationContext: ApplicationContext,
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.logger = logger;
+        this.saveServer = saveServer;
+        this.profileHelper = profileHelper;
+        this.localisationService = localisationService;
+        this.applicationContext = applicationContext;
+        this.configServer = configServer;
         this.inRaidConfig = this.configServer.getConfig(ConfigTypes.IN_RAID);
         this.botConfig = this.configServer.getConfig(ConfigTypes.BOT);
     }
@@ -79,11 +91,11 @@ export class InraidController {
         return this.inRaidConfig;
     }
 
-    public getTraitorScavHostileChance(url: string, sessionID: string): number {
+    public getTraitorScavHostileChance(_url: string, _sessionID: string): number {
         return this.inRaidConfig.playerScavHostileChancePercent;
     }
 
-    public getBossTypes(url: string, sessionId: string): string[] {
+    public getBossTypes(_url: string, _sessionId: string): string[] {
         return this.botConfig.bosses;
     }
 }

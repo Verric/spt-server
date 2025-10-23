@@ -1,6 +1,6 @@
 import { WeatherGenerator } from "@spt/generators/WeatherGenerator";
 import { WeatherHelper } from "@spt/helpers/WeatherHelper";
-import { IWeather, IWeatherData } from "@spt/models/eft/weather/IWeatherData";
+import { IWeatherData } from "@spt/models/eft/weather/IWeatherData";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
 import { IWeatherConfig } from "@spt/models/spt/config/IWeatherConfig";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
@@ -13,21 +13,34 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class WeatherController {
     protected weatherConfig: IWeatherConfig;
+    protected weatherGenerator: WeatherGenerator;
+    protected logger: ILogger;
+    protected configServer: ConfigServer;
+    protected seasonalEventService: SeasonalEventService;
+    protected raidWeatherService: RaidWeatherService;
+    protected weatherHelper: WeatherHelper;
 
     constructor(
-        @inject("WeatherGenerator") protected weatherGenerator: WeatherGenerator,
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("SeasonalEventService") protected seasonalEventService: SeasonalEventService,
-        @inject("RaidWeatherService") protected raidWeatherService: RaidWeatherService,
-        @inject("WeatherHelper") protected weatherHelper: WeatherHelper,
+        @inject("WeatherGenerator") weatherGenerator: WeatherGenerator,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("SeasonalEventService") seasonalEventService: SeasonalEventService,
+        @inject("RaidWeatherService") raidWeatherService: RaidWeatherService,
+        @inject("WeatherHelper") weatherHelper: WeatherHelper,
     ) {
+        this.weatherGenerator = weatherGenerator;
+        this.logger = logger;
+        this.configServer = configServer;
+        this.seasonalEventService = seasonalEventService;
+        this.raidWeatherService = raidWeatherService;
+        this.weatherHelper = weatherHelper;
         this.weatherConfig = this.configServer.getConfig(ConfigTypes.WEATHER);
     }
 
     /** Handle client/weather */
     public generate(): IWeatherData {
-        let result: IWeatherData = { acceleration: 0, time: "", date: "", weather: undefined, season: 1 }; // defaults, hydrated below
+        //@ts-expect-error weather should not be nullable, ok since this is just a default obj
+        let result: IWeatherData = { acceleration: 0, time: "", date: "", weather: null, season: 1 }; // defaults, hydrated below
 
         result = this.weatherGenerator.calculateGameTime(result);
         result.weather = this.weatherGenerator.generateWeather(result.season);
@@ -36,7 +49,7 @@ export class WeatherController {
     }
 
     /** Handle client/localGame/weather */
-    public generateLocal(sesssionId: string): IGetLocalWeatherResponseData {
+    public generateLocal(_sesssionId: string): IGetLocalWeatherResponseData {
         const result: IGetLocalWeatherResponseData = {
             season: this.seasonalEventService.getActiveWeatherSeason(),
             weather: [],

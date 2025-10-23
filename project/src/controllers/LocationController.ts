@@ -14,14 +14,24 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class LocationController {
     protected locationConfig: ILocationConfig;
+    protected logger: ILogger;
+    protected databaseService: DatabaseService;
+    protected airdropService: AirdropService;
+    protected configServer: ConfigServer;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("AirdropService") protected airdropService: AirdropService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("AirdropService") airdropService: AirdropService,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.databaseService = databaseService;
+        this.airdropService = airdropService;
+        this.configServer = configServer;
+        this.cloner = cloner;
         this.locationConfig = this.configServer.getConfig(ConfigTypes.LOCATION);
     }
 
@@ -31,7 +41,7 @@ export class LocationController {
      * @param sessionId Players Id
      * @returns ILocationsGenerateAllResponse
      */
-    public generateAll(sessionId: string): ILocationsGenerateAllResponse {
+    public generateAll(_sessionId: string): ILocationsGenerateAllResponse {
         const locationsFromDb = this.databaseService.getLocations();
         const locations: ILocations = {};
         for (const mapName in locationsFromDb) {

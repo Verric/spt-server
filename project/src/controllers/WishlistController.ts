@@ -8,7 +8,11 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class WishlistController {
-    constructor(@inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder) {}
+    protected eventOutputHolder: EventOutputHolder;
+
+    constructor(@inject("EventOutputHolder") eventOutputHolder: EventOutputHolder) {
+        this.eventOutputHolder = eventOutputHolder;
+    }
 
     /** Handle AddToWishList */
     public addToWishList(

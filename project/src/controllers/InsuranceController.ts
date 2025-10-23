@@ -25,39 +25,79 @@ import { LocalisationService } from "@spt/services/LocalisationService";
 import { MailSendService } from "@spt/services/MailSendService";
 import { PaymentService } from "@spt/services/PaymentService";
 import { RagfairPriceService } from "@spt/services/RagfairPriceService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { HashUtil } from "@spt/utils/HashUtil";
 import { MathUtil } from "@spt/utils/MathUtil";
 import { ProbabilityObject, ProbabilityObjectArray, RandomUtil } from "@spt/utils/RandomUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class InsuranceController {
     protected insuranceConfig: IInsuranceConfig;
+    protected logger: ILogger;
+    protected randomUtil: RandomUtil;
+    protected mathUtil: MathUtil;
+    protected hashUtil: HashUtil;
+    protected eventOutputHolder: EventOutputHolder;
+    protected timeUtil: TimeUtil;
+    protected saveServer: SaveServer;
+    protected databaseService: DatabaseService;
+    protected itemHelper: ItemHelper;
+    protected profileHelper: ProfileHelper;
+    protected dialogueHelper: DialogueHelper;
+    protected weightedRandomHelper: WeightedRandomHelper;
+    protected traderHelper: TraderHelper;
+    protected paymentService: PaymentService;
+    protected insuranceService: InsuranceService;
+    protected mailSendService: MailSendService;
+    protected ragfairPriceService: RagfairPriceService;
+    protected localisationService: LocalisationService;
+    protected configServer: ConfigServer;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("MathUtil") protected mathUtil: MathUtil,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("DialogueHelper") protected dialogueHelper: DialogueHelper,
-        @inject("WeightedRandomHelper") protected weightedRandomHelper: WeightedRandomHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("PaymentService") protected paymentService: PaymentService,
-        @inject("InsuranceService") protected insuranceService: InsuranceService,
-        @inject("MailSendService") protected mailSendService: MailSendService,
-        @inject("RagfairPriceService") protected ragfairPriceService: RagfairPriceService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("MathUtil") mathUtil: MathUtil,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("DialogueHelper") dialogueHelper: DialogueHelper,
+        @inject("WeightedRandomHelper") weightedRandomHelper: WeightedRandomHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("PaymentService") paymentService: PaymentService,
+        @inject("InsuranceService") insuranceService: InsuranceService,
+        @inject("MailSendService") mailSendService: MailSendService,
+        @inject("RagfairPriceService") ragfairPriceService: RagfairPriceService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.randomUtil = randomUtil;
+        this.mathUtil = mathUtil;
+        this.hashUtil = hashUtil;
+        this.eventOutputHolder = eventOutputHolder;
+        this.timeUtil = timeUtil;
+        this.saveServer = saveServer;
+        this.databaseService = databaseService;
+        this.itemHelper = itemHelper;
+        this.profileHelper = profileHelper;
+        this.dialogueHelper = dialogueHelper;
+        this.weightedRandomHelper = weightedRandomHelper;
+        this.traderHelper = traderHelper;
+        this.paymentService = paymentService;
+        this.insuranceService = insuranceService;
+        this.mailSendService = mailSendService;
+        this.ragfairPriceService = ragfairPriceService;
+        this.localisationService = localisationService;
+        this.configServer = configServer;
+        this.cloner = cloner;
         this.insuranceConfig = this.configServer.getConfig(ConfigTypes.INSURANCE);
     }
 

@@ -33,12 +33,14 @@ export class Router {
 }
 
 export class StaticRouter extends Router {
-    constructor(private routes: RouteAction[]) {
+    private routes: RouteAction[];
+    constructor(routes: RouteAction[]) {
         super();
+        this.routes = routes;
     }
 
     public async handleStatic(url: string, info: any, sessionID: string, output: string): Promise<any> {
-        return this.routes.find((route) => route.url === url).action(url, info, sessionID, output);
+        return this.routes.find((route) => route.url === url)?.action(url, info, sessionID, output);
     }
 
     public override getHandledRoutes(): HandledRoute[] {
@@ -52,7 +54,7 @@ export class DynamicRouter extends Router {
     }
 
     public async handleDynamic(url: string, info: any, sessionID: string, output: string): Promise<any> {
-        return this.routes.find((r) => url.includes(r.url)).action(url, info, sessionID, output);
+        return this.routes.find((r) => url.includes(r.url))?.action(url, info, sessionID, output);
     }
 
     public override getHandledRoutes(): HandledRoute[] {
@@ -68,7 +70,7 @@ export class ItemEventRouterDefinition extends Router {
         pmcData: IPmcData,
         body: any,
         sessionID: string,
-        output: IItemEventRouterResponse,
+        output: IItemEventRouterResponse
     ): Promise<any> {
         throw new Error("This method needs to be overrode by the router classes");
     }
@@ -81,15 +83,12 @@ export class SaveLoadRouter extends Router {
 }
 
 export class HandledRoute {
-    constructor(
-        public route: string,
-        public dynamic: boolean,
-    ) {}
+    constructor(public route: string, public dynamic: boolean) {}
 }
 
 export class RouteAction {
     constructor(
         public url: string,
-        public action: (url: string, info: any, sessionID: string, output: string) => Promise<any>,
+        public action: (url: string, info: any, sessionID: string, output: string) => Promise<any>
     ) {}
 }

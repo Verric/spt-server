@@ -29,19 +29,39 @@ import { inject, injectAll, injectable } from "tsyringe";
 @injectable()
 export class DialogueController {
     protected coreConfig: ICoreConfig;
+    protected logger: ILogger;
+    protected saveServer: SaveServer;
+    protected timeUtil: TimeUtil;
+    protected dialogueHelper: DialogueHelper;
+    protected notificationSendHelper: NotificationSendHelper;
+    protected profileHelper: ProfileHelper;
+    protected mailSendService: MailSendService;
+    protected localisationService: LocalisationService;
+    protected configServer: ConfigServer;
+    protected dialogueChatBots: IDialogueChatBot[];
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("DialogueHelper") protected dialogueHelper: DialogueHelper,
-        @inject("NotificationSendHelper") protected notificationSendHelper: NotificationSendHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("MailSendService") protected mailSendService: MailSendService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @injectAll("DialogueChatBot") protected dialogueChatBots: IDialogueChatBot[],
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("DialogueHelper") dialogueHelper: DialogueHelper,
+        @inject("NotificationSendHelper") notificationSendHelper: NotificationSendHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("MailSendService") mailSendService: MailSendService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @injectAll("DialogueChatBot") dialogueChatBots: IDialogueChatBot[],
     ) {
+        this.logger = logger;
+        this.saveServer = saveServer;
+        this.timeUtil = timeUtil;
+        this.dialogueHelper = dialogueHelper;
+        this.notificationSendHelper = notificationSendHelper;
+        this.profileHelper = profileHelper;
+        this.mailSendService = mailSendService;
+        this.localisationService = localisationService;
+        this.configServer = configServer;
+        this.dialogueChatBots = dialogueChatBots;
         this.coreConfig = this.configServer.getConfig<ICoreConfig>(ConfigTypes.CORE);
     }
 

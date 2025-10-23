@@ -22,16 +22,34 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class ProfileController {
+    protected logger: ILogger;
+    protected cloner: ICloner;
+    protected saveServer: SaveServer;
+    protected databaseService: DatabaseService;
+    protected createProfileService: CreateProfileService;
+    protected playerScavGenerator: PlayerScavGenerator;
+    protected profileHelper: ProfileHelper;
+    protected itemHelper: ItemHelper;
+
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("PrimaryCloner") protected cloner: ICloner,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("CreateProfileService") protected createProfileService: CreateProfileService,
-        @inject("PlayerScavGenerator") protected playerScavGenerator: PlayerScavGenerator,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-    ) { }
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("PrimaryCloner") cloner: ICloner,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("CreateProfileService") createProfileService: CreateProfileService,
+        @inject("PlayerScavGenerator") playerScavGenerator: PlayerScavGenerator,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+    ) {
+        this.logger = logger;
+        this.cloner = cloner;
+        this.saveServer = saveServer;
+        this.databaseService = databaseService;
+        this.createProfileService = createProfileService;
+        this.playerScavGenerator = playerScavGenerator;
+        this.profileHelper = profileHelper;
+        this.itemHelper = itemHelper;
+    }
 
     /**
      * Handle /launcher/profiles
@@ -158,7 +176,7 @@ export class ProfileController {
     /**
      * Handle client/game/profile/search
      */
-    public getFriends(info: ISearchFriendRequestData, sessionID: string): ISearchFriendResponse[] {
+    public getFriends(info: ISearchFriendRequestData, _sessionID: string): ISearchFriendResponse[] {
         // TODO: We should probably rename this method in the next client update
         const result: ISearchFriendResponse[] = [];
 
@@ -212,9 +230,12 @@ export class ProfileController {
         }
         const playerPmc = profile.characters.pmc;
         const playerScav = profile.characters.scav;
-        const hideoutKeys = [...Object.values(playerPmc.Inventory.hideoutAreaStashes), playerPmc.Inventory.hideoutCustomizationStashId];
+        const hideoutKeys = [
+            ...Object.values(playerPmc.Inventory.hideoutAreaStashes),
+            playerPmc.Inventory.hideoutCustomizationStashId,
+        ];
 
-        const hideoutItems = playerPmc.Inventory.items.filter(x => hideoutKeys.includes(x._id));
+        const hideoutItems = playerPmc.Inventory.items.filter((x) => hideoutKeys.includes(x._id));
         const itemsToReturn = [];
         for (const item of hideoutItems) {
             const foundItems = this.itemHelper.findAndReturnChildrenAsItems(playerPmc.Inventory.items, item._id);
@@ -262,7 +283,7 @@ export class ProfileController {
             hideout: playerPmc.Hideout,
             customizationStash: playerPmc.Inventory.hideoutCustomizationStashId,
             hideoutAreaStashes: playerPmc.Inventory.hideoutAreaStashes,
-            items: itemsToReturn
+            items: itemsToReturn,
         };
     }
 

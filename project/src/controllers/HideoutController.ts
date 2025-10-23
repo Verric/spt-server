@@ -37,7 +37,6 @@ import type { IAddItemDirectRequest } from "@spt/models/eft/inventory/IAddItemDi
 import type { IAddItemsDirectRequest } from "@spt/models/eft/inventory/IAddItemsDirectRequest";
 import type { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
 import { BackendErrorCodes } from "@spt/models/enums/BackendErrorCodes";
-import { BonusType } from "@spt/models/enums/BonusType";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
 import { HideoutAreas } from "@spt/models/enums/HideoutAreas";
 import { ItemTpl } from "@spt/models/enums/ItemTpl";
@@ -53,11 +52,11 @@ import { FenceService } from "@spt/services/FenceService";
 import { LocalisationService } from "@spt/services/LocalisationService";
 import { PlayerService } from "@spt/services/PlayerService";
 import { ProfileActivityService } from "@spt/services/ProfileActivityService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { HashUtil } from "@spt/utils/HashUtil";
 import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import { RandomUtil } from "@spt/utils/RandomUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
@@ -65,31 +64,75 @@ export class HideoutController {
     /** Key used in TaskConditionCounters array */
     protected static nameTaskConditionCountersCraftingId = "673f5d6fdd6ed700c703afdc";
     protected hideoutConfig: IHideoutConfig;
+    protected logger: ILogger;
+    protected hashUtil: HashUtil;
+    protected timeUtil: TimeUtil;
+    protected databaseService: DatabaseService;
+    protected randomUtil: RandomUtil;
+    protected inventoryHelper: InventoryHelper;
+    protected itemHelper: ItemHelper;
+    protected saveServer: SaveServer;
+    protected playerService: PlayerService;
+    protected presetHelper: PresetHelper;
+    protected paymentHelper: PaymentHelper;
+    protected eventOutputHolder: EventOutputHolder;
+    protected httpResponse: HttpResponseUtil;
+    protected profileHelper: ProfileHelper;
+    protected hideoutHelper: HideoutHelper;
+    protected scavCaseRewardGenerator: ScavCaseRewardGenerator;
+    protected localisationService: LocalisationService;
+    protected profileActivityService: ProfileActivityService;
+    protected configServer: ConfigServer;
+    protected fenceService: FenceService;
+    protected circleOfCultistService: CircleOfCultistService;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("InventoryHelper") protected inventoryHelper: InventoryHelper,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("PlayerService") protected playerService: PlayerService,
-        @inject("PresetHelper") protected presetHelper: PresetHelper,
-        @inject("PaymentHelper") protected paymentHelper: PaymentHelper,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("HideoutHelper") protected hideoutHelper: HideoutHelper,
-        @inject("ScavCaseRewardGenerator") protected scavCaseRewardGenerator: ScavCaseRewardGenerator,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("ProfileActivityService") protected profileActivityService: ProfileActivityService,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("FenceService") protected fenceService: FenceService,
-        @inject("CircleOfCultistService") protected circleOfCultistService: CircleOfCultistService,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("InventoryHelper") inventoryHelper: InventoryHelper,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("PlayerService") playerService: PlayerService,
+        @inject("PresetHelper") presetHelper: PresetHelper,
+        @inject("PaymentHelper") paymentHelper: PaymentHelper,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("HideoutHelper") hideoutHelper: HideoutHelper,
+        @inject("ScavCaseRewardGenerator") scavCaseRewardGenerator: ScavCaseRewardGenerator,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ProfileActivityService") profileActivityService: ProfileActivityService,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("FenceService") fenceService: FenceService,
+        @inject("CircleOfCultistService") circleOfCultistService: CircleOfCultistService,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.hashUtil = hashUtil;
+        this.timeUtil = timeUtil;
+        this.databaseService = databaseService;
+        this.randomUtil = randomUtil;
+        this.inventoryHelper = inventoryHelper;
+        this.itemHelper = itemHelper;
+        this.saveServer = saveServer;
+        this.playerService = playerService;
+        this.presetHelper = presetHelper;
+        this.paymentHelper = paymentHelper;
+        this.eventOutputHolder = eventOutputHolder;
+        this.httpResponse = httpResponse;
+        this.profileHelper = profileHelper;
+        this.hideoutHelper = hideoutHelper;
+        this.scavCaseRewardGenerator = scavCaseRewardGenerator;
+        this.localisationService = localisationService;
+        this.profileActivityService = profileActivityService;
+        this.configServer = configServer;
+        this.fenceService = fenceService;
+        this.circleOfCultistService = circleOfCultistService;
+        this.cloner = cloner;
         this.hideoutConfig = this.configServer.getConfig(ConfigTypes.HIDEOUT);
     }
 
@@ -381,7 +424,7 @@ export class HideoutController {
      * @param hideoutStage Stage area upgraded to
      */
     protected addUpdateInventoryItemToProfile(
-        sessionId: string,
+        _sessionId: string,
         pmcData: IPmcData,
         dbHideoutArea: IHideoutArea,
         hideoutStage: IStage,
@@ -1155,7 +1198,7 @@ export class HideoutController {
      * @param sessionId Session id
      * @returns IQteData array
      */
-    public getQteList(sessionId: string): IQteData[] {
+    public getQteList(_sessionId: string): IQteData[] {
         return this.databaseService.getHideout().qte;
     }
 
@@ -1167,10 +1210,10 @@ export class HideoutController {
      * @param request QTE result object
      */
     public handleQTEEventOutcome(
-        sessionId: string,
+        _sessionId: string,
         pmcData: IPmcData,
         request: IHandleQTEEventRequestData,
-        output: IItemEventRouterResponse,
+        _output: IItemEventRouterResponse,
     ): void {
         // {
         //     "Action": "HideoutQuickTimeEvent",
@@ -1245,7 +1288,7 @@ export class HideoutController {
      * @param request shooting range score request
      * @returns IItemEventRouterResponse
      */
-    public recordShootingRangePoints(sessionId: string, pmcData: IPmcData, request: IRecordShootingRangePoints): void {
+    public recordShootingRangePoints(_sessionId: string, pmcData: IPmcData, request: IRecordShootingRangePoints): void {
         const shootingRangeKey = "ShootingRangePoints";
         const overallCounterItems = pmcData.Stats.Eft.OverallCounters.Items;
 

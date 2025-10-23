@@ -9,16 +9,19 @@ import { inject, injectable } from "tsyringe";
  */
 @injectable()
 export class AchievementController {
-    constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("DatabaseService") protected databaseService: DatabaseService
-    ) {}
+    protected logger: ILogger;
+    protected databaseService: DatabaseService;
+
+    constructor(@inject("PrimaryLogger") logger: ILogger, @inject("DatabaseService") databaseService: DatabaseService) {
+        this.logger = logger;
+        this.databaseService = databaseService;
+    }
 
     /**
      * Get base achievements
      * @param sessionID Session id
      */
-    public getAchievements(sessionID: string): IGetAchievementsResponse {
+    public getAchievements(_sessionID: string): IGetAchievementsResponse {
         return {
             elements: this.databaseService.getAchievements(),
         };

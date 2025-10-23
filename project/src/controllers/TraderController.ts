@@ -16,31 +16,59 @@ import { FenceService } from "@spt/services/FenceService";
 import { RagfairPriceService } from "@spt/services/RagfairPriceService";
 import { TraderAssortService } from "@spt/services/TraderAssortService";
 import { TraderPurchasePersisterService } from "@spt/services/TraderPurchasePersisterService";
-import { TimeUtil } from "@spt/utils/TimeUtil";
 import type { ICloner } from "@spt/utils/cloners/ICloner";
+import { TimeUtil } from "@spt/utils/TimeUtil";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class TraderController {
     protected traderConfig: ITraderConfig;
+    protected logger: ILogger;
+    protected timeUtil: TimeUtil;
+    protected databaseService: DatabaseService;
+    protected traderAssortHelper: TraderAssortHelper;
+    protected profileHelper: ProfileHelper;
+    protected traderHelper: TraderHelper;
+    protected paymentHelper: PaymentHelper;
+    protected traderAssortService: TraderAssortService;
+    protected ragfairPriceService: RagfairPriceService;
+    protected traderPurchasePersisterService: TraderPurchasePersisterService;
+    protected fenceService: FenceService;
+    protected fenceBaseAssortGenerator: FenceBaseAssortGenerator;
+    protected configServer: ConfigServer;
+    protected cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("TraderAssortHelper") protected traderAssortHelper: TraderAssortHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("PaymentHelper") protected paymentHelper: PaymentHelper,
-        @inject("TraderAssortService") protected traderAssortService: TraderAssortService,
-        @inject("RagfairPriceService") protected ragfairPriceService: RagfairPriceService,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("TraderAssortHelper") traderAssortHelper: TraderAssortHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("PaymentHelper") paymentHelper: PaymentHelper,
+        @inject("TraderAssortService") traderAssortService: TraderAssortService,
+        @inject("RagfairPriceService") ragfairPriceService: RagfairPriceService,
         @inject("TraderPurchasePersisterService")
-        protected traderPurchasePersisterService: TraderPurchasePersisterService,
-        @inject("FenceService") protected fenceService: FenceService,
-        @inject("FenceBaseAssortGenerator") protected fenceBaseAssortGenerator: FenceBaseAssortGenerator,
-        @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("PrimaryCloner") protected cloner: ICloner,
+        traderPurchasePersisterService: TraderPurchasePersisterService,
+        @inject("FenceService") fenceService: FenceService,
+        @inject("FenceBaseAssortGenerator") fenceBaseAssortGenerator: FenceBaseAssortGenerator,
+        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("PrimaryCloner") cloner: ICloner,
     ) {
+        this.logger = logger;
+        this.timeUtil = timeUtil;
+        this.databaseService = databaseService;
+        this.traderAssortHelper = traderAssortHelper;
+        this.profileHelper = profileHelper;
+        this.traderHelper = traderHelper;
+        this.paymentHelper = paymentHelper;
+        this.traderAssortService = traderAssortService;
+        this.ragfairPriceService = ragfairPriceService;
+        this.traderPurchasePersisterService = traderPurchasePersisterService;
+        this.fenceService = fenceService;
+        this.fenceBaseAssortGenerator = fenceBaseAssortGenerator;
+        this.configServer = configServer;
+        this.cloner = cloner;
         this.traderConfig = this.configServer.getConfig(ConfigTypes.TRADER);
     }
 
@@ -182,7 +210,7 @@ export class TraderController {
     }
 
     /** Handle client/items/prices/TRADERID */
-    public getItemPrices(sessionId: string, traderId: string): IGetItemPricesResponse {
+    public getItemPrices(_sessionId: string, traderId: string): IGetItemPricesResponse {
         const handbookPrices = this.ragfairPriceService.getAllStaticPrices();
         const handbookPricesClone = this.cloner.clone(handbookPrices);
 

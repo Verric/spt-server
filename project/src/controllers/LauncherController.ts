@@ -22,20 +22,42 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class LauncherController {
     protected coreConfig: ICoreConfig;
+    protected logger: ILogger;
+    protected hashUtil: HashUtil;
+    protected timeUtil: TimeUtil;
+    protected randomUtil: RandomUtil;
+    protected saveServer: SaveServer;
+    protected httpServerHelper: HttpServerHelper;
+    protected profileHelper: ProfileHelper;
+    protected databaseService: DatabaseService;
+    protected localisationService: LocalisationService;
+    protected preSptModLoader: PreSptModLoader;
+    protected configServer: ConfigServer;
 
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("SaveServer") protected saveServer: SaveServer,
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("PreSptModLoader") protected preSptModLoader: PreSptModLoader,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("TimeUtil") timeUtil: TimeUtil,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("HttpServerHelper") httpServerHelper: HttpServerHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("PreSptModLoader") preSptModLoader: PreSptModLoader,
+        @inject("ConfigServer") configServer: ConfigServer,
     ) {
+        this.logger = logger;
+        this.hashUtil = hashUtil;
+        this.timeUtil = timeUtil;
+        this.randomUtil = randomUtil;
+        this.saveServer = saveServer;
+        this.httpServerHelper = httpServerHelper;
+        this.profileHelper = profileHelper;
+        this.databaseService = databaseService;
+        this.localisationService = localisationService;
+        this.preSptModLoader = preSptModLoader;
+        this.configServer = configServer;
         this.coreConfig = this.configServer.getConfig(ConfigTypes.CORE);
     }
 

@@ -44,37 +44,81 @@ import { LocalisationService } from "@spt/services/LocalisationService";
 import { MapMarkerService } from "@spt/services/MapMarkerService";
 import { PlayerService } from "@spt/services/PlayerService";
 import { RagfairOfferService } from "@spt/services/RagfairOfferService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { HashUtil } from "@spt/utils/HashUtil";
 import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import { RandomUtil } from "@spt/utils/RandomUtil";
-import type { ICloner } from "@spt/utils/cloners/ICloner";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class InventoryController {
+    protected logger: ILogger;
+    protected hashUtil: HashUtil;
+    protected itemHelper: ItemHelper;
+    protected randomUtil: RandomUtil;
+    protected databaseService: DatabaseService;
+    protected fenceService: FenceService;
+    protected presetHelper: PresetHelper;
+    protected inventoryHelper: InventoryHelper;
+    protected questHelper: QuestHelper;
+    protected hideoutHelper: HideoutHelper;
+    protected ragfairOfferService: RagfairOfferService;
+    protected mapMarkerService: MapMarkerService;
+    protected profileHelper: ProfileHelper;
+    protected paymentHelper: PaymentHelper;
+    protected traderHelper: TraderHelper;
+    protected localisationService: LocalisationService;
+    protected playerService: PlayerService;
+    protected lootGenerator: LootGenerator;
+    protected eventOutputHolder: EventOutputHolder;
+    protected httpResponseUtil: HttpResponseUtil;
+    protected cloner: ICloner;
+
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("HashUtil") protected hashUtil: HashUtil,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("RandomUtil") protected randomUtil: RandomUtil,
-        @inject("DatabaseService") protected databaseService: DatabaseService,
-        @inject("FenceService") protected fenceService: FenceService,
-        @inject("PresetHelper") protected presetHelper: PresetHelper,
-        @inject("InventoryHelper") protected inventoryHelper: InventoryHelper,
-        @inject("QuestHelper") protected questHelper: QuestHelper,
-        @inject("HideoutHelper") protected hideoutHelper: HideoutHelper,
-        @inject("RagfairOfferService") protected ragfairOfferService: RagfairOfferService,
-        @inject("MapMarkerService") protected mapMarkerService: MapMarkerService,
-        @inject("ProfileHelper") protected profileHelper: ProfileHelper,
-        @inject("PaymentHelper") protected paymentHelper: PaymentHelper,
-        @inject("TraderHelper") protected traderHelper: TraderHelper,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("PlayerService") protected playerService: PlayerService,
-        @inject("LootGenerator") protected lootGenerator: LootGenerator,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("HttpResponseUtil") protected httpResponseUtil: HttpResponseUtil,
-        @inject("PrimaryCloner") protected cloner: ICloner,
-    ) {}
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("RandomUtil") randomUtil: RandomUtil,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("FenceService") fenceService: FenceService,
+        @inject("PresetHelper") presetHelper: PresetHelper,
+        @inject("InventoryHelper") inventoryHelper: InventoryHelper,
+        @inject("QuestHelper") questHelper: QuestHelper,
+        @inject("HideoutHelper") hideoutHelper: HideoutHelper,
+        @inject("RagfairOfferService") ragfairOfferService: RagfairOfferService,
+        @inject("MapMarkerService") mapMarkerService: MapMarkerService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("PaymentHelper") paymentHelper: PaymentHelper,
+        @inject("TraderHelper") traderHelper: TraderHelper,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("PlayerService") playerService: PlayerService,
+        @inject("LootGenerator") lootGenerator: LootGenerator,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("HttpResponseUtil") httpResponseUtil: HttpResponseUtil,
+        @inject("PrimaryCloner") cloner: ICloner,
+    ) {
+        this.logger = logger;
+        this.hashUtil = hashUtil;
+        this.itemHelper = itemHelper;
+        this.randomUtil = randomUtil;
+        this.databaseService = databaseService;
+        this.fenceService = fenceService;
+        this.presetHelper = presetHelper;
+        this.inventoryHelper = inventoryHelper;
+        this.questHelper = questHelper;
+        this.hideoutHelper = hideoutHelper;
+        this.ragfairOfferService = ragfairOfferService;
+        this.mapMarkerService = mapMarkerService;
+        this.profileHelper = profileHelper;
+        this.paymentHelper = paymentHelper;
+        this.traderHelper = traderHelper;
+        this.localisationService = localisationService;
+        this.playerService = playerService;
+        this.lootGenerator = lootGenerator;
+        this.eventOutputHolder = eventOutputHolder;
+        this.httpResponseUtil = httpResponseUtil;
+        this.cloner = cloner;
+    }
 
     /**
      * Move Item
@@ -178,7 +222,7 @@ export class InventoryController {
      * @returns IItemEventRouterResponse
      */
     public splitItem(
-        pmcData: IPmcData,
+        _pmcData: IPmcData,
         request: IInventorySplitRequestData,
         sessionID: string,
         output: IItemEventRouterResponse,
@@ -238,7 +282,7 @@ export class InventoryController {
      * @returns IItemEventRouterResponse
      */
     public mergeItem(
-        pmcData: IPmcData,
+        _pmcData: IPmcData,
         body: IInventoryMergeRequestData,
         sessionID: string,
         output: IItemEventRouterResponse,
@@ -313,7 +357,7 @@ export class InventoryController {
      * @returns IItemEventRouterResponse
      */
     public transferItem(
-        pmcData: IPmcData,
+        _pmcData: IPmcData,
         body: IInventoryTransferRequestData,
         sessionID: string,
         output: IItemEventRouterResponse,
@@ -526,7 +570,7 @@ export class InventoryController {
      * @param sessionID Session id
      * @returns IItemEventRouterResponse
      */
-    public bindItem(pmcData: IPmcData, bindRequest: IInventoryBindRequestData, sessionID: string): void {
+    public bindItem(pmcData: IPmcData, bindRequest: IInventoryBindRequestData, _sessionID: string): void {
         // TODO - replace with single .find() call
         for (const index in pmcData.Inventory.fastPanel) {
             // Find item with existing item in it and remove existing binding, you cant have same item bound to more than 1 slot
@@ -552,8 +596,8 @@ export class InventoryController {
     public unbindItem(
         pmcData: IPmcData,
         request: IInventoryBindRequestData,
-        sessionID: string,
-        output: IItemEventRouterResponse,
+        _sessionID: string,
+        _output: IItemEventRouterResponse,
     ): void {
         // Remove kvp from requested fast panel index
         delete pmcData.Inventory.fastPanel[request.index];
@@ -731,7 +775,7 @@ export class InventoryController {
      * @param request sort request
      * @param sessionID Session id
      */
-    public sortInventory(pmcData: IPmcData, request: IInventorySortRequestData, sessionID: string): void {
+    public sortInventory(pmcData: IPmcData, request: IInventorySortRequestData, _sessionID: string): void {
         for (const change of request.changedItems) {
             const inventoryItem = pmcData.Inventory.items.find((item) => item._id === change._id);
             if (!inventoryItem) {
@@ -954,7 +998,7 @@ export class InventoryController {
         }
     }
 
-    public setFavoriteItem(pmcData: IPmcData, request: ISetFavoriteItems, sessionId: string): void {
+    public setFavoriteItem(pmcData: IPmcData, request: ISetFavoriteItems, _sessionId: string): void {
         // The client sends the full list of favorite items, so clear the current favorites
         pmcData.Inventory.favoriteItems = [];
 

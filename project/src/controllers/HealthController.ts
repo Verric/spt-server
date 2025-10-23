@@ -15,23 +15,43 @@ import type { ILogger } from "@spt/models/spt/utils/ILogger";
 import { EventOutputHolder } from "@spt/routers/EventOutputHolder";
 import { LocalisationService } from "@spt/services/LocalisationService";
 import { PaymentService } from "@spt/services/PaymentService";
-import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import type { ICloner } from "@spt/utils/cloners/ICloner";
+import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HealthController {
+    protected logger: ILogger;
+    protected eventOutputHolder: EventOutputHolder;
+    protected itemHelper: ItemHelper;
+    protected paymentService: PaymentService;
+    protected inventoryHelper: InventoryHelper;
+    protected localisationService: LocalisationService;
+    protected httpResponse: HttpResponseUtil;
+    protected healthHelper: HealthHelper;
+    protected cloner: ICloner;
+
     constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("EventOutputHolder") protected eventOutputHolder: EventOutputHolder,
-        @inject("ItemHelper") protected itemHelper: ItemHelper,
-        @inject("PaymentService") protected paymentService: PaymentService,
-        @inject("InventoryHelper") protected inventoryHelper: InventoryHelper,
-        @inject("LocalisationService") protected localisationService: LocalisationService,
-        @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("HealthHelper") protected healthHelper: HealthHelper,
-        @inject("PrimaryCloner") protected cloner: ICloner,
-    ) {}
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("PaymentService") paymentService: PaymentService,
+        @inject("InventoryHelper") inventoryHelper: InventoryHelper,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("HealthHelper") healthHelper: HealthHelper,
+        @inject("PrimaryCloner") cloner: ICloner,
+    ) {
+        this.logger = logger;
+        this.eventOutputHolder = eventOutputHolder;
+        this.itemHelper = itemHelper;
+        this.paymentService = paymentService;
+        this.inventoryHelper = inventoryHelper;
+        this.localisationService = localisationService;
+        this.httpResponse = httpResponse;
+        this.healthHelper = healthHelper;
+        this.cloner = cloner;
+    }
 
     /**
      * When healing in menu
@@ -269,7 +289,7 @@ export class HealthController {
      * @param info Request data
      * @param sessionID
      */
-    public applyWorkoutChanges(pmcData: IPmcData, info: IWorkoutData, sessionId: string): void {
+    public applyWorkoutChanges(pmcData: IPmcData, info: IWorkoutData, _sessionId: string): void {
         // https://dev.sp-tarkov.com/SPT/Server/issues/2674
         // TODO:
         // Health effects (fractures etc) are handled in /player/health/sync.
