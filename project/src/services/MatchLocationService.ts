@@ -8,7 +8,7 @@ export class MatchLocationService {
 
     constructor(
         @inject("TimeUtil") protected timeUtil: TimeUtil,
-        @inject("SaveServer") protected saveServer: SaveServer,
+        @inject("SaveServer") protected saveServer: SaveServer
     ) {}
 
     public deleteGroup(info: any): void {

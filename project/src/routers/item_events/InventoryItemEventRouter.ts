@@ -8,47 +8,51 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class InventoryItemEventRouter extends ItemEventRouterDefinition {
+    protected inventoryCallbacks: InventoryCallbacks;
+    protected hideoutCallbacks: HideoutCallbacks;
     constructor(
-        @inject("InventoryCallbacks") protected inventoryCallbacks: InventoryCallbacks,
-        @inject("HideoutCallbacks") protected hideoutCallbacks: HideoutCallbacks,
+        @inject("InventoryCallbacks") inventoryCallbacks: InventoryCallbacks,
+        @inject("HideoutCallbacks") hideoutCallbacks: HideoutCallbacks
     ) {
         super();
+        this.inventoryCallbacks = inventoryCallbacks;
+        this.hideoutCallbacks = hideoutCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute(ItemEventActions.MOVE, false),
-            new HandledRoute(ItemEventActions.REMOVE, false),
-            new HandledRoute(ItemEventActions.SPLIT, false),
-            new HandledRoute(ItemEventActions.MERGE, false),
-            new HandledRoute(ItemEventActions.TRANSFER, false),
-            new HandledRoute(ItemEventActions.SWAP, false),
-            new HandledRoute(ItemEventActions.FOLD, false),
-            new HandledRoute(ItemEventActions.TOGGLE, false),
-            new HandledRoute(ItemEventActions.TAG, false),
-            new HandledRoute(ItemEventActions.BIND, false),
-            new HandledRoute(ItemEventActions.UNBIND, false),
-            new HandledRoute(ItemEventActions.EXAMINE, false),
-            new HandledRoute(ItemEventActions.READ_ENCYCLOPEDIA, false),
-            new HandledRoute(ItemEventActions.APPLY_INVENTORY_CHANGES, false),
-            new HandledRoute(ItemEventActions.CREATE_MAP_MARKER, false),
-            new HandledRoute(ItemEventActions.DELETE_MAP_MARKER, false),
-            new HandledRoute(ItemEventActions.EDIT_MAP_MARKER, false),
-            new HandledRoute(ItemEventActions.OPEN_RANDOM_LOOT_CONTAINER, false),
-            new HandledRoute(ItemEventActions.HIDEOUT_QTE_EVENT, false),
-            new HandledRoute(ItemEventActions.REDEEM_PROFILE_REWARD, false),
-            new HandledRoute(ItemEventActions.SET_FAVORITE_ITEMS, false),
-            new HandledRoute(ItemEventActions.QUEST_FAIL, false),
-            new HandledRoute(ItemEventActions.PIN_LOCK, false),
+            { route: ItemEventActions.MOVE, dynamic: false },
+            { route: ItemEventActions.REMOVE, dynamic: false },
+            { route: ItemEventActions.SPLIT, dynamic: false },
+            { route: ItemEventActions.MERGE, dynamic: false },
+            { route: ItemEventActions.TRANSFER, dynamic: false },
+            { route: ItemEventActions.SWAP, dynamic: false },
+            { route: ItemEventActions.FOLD, dynamic: false },
+            { route: ItemEventActions.TOGGLE, dynamic: false },
+            { route: ItemEventActions.TAG, dynamic: false },
+            { route: ItemEventActions.BIND, dynamic: false },
+            { route: ItemEventActions.UNBIND, dynamic: false },
+            { route: ItemEventActions.EXAMINE, dynamic: false },
+            { route: ItemEventActions.READ_ENCYCLOPEDIA, dynamic: false },
+            { route: ItemEventActions.APPLY_INVENTORY_CHANGES, dynamic: false },
+            { route: ItemEventActions.CREATE_MAP_MARKER, dynamic: false },
+            { route: ItemEventActions.DELETE_MAP_MARKER, dynamic: false },
+            { route: ItemEventActions.EDIT_MAP_MARKER, dynamic: false },
+            { route: ItemEventActions.OPEN_RANDOM_LOOT_CONTAINER, dynamic: false },
+            { route: ItemEventActions.HIDEOUT_QTE_EVENT, dynamic: false },
+            { route: ItemEventActions.REDEEM_PROFILE_REWARD, dynamic: false },
+            { route: ItemEventActions.SET_FAVORITE_ITEMS, dynamic: false },
+            { route: ItemEventActions.QUEST_FAIL, dynamic: false },
+            { route: ItemEventActions.PIN_LOCK, dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: ItemEventActions,
         pmcData: IPmcData,
         body: any,
         sessionID: string,
-        output: IItemEventRouterResponse,
+        output: IItemEventRouterResponse
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case ItemEventActions.MOVE:

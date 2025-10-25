@@ -1,0 +1,226 @@
+import { IEmptyRequestData } from "@spt/models/eft/common/IEmptyRequestData";
+import { IGetBodyResponseData } from "@spt/models/eft/httpResponse/IGetBodyResponseData";
+import { INullResponseData } from "@spt/models/eft/httpResponse/INullResponseData";
+import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
+import { ItemHelper } from "@spt/helpers/ItemHelper";
+import { ProfileHelper } from "@spt/helpers/ProfileHelper";
+import { ISetMagazineRequest } from "@spt/models/eft/builds/ISetMagazineRequest";
+import { IPresetBuildActionRequestData } from "@spt/models/eft/presetBuild/IPresetBuildActionRequestData";
+import { IRemoveBuildRequestData } from "@spt/models/eft/presetBuild/IRemoveBuildRequestData";
+import { IEquipmentBuild, IMagazineBuild, IUserBuilds, IWeaponBuild } from "@spt/models/eft/profile/ISptProfile";
+import { EquipmentBuildType } from "@spt/models/enums/EquipmentBuildType";
+import type { ILogger } from "@spt/models/spt/utils/ILogger";
+import { EventOutputHolder } from "@spt/routers/EventOutputHolder";
+import { SaveServer } from "@spt/servers/SaveServer";
+import { DatabaseService } from "@spt/services/DatabaseService";
+import { LocalisationService } from "@spt/services/LocalisationService";
+import type { ICloner } from "@spt/utils/cloners/ICloner";
+import { HashUtil } from "@spt/utils/HashUtil";
+import { inject, injectable } from "tsyringe";
+
+@injectable()
+export class BuildsController {
+    protected httpResponse: HttpResponseUtil;
+    protected logger: ILogger;
+    protected hashUtil: HashUtil;
+    protected eventOutputHolder: EventOutputHolder;
+    protected databaseService: DatabaseService;
+    protected profileHelper: ProfileHelper;
+    protected localisationService: LocalisationService;
+    protected itemHelper: ItemHelper;
+    protected saveServer: SaveServer;
+    protected cloner: ICloner;
+    constructor(
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("PrimaryLogger") logger: ILogger,
+        @inject("HashUtil") hashUtil: HashUtil,
+        @inject("EventOutputHolder") eventOutputHolder: EventOutputHolder,
+        @inject("DatabaseService") databaseService: DatabaseService,
+        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("LocalisationService") localisationService: LocalisationService,
+        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("SaveServer") saveServer: SaveServer,
+        @inject("PrimaryCloner") cloner: ICloner
+    ) {
+        this.httpResponse = httpResponse;
+        this.logger = logger;
+        this.hashUtil = hashUtil;
+        this.eventOutputHolder = eventOutputHolder;
+        this.databaseService = databaseService;
+        this.profileHelper = profileHelper;
+        this.localisationService = localisationService;
+        this.itemHelper = itemHelper;
+        this.saveServer = saveServer;
+        this.cloner = cloner;
+    }
+
+    /**
+     * Handle client/builds/list
+     */
+    public getBuilds(_url: string, _info: IEmptyRequestData, sessionID: string): IGetBodyResponseData<IUserBuilds> {
+        const secureContainerSlotId = "SecuredContainer";
+        const profile = this.saveServer.getProfile(sessionID);
+        if (!profile.userbuilds) {
+            profile.userbuilds = { equipmentBuilds: [], weaponBuilds: [], magazineBuilds: [] };
+        }
+
+        // Ensure the secure container in the default presets match what the player has equipped
+        const defaultEquipmentPresetsClone = this.cloner.clone(
+            this.databaseService.getTemplates().defaultEquipmentPresets
+        );
+        const playerSecureContainer = profile.characters.pmc.Inventory.items?.find(
+            (x) => x.slotId === secureContainerSlotId
+        );
+        const firstDefaultItemsSecureContainer = defaultEquipmentPresetsClone[0]?.Items?.find(
+            (x) => x.slotId === secureContainerSlotId
+        );
+        if (playerSecureContainer && playerSecureContainer?._tpl !== firstDefaultItemsSecureContainer?._tpl) {
+            // Default equipment presets' secure container tpl doesn't match players secure container tpl
+            for (const defaultPreset of defaultEquipmentPresetsClone) {
+                // Find presets secure container
+                const secureContainer = defaultPreset.Items.find((item) => item.slotId === secureContainerSlotId);
+                if (secureContainer) {
+                    secureContainer._tpl = playerSecureContainer._tpl;
+                }
+            }
+        }
+        // Clone player build data from profile and append the above defaults onto end
+        const userBuildsClone = this.cloner.clone(profile.userbuilds);
+        userBuildsClone.equipmentBuilds.push(...defaultEquipmentPresetsClone);
+
+        return this.httpResponse.getBody(userBuildsClone);
+    }
+
+    /**
+     * Handle client/builds/magazine/save
+     */
+    public createMagazineTemplate(_url: string, request: ISetMagazineRequest, sessionId: string): INullResponseData {
+        const result: IMagazineBuild = {
+            Id: request.Id,
+            Name: request.Name,
+            Caliber: request.Caliber,
+            TopCount: request.TopCount,
+            BottomCount: request.BottomCount,
+            Items: request.Items,
+        };
+        const profile = this.profileHelper.getFullProfile(sessionId);
+
+        profile.userbuilds.magazineBuilds ||= [];
+
+        const existingArrayId = profile.userbuilds.magazineBuilds.findIndex((item) => item.Name === request.Name);
+        if (existingArrayId === -1) {
+            profile.userbuilds.magazineBuilds.push(result);
+        } else {
+            profile.userbuilds.magazineBuilds.splice(existingArrayId, 1, result);
+        }
+
+        return this.httpResponse.nullResponse();
+    }
+
+    /**
+     * Handle client/builds/weapon/save
+     */
+    public setWeapon(_url: string, body: IPresetBuildActionRequestData, sessionId: string): INullResponseData {
+        const pmcData = this.profileHelper.getPmcProfile(sessionId);
+
+        // Replace duplicate Id's. The first item is the base item.
+        // The root ID and the base item ID need to match.
+        body.Items = this.itemHelper.replaceIDs(body.Items, pmcData);
+        body.Root = body.Items[0]._id;
+
+        // Create new object ready to save into profile userbuilds.weaponBuilds
+        const newBuild: IWeaponBuild = { Id: body.Id, Name: body.Name, Root: body.Root, Items: body.Items };
+
+        const savedWeaponBuilds = this.saveServer.getProfile(sessionId).userbuilds.weaponBuilds;
+        const existingBuild = savedWeaponBuilds.find((x) => x.Id === body.Id);
+        if (existingBuild) {
+            // exists, replace
+            this.saveServer
+                .getProfile(sessionId)
+                .userbuilds.weaponBuilds.splice(savedWeaponBuilds.indexOf(existingBuild), 1, newBuild);
+        } else {
+            // Add fresh
+            this.saveServer.getProfile(sessionId).userbuilds.weaponBuilds.push(newBuild);
+        }
+
+        return this.httpResponse.nullResponse();
+    }
+
+    /**
+     * Handle client/builds/equipment/save
+     */
+    public setEquipment(_url: string, request: IPresetBuildActionRequestData, sessionId: string): INullResponseData {
+        const buildType = "equipmentBuilds";
+        const pmcData = this.profileHelper.getPmcProfile(sessionId);
+
+        const existingSavedEquipmentBuilds: IEquipmentBuild[] =
+            this.saveServer.getProfile(sessionId).userbuilds[buildType];
+
+        // Replace duplicate ID's. The first item is the base item.
+        // Root ID and the base item ID need to match.
+        request.Items = this.itemHelper.replaceIDs(request.Items, pmcData);
+
+        const newBuild: IEquipmentBuild = {
+            Id: request.Id,
+            Name: request.Name,
+            BuildType: EquipmentBuildType.CUSTOM,
+            Root: request.Items[0]._id,
+            Items: request.Items,
+        };
+
+        const existingBuild = existingSavedEquipmentBuilds.find(
+            (build) => build.Name === request.Name || build.Id === request.Id
+        );
+        if (existingBuild) {
+            // Already exists, replace
+            this.saveServer
+                .getProfile(sessionId)
+                .userbuilds[buildType].splice(existingSavedEquipmentBuilds.indexOf(existingBuild), 1, newBuild);
+        } else {
+            // Fresh, add new
+            this.saveServer.getProfile(sessionId).userbuilds[buildType].push(newBuild);
+        }
+
+        return this.httpResponse.nullResponse();
+    }
+
+    /**
+     * Handle client/builds/delete
+     */
+    public deleteBuild(_url: string, info: IRemoveBuildRequestData, sessionID: string): INullResponseData {
+        const idToRemove = info.id;
+        const profile = this.saveServer.getProfile(sessionID);
+        const weaponBuilds = profile.userbuilds.weaponBuilds;
+        const equipmentBuilds = profile.userbuilds.equipmentBuilds;
+        const magazineBuilds = profile.userbuilds.magazineBuilds;
+
+        // Check for id in weapon array first
+        const matchingWeaponBuild = weaponBuilds.find((weaponBuild) => weaponBuild.Id === idToRemove);
+        if (matchingWeaponBuild) {
+            weaponBuilds.splice(weaponBuilds.indexOf(matchingWeaponBuild), 1);
+
+            return this.httpResponse.nullResponse();
+        }
+
+        // Id not found in weapons, try equipment
+        const matchingEquipmentBuild = equipmentBuilds.find((equipmentBuild) => equipmentBuild.Id === idToRemove);
+        if (matchingEquipmentBuild) {
+            equipmentBuilds.splice(equipmentBuilds.indexOf(matchingEquipmentBuild), 1);
+
+            return this.httpResponse.nullResponse();
+        }
+
+        // Id not found in weapons/equipment, try mags
+        const matchingMagazineBuild = magazineBuilds.find((magBuild) => magBuild.Id === idToRemove);
+        if (matchingMagazineBuild) {
+            magazineBuilds.splice(magazineBuilds.indexOf(matchingMagazineBuild), 1);
+
+            return this.httpResponse.nullResponse();
+        }
+
+        // Not found in weapons,equipment or magazines, not good
+        this.logger.error(this.localisationService.getText("build-unable_to_delete_preset", idToRemove));
+
+        return this.httpResponse.nullResponse();
+    }
+}

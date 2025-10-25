@@ -7,37 +7,39 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HideoutItemEventRouter extends ItemEventRouterDefinition {
-    constructor(@inject("HideoutCallbacks") protected hideoutCallbacks: HideoutCallbacks) {
+    protected hideoutCallbacks: HideoutCallbacks;
+    constructor(@inject("HideoutCallbacks") hideoutCallbacks: HideoutCallbacks) {
         super();
+        this.hideoutCallbacks = hideoutCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute(HideoutEventActions.HIDEOUT_UPGRADE, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_UPGRADE_COMPLETE, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_PUT_ITEMS_IN_AREA_SLOTS, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_TAKE_ITEMS_FROM_AREA_SLOTS, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_TOGGLE_AREA, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_SINGLE_PRODUCTION_START, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_SCAV_CASE_PRODUCTION_START, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_CONTINUOUS_PRODUCTION_START, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_TAKE_PRODUCTION, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_RECORD_SHOOTING_RANGE_POINTS, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_IMPROVE_AREA, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_CANCEL_PRODUCTION_COMMAND, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_CIRCLE_OF_CULTIST_PRODUCTION_START, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_DELETE_PRODUCTION_COMMAND, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_CUSTOMIZATION_APPLY_COMMAND, false),
-            new HandledRoute(HideoutEventActions.HIDEOUT_CUSTOMIZATION_SET_MANNEQUIN_POSE, false),
+            { route: HideoutEventActions.HIDEOUT_UPGRADE, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_UPGRADE_COMPLETE, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_PUT_ITEMS_IN_AREA_SLOTS, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_TAKE_ITEMS_FROM_AREA_SLOTS, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_TOGGLE_AREA, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_SINGLE_PRODUCTION_START, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_SCAV_CASE_PRODUCTION_START, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_CONTINUOUS_PRODUCTION_START, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_TAKE_PRODUCTION, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_RECORD_SHOOTING_RANGE_POINTS, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_IMPROVE_AREA, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_CANCEL_PRODUCTION_COMMAND, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_CIRCLE_OF_CULTIST_PRODUCTION_START, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_DELETE_PRODUCTION_COMMAND, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_CUSTOMIZATION_APPLY_COMMAND, dynamic: false },
+            { route: HideoutEventActions.HIDEOUT_CUSTOMIZATION_SET_MANNEQUIN_POSE, dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: HideoutEventActions,
         pmcData: IPmcData,
         body: any,
         sessionID: string,
-        output: IItemEventRouterResponse,
+        output: IItemEventRouterResponse
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case HideoutEventActions.HIDEOUT_UPGRADE:
@@ -72,8 +74,6 @@ export class HideoutItemEventRouter extends ItemEventRouterDefinition {
                 return this.hideoutCallbacks.hideoutCustomizationApplyCommand(pmcData, body, sessionID);
             case HideoutEventActions.HIDEOUT_CUSTOMIZATION_SET_MANNEQUIN_POSE:
                 return this.hideoutCallbacks.hideoutCustomizationSetMannequinPose(pmcData, body, sessionID);
-            default:
-                throw new Error(`Unhandled event ${url} request: ${JSON.stringify(body)}`);
         }
     }
 }

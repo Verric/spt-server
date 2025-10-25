@@ -11,73 +11,83 @@ import { inject, injectable } from "tsyringe";
 export class RagfairStaticRouter extends StaticRouter {
     constructor(@inject("RagfairCallbacks") protected ragfairCallbacks: RagfairCallbacks) {
         super([
-            new RouteAction(
-                "/client/ragfair/search",
-                async (
+            {
+                url: "/client/ragfair/search",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetOffersResult>> => {
                     return this.ragfairCallbacks.search(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/ragfair/find",
-                async (
+            },
+            {
+                url: "/client/ragfair/find",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetOffersResult>> => {
                     return this.ragfairCallbacks.search(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/ragfair/itemMarketPrice",
-                async (
+            },
+            {
+                url: "/client/ragfair/itemMarketPrice",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetItemPriceResult>> => {
                     return this.ragfairCallbacks.getMarketPrice(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/ragfair/offerfees",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
-                    return this.ragfairCallbacks.storePlayerOfferTaxAmount(url, info, sessionID);
-                },
-            ),
-            new RouteAction(
-                "/client/reports/ragfair/send",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
-                    return this.ragfairCallbacks.sendReport(url, info, sessionID);
-                },
-            ),
-            new RouteAction(
-                "/client/items/prices",
-                async (
+            },
+            {
+                url: "/client/ragfair/offerfees",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
+                ): Promise<INullResponseData> => {
+                    return this.ragfairCallbacks.storePlayerOfferTaxAmount(url, info, sessionID);
+                },
+            },
+            {
+                url: "/client/reports/ragfair/send",
+                action: async (
+                    url: string,
+                    info: any,
+                    sessionID: string,
+                    output: string
+                ): Promise<INullResponseData> => {
+                    return this.ragfairCallbacks.sendReport(url, info, sessionID);
+                },
+            },
+            {
+                url: "/client/items/prices",
+                action: async (
+                    url: string,
+                    info: any,
+                    sessionID: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<Record<string, number>>> => {
                     return this.ragfairCallbacks.getFleaPrices(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/ragfair/offer/findbyid",
-                async (
+            },
+            {
+                url: "/client/ragfair/offer/findbyid",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IRagfairOffer>> => {
                     return this.ragfairCallbacks.getFleaOfferById(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

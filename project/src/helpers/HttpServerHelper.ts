@@ -17,13 +17,13 @@ export class HttpServerHelper {
         png: "image/png",
         svg: "image/svg+xml",
         txt: "text/plain",
-    };
+    } as const;
 
     constructor(@inject("ConfigServer") protected configServer: ConfigServer) {
         this.httpConfig = this.configServer.getConfig(ConfigTypes.HTTP);
     }
 
-    public getMimeText(key: string): string {
+    public getMimeText(key: keyof typeof this.mime): (typeof this.mime)[keyof typeof this.mime] {
         return this.mime[key];
     }
 

@@ -5,7 +5,7 @@ import { injectable } from "tsyringe";
 @injectable()
 export class HealthSaveLoadRouter extends SaveLoadRouter {
     public override getHandledRoutes(): HandledRoute[] {
-        return [new HandledRoute("spt-health", false)];
+        return [{ route: "spt-health", dynamic: false }];
     }
 
     public override async handleLoad(profile: ISptProfile): Promise<ISptProfile> {

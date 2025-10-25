@@ -9,28 +9,28 @@ import { inject, injectable } from "tsyringe";
 export class TraderStaticRouter extends StaticRouter {
     constructor(@inject("TraderCallbacks") protected traderCallbacks: TraderCallbacks) {
         super([
-            new RouteAction(
-                "/client/trading/api/traderSettings",
-                async (
+            {
+                url: "/client/trading/api/traderSettings",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<ITraderBase[]>> => {
                     return this.traderCallbacks.getTraderSettings(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/singleplayer/moddedTraders",
-                async (
+            },
+            {
+                url: "/singleplayer/moddedTraders",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IModdedTraders>> => {
                     return this.traderCallbacks.getModdedTraderData(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

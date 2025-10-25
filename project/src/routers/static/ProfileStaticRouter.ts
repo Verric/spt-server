@@ -13,134 +13,139 @@ import { inject, injectable } from "tsyringe";
 export class ProfileStaticRouter extends StaticRouter {
     constructor(@inject("ProfileCallbacks") protected profileCallbacks: ProfileCallbacks) {
         super([
-            new RouteAction(
-                "/client/game/profile/create",
-                async (
+            {
+                url: "/client/game/profile/create",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<ICreateProfileResponse>> => {
                     return this.profileCallbacks.createProfile(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/list",
-                async (
+            },
+            {
+                url: "/client/game/profile/list",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IPmcData[]>> => {
                     return this.profileCallbacks.getProfileData(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/savage/regenerate",
-                async (
+            },
+            {
+                url: "/client/game/profile/savage/regenerate",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IPmcData[]>> => {
                     return this.profileCallbacks.regenerateScav(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/voice/change",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
-                    return this.profileCallbacks.changeVoice(url, info, sessionID);
-                },
-            ),
-            new RouteAction(
-                "/client/game/profile/nickname/change",
-                async (
+            },
+            {
+                url: "/client/game/profile/voice/change",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
+                ): Promise<INullResponseData> => {
+                    return this.profileCallbacks.changeVoice(url, info, sessionID);
+                },
+            },
+            {
+                url: "/client/game/profile/nickname/change",
+                action: async (
+                    url: string,
+                    info: any,
+                    sessionID: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any>> => {
                     return this.profileCallbacks.changeNickname(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/nickname/validate",
-                async (
+            },
+            {
+                url: "/client/game/profile/nickname/validate",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any>> => {
                     return this.profileCallbacks.validateNickname(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/nickname/reserved",
-                async (
+            },
+            {
+                url: "/client/game/profile/nickname/reserved",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<string>> => {
                     return this.profileCallbacks.getReservedNickname(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/profile/status",
-                async (
+            },
+            {
+                url: "/client/profile/status",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetProfileStatusResponseData>> => {
                     return this.profileCallbacks.getProfileStatus(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/profile/view",
-                async (
+            },
+            {
+                url: "/client/profile/view",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetOtherProfileResponse>> => {
                     return this.profileCallbacks.getOtherProfile(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/profile/settings",
-                async (
+            },
+            {
+                url: "/client/profile/settings",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<boolean>> => {
                     return this.profileCallbacks.getProfileSettings(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/search",
-                async (
+            },
+            {
+                url: "/client/game/profile/search",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<ISearchFriendResponse[]>> => {
                     return this.profileCallbacks.searchFriend(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/launcher/profile/info",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+            },
+            {
+                url: "/launcher/profile/info",
+                action: async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
                     return this.profileCallbacks.getMiniProfile(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/launcher/profiles",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+            },
+            {
+                url: "/launcher/profiles",
+                action: async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
                     return this.profileCallbacks.getAllMiniProfiles(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

@@ -5,8 +5,10 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class ImageSerializer extends Serializer {
-    constructor(@inject("ImageRouter") protected imageRouter: ImageRouter) {
+    protected imageRouter: ImageRouter;
+    constructor(@inject("ImageRouter") imageRouter: ImageRouter) {
         super();
+        this.imageRouter = imageRouter;
     }
 
     public override async serialize(sessionID: string, req: IncomingMessage, resp: ServerResponse): Promise<void> {

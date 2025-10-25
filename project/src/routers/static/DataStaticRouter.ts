@@ -1,5 +1,5 @@
 import { DataCallbacks } from "@spt/callbacks/DataCallbacks";
-import { RouteAction, StaticRouter } from "@spt/di/Router";
+import { StaticRouter } from "@spt/di/Router";
 import { IGlobals } from "@spt/models/eft/common/IGlobals";
 import { ICustomizationItem } from "@spt/models/eft/common/tables/ICustomizationItem";
 import { IHandbookBase } from "@spt/models/eft/common/tables/IHandbookBase";
@@ -12,119 +12,78 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class DataStaticRouter extends StaticRouter {
-    constructor(@inject("DataCallbacks") protected dataCallbacks: DataCallbacks) {
+    constructor(@inject("DataCallbacks") dataCallbacks: DataCallbacks) {
         super([
-            new RouteAction(
-                "/client/settings",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<ISettingsBase>> => {
-                    return this.dataCallbacks.getSettings(url, info, sessionID);
+            {
+                url: "/client/settings",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<ISettingsBase>> => {
+                    return dataCallbacks.getSettings(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/globals",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IGlobals>> => {
-                    return this.dataCallbacks.getGlobals(url, info, sessionID);
+            },
+            {
+                url: "/client/globals",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGlobals>> => {
+                    return dataCallbacks.getGlobals(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/items",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
-                    return this.dataCallbacks.getTemplateItems(url, info, sessionID);
+            },
+            {
+                url: "/client/items",
+                action: async (url, info, sessionID): Promise<string> => {
+                    return dataCallbacks.getTemplateItems(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/handbook/templates",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IHandbookBase>> => {
-                    return this.dataCallbacks.getTemplateHandbook(url, info, sessionID);
+            },
+            {
+                url: "/client/handbook/templates",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IHandbookBase>> => {
+                    return dataCallbacks.getTemplateHandbook(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/customization",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
+            },
+            {
+                url: "/client/customization",
+                action: async (
+                    url,
+                    info,
+                    sessionID
                 ): Promise<IGetBodyResponseData<Record<string, ICustomizationItem>>> => {
-                    return this.dataCallbacks.getTemplateSuits(url, info, sessionID);
+                    return dataCallbacks.getTemplateSuits(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/account/customization",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<string[]>> => {
-                    return this.dataCallbacks.getTemplateCharacter(url, info, sessionID);
+            },
+            {
+                url: "/client/account/customization",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<string[]>> => {
+                    return dataCallbacks.getTemplateCharacter(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/hideout/production/recipes",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IHideoutProductionData>> => {
-                    return this.dataCallbacks.getHideoutProduction(url, info, sessionID);
+            },
+            {
+                url: "/client/hideout/production/recipes",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IHideoutProductionData>> => {
+                    return dataCallbacks.getHideoutProduction(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/hideout/settings",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IHideoutSettingsBase>> => {
-                    return this.dataCallbacks.getHideoutSettings(url, info, sessionID);
+            },
+            {
+                url: "/client/hideout/settings",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IHideoutSettingsBase>> => {
+                    return dataCallbacks.getHideoutSettings(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/hideout/areas",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IHideoutArea[]>> => {
-                    return this.dataCallbacks.getHideoutAreas(url, info, sessionID);
+            },
+            {
+                url: "/client/hideout/areas",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IHideoutArea[]>> => {
+                    return dataCallbacks.getHideoutAreas(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/languages",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<Record<string, string>>> => {
-                    return this.dataCallbacks.getLocalesLanguages(url, info, sessionID);
+            },
+            {
+                url: "/client/languages",
+                action: async (url, info, sessionID, output): Promise<IGetBodyResponseData<Record<string, string>>> => {
+                    return dataCallbacks.getLocalesLanguages(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/hideout/qte/list",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
-                    return this.dataCallbacks.getQteList(url, info, sessionID);
+            },
+            {
+                url: "/client/hideout/qte/list",
+                action: async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+                    return dataCallbacks.getQteList(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

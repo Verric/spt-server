@@ -1,5 +1,5 @@
 import { DialogueCallbacks } from "@spt/callbacks/DialogueCallbacks";
-import { RouteAction, StaticRouter } from "@spt/di/Router";
+import { StaticRouter } from "@spt/di/Router";
 import { IAddUserGroupMailRequest } from "@spt/models/eft/dialog/IAddUserGroupMailRequest";
 import { IChangeGroupMailOwnerRequest } from "@spt/models/eft/dialog/IChangeGroupMailOwnerRequest";
 import { IChatServer } from "@spt/models/eft/dialog/IChatServer";
@@ -24,10 +24,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IChatServer[]>> => {
                     return this.dialogueCallbacks.getChatServerList(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/list",
@@ -35,10 +35,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IDialogueInfo[]>> => {
                     return this.dialogueCallbacks.getMailDialogList(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/view",
@@ -46,10 +46,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetMailDialogViewResponseData>> => {
                     return this.dialogueCallbacks.getMailDialogView(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/info",
@@ -57,10 +57,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IDialogueInfo>> => {
                     return this.dialogueCallbacks.getMailDialogInfo(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/remove",
@@ -68,10 +68,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.removeDialog(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/pin",
@@ -79,10 +79,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.pinDialog(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/unpin",
@@ -90,10 +90,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.unpinDialog(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/read",
@@ -101,10 +101,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.setRead(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/getAllAttachments",
@@ -112,10 +112,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetAllAttachmentsResponse>> => {
                     return this.dialogueCallbacks.getAllAttachments(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/msg/send",
@@ -123,10 +123,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<string>> => {
                     return this.dialogueCallbacks.sendMessage(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/clear",
@@ -134,10 +134,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.clearMail(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/group/create",
@@ -145,10 +145,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: ICreateGroupMailRequest,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.createGroupMail(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/group/owner/change",
@@ -156,10 +156,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: IChangeGroupMailOwnerRequest,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.changeMailGroupOwner(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/group/users/add",
@@ -167,10 +167,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: IAddUserGroupMailRequest,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.addUserToMail(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/mail/dialog/group/users/remove",
@@ -178,10 +178,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: IRemoveUserGroupMailRequest,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.removeUserFromMail(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/list",
@@ -189,10 +189,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetFriendListDataResponse>> => {
                     return this.dialogueCallbacks.getFriendList(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/list/outbox",
@@ -200,10 +200,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.listOutbox(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/list/inbox",
@@ -211,10 +211,10 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any[]>> => {
                     return this.dialogueCallbacks.listInbox(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/send",
@@ -222,16 +222,16 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IFriendRequestSendResponse>> => {
                     return this.dialogueCallbacks.sendFriendRequest(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/accept-all",
                 (url: string, info: any, sessionID: string, output: string): any => {
                     return this.dialogueCallbacks.acceptAllFriendRequests(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/accept",
@@ -239,16 +239,16 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<boolean>> => {
                     return this.dialogueCallbacks.acceptFriendRequest(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/decline",
                 (url: string, info: any, sessionID: string, output: string): any => {
                     return this.dialogueCallbacks.declineFriendRequest(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/request/cancel",
@@ -256,28 +256,28 @@ export class DialogStaticRouter extends StaticRouter {
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<boolean>> => {
                     return this.dialogueCallbacks.cancelFriendRequest(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/delete",
                 async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
                     return this.dialogueCallbacks.deleteFriend(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/ignore/set",
                 async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
                     return this.dialogueCallbacks.ignoreFriend(url, info, sessionID);
-                },
+                }
             ),
             new RouteAction(
                 "/client/friend/ignore/remove",
                 async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
                     return this.dialogueCallbacks.unIgnoreFriend(url, info, sessionID);
-                },
+                }
             ),
         ]);
     }

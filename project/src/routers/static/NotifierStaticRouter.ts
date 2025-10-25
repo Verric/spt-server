@@ -9,28 +9,28 @@ import { inject, injectable } from "tsyringe";
 export class NotifierStaticRouter extends StaticRouter {
     constructor(@inject("NotifierCallbacks") protected notifierCallbacks: NotifierCallbacks) {
         super([
-            new RouteAction(
-                "/client/notifier/channel/create",
-                async (
+            {
+                url: "/client/notifier/channel/create",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<INotifierChannel>> => {
                     return this.notifierCallbacks.createNotifierChannel(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/profile/select",
-                async (
+            },
+            {
+                url: "/client/game/profile/select",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<ISelectProfileResponse>> => {
                     return this.notifierCallbacks.selectProfile(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

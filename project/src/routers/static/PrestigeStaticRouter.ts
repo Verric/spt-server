@@ -8,24 +8,29 @@ import { inject, injectable } from "tsyringe";
 export class PrestigeStaticRouter extends StaticRouter {
     constructor(@inject("PrestigeCallbacks") protected prestigeCallbacks: PrestigeCallbacks) {
         super([
-            new RouteAction(
-                "/client/prestige/list",
-                async (
+            {
+                url: "/client/prestige/list",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<any>> => {
                     return this.prestigeCallbacks.getPrestige(url, info, sessionID);
                 },
-            ),
+            },
 
-            new RouteAction(
-                "/client/prestige/obtain",
-                async (url: string, info: any, sessionID: string, _output: string): Promise<INullResponseData> => {
+            {
+                url: "/client/prestige/obtain",
+                action: async (
+                    url: string,
+                    info: any,
+                    sessionID: string,
+                    _output: string
+                ): Promise<INullResponseData> => {
                     return await this.prestigeCallbacks.obtainPrestige(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

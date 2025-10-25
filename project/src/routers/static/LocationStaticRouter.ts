@@ -9,28 +9,28 @@ import { inject, injectable } from "tsyringe";
 export class LocationStaticRouter extends StaticRouter {
     constructor(@inject("LocationCallbacks") protected locationCallbacks: LocationCallbacks) {
         super([
-            new RouteAction(
-                "/client/locations",
-                async (
+            {
+                url: "/client/locations",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<ILocationsGenerateAllResponse>> => {
                     return this.locationCallbacks.getLocationData(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/airdrop/loot",
-                async (
+            },
+            {
+                url: "/client/airdrop/loot",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetAirdropLootResponse>> => {
                     return this.locationCallbacks.getAirdropLoot(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

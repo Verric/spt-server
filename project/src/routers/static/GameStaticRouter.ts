@@ -1,5 +1,5 @@
 import { GameCallbacks } from "@spt/callbacks/GameCallbacks";
-import { RouteAction, StaticRouter } from "@spt/di/Router";
+import { StaticRouter } from "@spt/di/Router";
 import { ICheckVersionResponse } from "@spt/models/eft/game/ICheckVersionResponse";
 import { ICurrentGroupResponse } from "@spt/models/eft/game/ICurrentGroupResponse";
 import { IGameConfigResponse } from "@spt/models/eft/game/IGameConfigResponse";
@@ -20,155 +20,109 @@ import { inject, injectable } from "tsyringe";
 export class GameStaticRouter extends StaticRouter {
     constructor(
         @inject("HttpResponseUtil") protected httpResponse: HttpResponseUtil,
-        @inject("GameCallbacks") protected gameCallbacks: GameCallbacks,
+        @inject("GameCallbacks") protected gameCallbacks: GameCallbacks
     ) {
         super([
-            new RouteAction(
-                "/client/game/config",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IGameConfigResponse>> => {
+            {
+                url: "/client/game/config",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGameConfigResponse>> => {
                     return this.gameCallbacks.getGameConfig(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/mode",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IGameModeResponse>> => {
+            },
+            {
+                url: "/client/game/mode",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGameModeResponse>> => {
                     return this.gameCallbacks.getGameMode(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/server/list",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IServerDetails[]>> => {
+            },
+            {
+                url: "/client/server/list",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IServerDetails[]>> => {
                     return this.gameCallbacks.getServer(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/match/group/current",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<ICurrentGroupResponse>> => {
+            },
+            {
+                url: "/client/match/group/current",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<ICurrentGroupResponse>> => {
                     return this.gameCallbacks.getCurrentGroup(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/version/validate",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
+            },
+            {
+                url: "/client/game/version/validate",
+                action: async (url, info, sessionID): Promise<INullResponseData> => {
                     return this.gameCallbacks.versionValidate(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/start",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IGameStartResponse>> => {
+            },
+            {
+                url: "/client/game/start",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGameStartResponse>> => {
                     return this.gameCallbacks.gameStart(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/logout",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IGameLogoutResponseData>> => {
+            },
+            {
+                url: "/client/game/logout",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGameLogoutResponseData>> => {
                     return await this.gameCallbacks.gameLogout(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/checkVersion",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<ICheckVersionResponse>> => {
+            },
+            {
+                url: "/client/checkVersion",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<ICheckVersionResponse>> => {
                     return this.gameCallbacks.validateGameVersion(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/game/keepalive",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
-                ): Promise<IGetBodyResponseData<IGameKeepAliveResponse>> => {
+            },
+            {
+                url: "/client/game/keepalive",
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGameKeepAliveResponse>> => {
                     return this.gameCallbacks.gameKeepalive(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/singleplayer/settings/version",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+            },
+            {
+                url: "/singleplayer/settings/version",
+                action: async (url, info, sessionID): Promise<string> => {
                     return this.gameCallbacks.getVersion(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/reports/lobby/send",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
+            },
+            {
+                url: "/client/reports/lobby/send",
+                action: async (url, info, sessionID): Promise<INullResponseData> => {
                     return this.gameCallbacks.reportNickname(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/report/send",
-                async (
-                    url: string,
-                    info: ISendReportRequest,
-                    sessionID: string,
-                    output: string,
-                ): Promise<INullResponseData> => {
+            },
+            {
+                url: "/client/report/send",
+                action: async (url, info: ISendReportRequest, sessionID): Promise<INullResponseData> => {
                     return this.gameCallbacks.reportNickname(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/singleplayer/settings/getRaidTime",
-                async (url: string, info: any, sessionID: string, output: string): Promise<IGetRaidTimeResponse> => {
+            },
+            {
+                url: "/singleplayer/settings/getRaidTime",
+                action: async (url, info, sessionID): Promise<IGetRaidTimeResponse> => {
                     return this.gameCallbacks.getRaidTime(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/survey",
-                async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string,
+            },
+            {
+                url: "/client/survey",
+                action: async (
+                    url,
+                    info,
+                    sessionID
                 ): Promise<INullResponseData | IGetBodyResponseData<ISurveyResponseData>> => {
                     return this.gameCallbacks.getSurvey(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/survey/view",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
+            },
+            {
+                url: "/client/survey/view",
+                action: async (url, info, sessionID): Promise<INullResponseData> => {
                     return this.gameCallbacks.getSurveyView(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/survey/opinion",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
+            },
+            {
+                url: "/client/survey/opinion",
+                action: async (url, info, sessionID): Promise<INullResponseData> => {
                     return this.gameCallbacks.sendSurveyOpinion(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

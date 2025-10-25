@@ -7,12 +7,18 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class NotifySerializer extends Serializer {
+    protected notifierController: NotifierController;
+    protected jsonUtil: JsonUtil;
+    protected httpServerHelper: HttpServerHelper;
     constructor(
-        @inject("NotifierController") protected notifierController: NotifierController,
-        @inject("JsonUtil") protected jsonUtil: JsonUtil,
-        @inject("HttpServerHelper") protected httpServerHelper: HttpServerHelper
+        @inject("NotifierController") notifierController: NotifierController,
+        @inject("JsonUtil") jsonUtil: JsonUtil,
+        @inject("HttpServerHelper") httpServerHelper: HttpServerHelper
     ) {
         super();
+        this.notifierController = notifierController;
+        this.jsonUtil = jsonUtil;
+        this.httpServerHelper = httpServerHelper;
     }
 
     public override async serialize(_sessionID: string, req: IncomingMessage, resp: ServerResponse): Promise<void> {

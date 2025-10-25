@@ -6,21 +6,23 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class InsuranceItemEventRouter extends ItemEventRouterDefinition {
+    protected insuranceCallbacks: InsuranceCallbacks;
     constructor(
-        @inject("InsuranceCallbacks") protected insuranceCallbacks: InsuranceCallbacks, // TODO: delay required
+        @inject("InsuranceCallbacks") insuranceCallbacks: InsuranceCallbacks // TODO: delay required
     ) {
         super();
+        this.insuranceCallbacks = insuranceCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
-        return [new HandledRoute("Insure", false)];
+        return [{ route: "Insure", dynamic: false }];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "Insure",
         pmcData: IPmcData,
         body: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "Insure":

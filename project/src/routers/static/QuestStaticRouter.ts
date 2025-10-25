@@ -9,28 +9,28 @@ import { inject, injectable } from "tsyringe";
 export class QuestStaticRouter extends StaticRouter {
     constructor(@inject("QuestCallbacks") protected questCallbacks: QuestCallbacks) {
         super([
-            new RouteAction(
-                "/client/quest/list",
-                async (
+            {
+                url: "/client/quest/list",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IQuest[]>> => {
                     return this.questCallbacks.listQuests(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/client/repeatalbeQuests/activityPeriods",
-                async (
+            },
+            {
+                url: "/client/repeatalbeQuests/activityPeriods",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IPmcDataRepeatableQuest[]>> => {
                     return this.questCallbacks.activityPeriods(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

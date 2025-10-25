@@ -6,23 +6,25 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class TradeItemEventRouter extends ItemEventRouterDefinition {
-    constructor(@inject("TradeCallbacks") protected tradeCallbacks: TradeCallbacks) {
+    protected tradeCallbacks: TradeCallbacks;
+    constructor(@inject("TradeCallbacks") tradeCallbacks: TradeCallbacks) {
         super();
+        this.tradeCallbacks = tradeCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute("TradingConfirm", false),
-            new HandledRoute("RagFairBuyOffer", false),
-            new HandledRoute("SellAllFromSavage", false),
+            { route: "TradingConfirm", dynamic: false },
+            { route: "RagFairBuyOffer", dynamic: false },
+            { route: "SellAllFromSavage", dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "TradingConfirm" | "RagFairBuyOffer" | "SellAllFromSavage",
         pmcData: IPmcData,
         body: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "TradingConfirm":

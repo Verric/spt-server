@@ -6,25 +6,27 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class HealthItemEventRouter extends ItemEventRouterDefinition {
+    protected healthCallbacks: HealthCallbacks;
     constructor(
-        @inject("HealthCallbacks") protected healthCallbacks: HealthCallbacks, // TODO: delay required
+        @inject("HealthCallbacks") healthCallbacks: HealthCallbacks // TODO: delay required
     ) {
         super();
+        this.healthCallbacks = healthCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute("Eat", false),
-            new HandledRoute("Heal", false),
-            new HandledRoute("RestoreHealth", false),
+            { route: "Eat", dynamic: false },
+            { route: "Heal", dynamic: false },
+            { route: "RestoreHealth", dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "Eat" | "Heal" | "RestoreHealth",
         pmcData: IPmcData,
         body: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "Eat":

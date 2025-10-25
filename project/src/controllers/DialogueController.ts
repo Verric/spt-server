@@ -28,17 +28,17 @@ import { inject, injectAll, injectable } from "tsyringe";
 
 @injectable()
 export class DialogueController {
-    protected coreConfig: ICoreConfig;
-    protected logger: ILogger;
-    protected saveServer: SaveServer;
-    protected timeUtil: TimeUtil;
-    protected dialogueHelper: DialogueHelper;
-    protected notificationSendHelper: NotificationSendHelper;
-    protected profileHelper: ProfileHelper;
-    protected mailSendService: MailSendService;
-    protected localisationService: LocalisationService;
-    protected configServer: ConfigServer;
-    protected dialogueChatBots: IDialogueChatBot[];
+    private coreConfig: ICoreConfig;
+    private logger: ILogger;
+    private saveServer: SaveServer;
+    private timeUtil: TimeUtil;
+    private dialogueHelper: DialogueHelper;
+    private notificationSendHelper: NotificationSendHelper;
+    private profileHelper: ProfileHelper;
+    private mailSendService: MailSendService;
+    private localisationService: LocalisationService;
+    private configServer: ConfigServer;
+    private dialogueChatBots: IDialogueChatBot[];
 
     constructor(
         @inject("PrimaryLogger") logger: ILogger,
@@ -50,7 +50,7 @@ export class DialogueController {
         @inject("MailSendService") mailSendService: MailSendService,
         @inject("LocalisationService") localisationService: LocalisationService,
         @inject("ConfigServer") configServer: ConfigServer,
-        @injectAll("DialogueChatBot") dialogueChatBots: IDialogueChatBot[],
+        @injectAll("DialogueChatBot") dialogueChatBots: IDialogueChatBot[]
     ) {
         this.logger = logger;
         this.saveServer = saveServer;
@@ -68,7 +68,7 @@ export class DialogueController {
     public registerChatBot(chatBot: IDialogueChatBot): void {
         if (this.dialogueChatBots.some((cb) => cb.getChatBot()._id === chatBot.getChatBot()._id)) {
             throw new Error(
-                this.localisationService.getText("dialog-chatbot_id_already_exists", chatBot.getChatBot()._id),
+                this.localisationService.getText("dialog-chatbot_id_already_exists", chatBot.getChatBot()._id)
             );
         }
         this.dialogueChatBots.push(chatBot);
@@ -104,7 +104,7 @@ export class DialogueController {
         return { Friends: friends, Ignore: [], InIgnoreList: [] };
     }
 
-    protected getActiveChatBots(): IUserDialogInfo[] {
+    private getActiveChatBots(): IUserDialogInfo[] {
         const activeBots = [];
 
         const chatBotConfig = this.coreConfig.features.chatbotFeatures;
@@ -166,7 +166,7 @@ export class DialogueController {
     public getDialogueUsers(
         dialog: IDialogue,
         messageType: MessageType,
-        sessionID: string,
+        sessionID: string
     ): IUserDialogInfo[] | undefined {
         const profile = this.saveServer.getProfile(sessionID);
 
@@ -206,7 +206,7 @@ export class DialogueController {
      */
     public generateDialogueView(
         request: IGetMailDialogViewRequestData,
-        sessionId: string,
+        sessionId: string
     ): IGetMailDialogViewResponseData {
         const dialogueId = request.dialogId;
         const fullProfile = this.saveServer.getProfile(sessionId);
@@ -231,7 +231,7 @@ export class DialogueController {
      * @param request get dialog request (params used when dialog doesnt exist in profile)
      * @returns Dialogue
      */
-    protected getDialogByIdFromProfile(profile: ISptProfile, request: IGetMailDialogViewRequestData): IDialogue {
+    private getDialogByIdFromProfile(profile: ISptProfile, request: IGetMailDialogViewRequestData): IDialogue {
         if (!profile.dialogues[request.dialogId]) {
             profile.dialogues[request.dialogId] = {
                 _id: request.dialogId,
@@ -263,7 +263,7 @@ export class DialogueController {
      * @param dialogUsers The participants of the mail
      * @returns IUserDialogInfo array
      */
-    protected getProfilesForMail(fullProfile: ISptProfile, dialogUsers?: IUserDialogInfo[]): IUserDialogInfo[] {
+    private getProfilesForMail(fullProfile: ISptProfile, dialogUsers?: IUserDialogInfo[]): IUserDialogInfo[] {
         const result: IUserDialogInfo[] = [];
         if (dialogUsers) {
             result.push(...dialogUsers);
@@ -294,7 +294,7 @@ export class DialogueController {
      * @param dialogueID Dialog id
      * @returns Count of messages with attachments
      */
-    protected getUnreadMessagesWithAttachmentsCount(sessionID: string, dialogueID: string): number {
+    private getUnreadMessagesWithAttachmentsCount(sessionID: string, dialogueID: string): number {
         let newAttachmentCount = 0;
         const activeMessages = this.getActiveMessagesFromDialog(sessionID, dialogueID);
         for (const message of activeMessages) {
@@ -311,7 +311,7 @@ export class DialogueController {
      * @param messages Messages to check
      * @returns true if uncollected rewards found
      */
-    protected messagesHaveUncollectedRewards(messages: IMessage[]): boolean {
+    private messagesHaveUncollectedRewards(messages: IMessage[]): boolean {
         return messages.some((message) => (message.items?.data?.length ?? 0) > 0);
     }
 
@@ -329,7 +329,7 @@ export class DialogueController {
                 this.localisationService.getText("dialogue-unable_to_find_in_profile", {
                     sessionId: sessionId,
                     dialogueId: dialogueId,
-                }),
+                })
             );
 
             return;
@@ -346,7 +346,7 @@ export class DialogueController {
                 this.localisationService.getText("dialogue-unable_to_find_in_profile", {
                     sessionId: sessionId,
                     dialogueId: dialogueId,
-                }),
+                })
             );
 
             return;
@@ -367,7 +367,7 @@ export class DialogueController {
             this.logger.error(
                 this.localisationService.getText("dialogue-unable_to_find_dialogs_in_profile", {
                     sessionId: sessionId,
-                }),
+                })
             );
 
             return;
@@ -394,7 +394,7 @@ export class DialogueController {
                 this.localisationService.getText("dialogue-unable_to_find_in_profile", {
                     sessionId: sessionId,
                     dialogueId: dialogueId,
-                }),
+                })
             );
 
             return undefined;
@@ -430,7 +430,7 @@ export class DialogueController {
      * @param dialogueId Dialog to get mail attachments from
      * @returns Message array
      */
-    protected getActiveMessagesFromDialog(sessionId: string, dialogueId: string): IMessage[] {
+    private getActiveMessagesFromDialog(sessionId: string, dialogueId: string): IMessage[] {
         const timeNow = this.timeUtil.getTimestamp();
         const dialogs = this.dialogueHelper.getDialogsForProfile(sessionId);
         return dialogs[dialogueId].messages.filter((message) => timeNow < message.dt + (message.maxStorageTime ?? 0));
@@ -441,7 +441,7 @@ export class DialogueController {
      * @param messages Messages to parse
      * @returns messages with items to collect
      */
-    protected getMessagesWithAttachments(messages: IMessage[]): IMessage[] {
+    private getMessagesWithAttachments(messages: IMessage[]): IMessage[] {
         return messages.filter((message) => (message.items?.data?.length ?? 0) > 0);
     }
 
@@ -449,7 +449,7 @@ export class DialogueController {
      * Delete expired items from all messages in player profile. triggers when updating traders.
      * @param sessionId Session id
      */
-    protected removeExpiredItemsFromMessages(sessionId: string): void {
+    private removeExpiredItemsFromMessages(sessionId: string): void {
         for (const dialogueId in this.dialogueHelper.getDialogsForProfile(sessionId)) {
             this.removeExpiredItemsFromMessage(sessionId, dialogueId);
         }
@@ -460,7 +460,7 @@ export class DialogueController {
      * @param sessionId Session id
      * @param dialogueId Dialog id
      */
-    protected removeExpiredItemsFromMessage(sessionId: string, dialogueId: string): void {
+    private removeExpiredItemsFromMessage(sessionId: string, dialogueId: string): void {
         const dialogs = this.dialogueHelper.getDialogsForProfile(sessionId);
         const dialog = dialogs[dialogueId];
         if (!dialog.messages) {
@@ -479,7 +479,7 @@ export class DialogueController {
      * @param message Message to check expiry of
      * @returns true or false
      */
-    protected messageHasExpired(message: IMessage): boolean {
+    private messageHasExpired(message: IMessage): boolean {
         return this.timeUtil.getTimestamp() > message.dt + (message.maxStorageTime ?? 0);
     }
 

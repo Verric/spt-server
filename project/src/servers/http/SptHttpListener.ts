@@ -27,8 +27,9 @@ export class SptHttpListener implements IHttpListener {
         @inject("LocalisationService") protected localisationService: LocalisationService
     ) {}
 
-    public canHandle(_: string, req: IncomingMessage): boolean {
-        return ["GET", "PUT", "POST"].includes(req.method);
+    public canHandle(_: string, { method }: IncomingMessage): boolean {
+        if (!method) return false;
+        return ["GET", "PUT", "POST"].includes(method);
     }
 
     public async handle(sessionId: string, req: IncomingMessage, resp: ServerResponse): Promise<void> {

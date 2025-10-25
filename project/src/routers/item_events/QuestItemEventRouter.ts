@@ -3,31 +3,33 @@ import { HandledRoute, ItemEventRouterDefinition } from "@spt/di/Router";
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
 import { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
 import type { ILogger } from "@spt/models/spt/utils/ILogger";
+
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class QuestItemEventRouter extends ItemEventRouterDefinition {
-    constructor(
-        @inject("PrimaryLogger") protected logger: ILogger,
-        @inject("QuestCallbacks") protected questCallbacks: QuestCallbacks,
-    ) {
+    protected logger: ILogger;
+    protected questCallbacks: QuestCallbacks;
+    constructor(@inject("PrimaryLogger") logger: ILogger, @inject("QuestCallbacks") questCallbacks: QuestCallbacks) {
         super();
+        this.logger = logger;
+        this.questCallbacks = questCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute("QuestAccept", false),
-            new HandledRoute("QuestComplete", false),
-            new HandledRoute("QuestHandover", false),
-            new HandledRoute("RepeatableQuestChange", false),
+            { route: "QuestAccept", dynamic: false },
+            { route: "QuestComplete", dynamic: false },
+            { route: "QuestHandover", dynamic: false },
+            { route: "RepeatableQuestChange", dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        eventAction: string,
+        eventAction: "QuestAccept" | "QuestComplete" | "QuestHandover" | "RepeatableQuestChange",
         pmcData: IPmcData,
         body: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         this.logger.debug(`${eventAction} ${body.qid}`);
         switch (eventAction) {

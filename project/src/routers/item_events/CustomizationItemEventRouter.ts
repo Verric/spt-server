@@ -7,20 +7,23 @@ import { inject, injectable } from "tsyringe";
 @injectable()
 export class CustomizationItemEventRouter extends ItemEventRouterDefinition {
     constructor(
-        @inject("CustomizationCallbacks") protected customizationCallbacks: CustomizationCallbacks, // TODO: delay required
+        @inject("CustomizationCallbacks") protected customizationCallbacks: CustomizationCallbacks // TODO: delay required
     ) {
         super();
     }
 
     public override getHandledRoutes(): HandledRoute[] {
-        return [new HandledRoute("CustomizationBuy", false), new HandledRoute("CustomizationSet", false)];
+        return [
+            { route: "CustomizationBuy", dynamic: false },
+            { route: "CustomizationSet", dynamic: false },
+        ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "CustomizationBuy" | "CustomizationSet",
         pmcData: IPmcData,
         body: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "CustomizationBuy":

@@ -6,23 +6,25 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class WishlistItemEventRouter extends ItemEventRouterDefinition {
-    constructor(@inject("WishlistCallbacks") protected wishlistCallbacks: WishlistCallbacks) {
+    protected wishlistCallbacks: WishlistCallbacks;
+    constructor(@inject("WishlistCallbacks") wishlistCallbacks: WishlistCallbacks) {
         super();
+        this.wishlistCallbacks = wishlistCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute("AddToWishList", false),
-            new HandledRoute("RemoveFromWishList", false),
-            new HandledRoute("ChangeWishlistItemCategory", false),
+            { route: "AddToWishList", dynamic: false },
+            { route: "RemoveFromWishList", dynamic: false },
+            { route: "ChangeWishlistItemCategory", dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "AddToWishList" | "RemoveFromWishList" | "ChangeWishlistItemCategory",
         pmcData: IPmcData,
         request: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "AddToWishList":

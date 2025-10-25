@@ -2,7 +2,7 @@ import { IPmcData } from "@spt/models/eft/common/IPmcData";
 import { IItemEventRouterResponse } from "@spt/models/eft/itemEvent/IItemEventRouterResponse";
 import { ISptProfile } from "@spt/models/eft/profile/ISptProfile";
 
-export class Router {
+export abstract class Router {
     protected handledRoutes: HandledRoute[] = [];
 
     public getTopLevelRoute(): string {
@@ -44,13 +44,15 @@ export class StaticRouter extends Router {
     }
 
     public override getHandledRoutes(): HandledRoute[] {
-        return this.routes.map((route) => new HandledRoute(route.url, false));
+        return this.routes.map(({ url }) => ({ route: url, dynamic: false }));
     }
 }
 
 export class DynamicRouter extends Router {
-    constructor(private routes: RouteAction[]) {
+    private routes: RouteAction[];
+    constructor(routes: RouteAction[]) {
         super();
+        this.routes = routes;
     }
 
     public async handleDynamic(url: string, info: any, sessionID: string, output: string): Promise<any> {
@@ -58,7 +60,7 @@ export class DynamicRouter extends Router {
     }
 
     public override getHandledRoutes(): HandledRoute[] {
-        return this.routes.map((route) => new HandledRoute(route.url, true));
+        return this.routes.map(({ url }) => ({ route: url, dynamic: true }));
     }
 }
 
@@ -76,19 +78,16 @@ export class ItemEventRouterDefinition extends Router {
     }
 }
 
-export class SaveLoadRouter extends Router {
-    public async handleLoad(profile: ISptProfile): Promise<ISptProfile> {
-        throw new Error("This method needs to be overrode by the router classes");
-    }
+export abstract class SaveLoadRouter extends Router {
+    public abstract handleLoad(profile: ISptProfile): Promise<ISptProfile>;
 }
 
-export class HandledRoute {
-    constructor(public route: string, public dynamic: boolean) {}
+export interface HandledRoute {
+    route: string;
+    dynamic: boolean;
 }
 
-export class RouteAction {
-    constructor(
-        public url: string,
-        public action: (url: string, info: any, sessionID: string, output: string) => Promise<any>
-    ) {}
+export interface RouteAction {
+    url: string;
+    action: (url: string, info: any, sessionID: string, output: string) => Promise<any>;
 }

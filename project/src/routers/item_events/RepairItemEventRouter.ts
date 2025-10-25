@@ -6,19 +6,24 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class RepairItemEventRouter extends ItemEventRouterDefinition {
-    constructor(@inject("RepairCallbacks") protected repairCallbacks: RepairCallbacks) {
+    protected repairCallbacks: RepairCallbacks;
+    constructor(@inject("RepairCallbacks") repairCallbacks: RepairCallbacks) {
         super();
+        this.repairCallbacks = repairCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
-        return [new HandledRoute("Repair", false), new HandledRoute("TraderRepair", false)];
+        return [
+            { route: "Repair", dynamic: false },
+            { route: "TraderRepair", dynamic: false },
+        ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "Repair" | "TraderRepair",
         pmcData: IPmcData,
         body: any,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "Repair":

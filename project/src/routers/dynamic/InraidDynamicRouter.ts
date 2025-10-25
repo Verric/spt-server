@@ -1,18 +1,18 @@
 import { InraidCallbacks } from "@spt/callbacks/InraidCallbacks";
-import { DynamicRouter, RouteAction } from "@spt/di/Router";
+import { DynamicRouter } from "@spt/di/Router";
 import { INullResponseData } from "@spt/models/eft/httpResponse/INullResponseData";
 import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class InraidDynamicRouter extends DynamicRouter {
-    constructor(@inject("InraidCallbacks") protected inraidCallbacks: InraidCallbacks) {
+    constructor(@inject("InraidCallbacks") inraidCallbacks: InraidCallbacks) {
         super([
-            new RouteAction(
-                "/client/location/getLocalloot",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
-                    return this.inraidCallbacks.registerPlayer(url, info, sessionID);
+            {
+                url: "/client/location/getLocalloot",
+                action: async (url, info, sessionID, output): Promise<INullResponseData> => {
+                    return inraidCallbacks.registerPlayer(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 

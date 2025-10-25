@@ -4,5 +4,5 @@ export const EntryType = {
     RELEASE: "RELEASE",
     BLEEDING_EDGE: "BLEEDING_EDGE",
     BLEEDING_EDGE_MODS: "BLEEDING_EDGE_MODS",
-};
+} as const;
 export type EntryType = (typeof EntryType)[keyof typeof EntryType];

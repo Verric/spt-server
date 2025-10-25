@@ -7,25 +7,27 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class NoteItemEventRouter extends ItemEventRouterDefinition {
+    protected noteCallbacks: NoteCallbacks;
     constructor(
-        @inject("NoteCallbacks") protected noteCallbacks: NoteCallbacks, // TODO: delay required
+        @inject("NoteCallbacks") noteCallbacks: NoteCallbacks // TODO: delay required
     ) {
         super();
+        this.noteCallbacks = noteCallbacks;
     }
 
     public override getHandledRoutes(): HandledRoute[] {
         return [
-            new HandledRoute("AddNote", false),
-            new HandledRoute("EditNote", false),
-            new HandledRoute("DeleteNote", false),
+            { route: "AddNote", dynamic: false },
+            { route: "EditNote", dynamic: false },
+            { route: "DeleteNote", dynamic: false },
         ];
     }
 
     public override async handleItemEvent(
-        url: string,
+        url: "AddNote" | "EditNote" | "DeleteNote",
         pmcData: IPmcData,
         body: INoteActionData,
-        sessionID: string,
+        sessionID: string
     ): Promise<IItemEventRouterResponse> {
         switch (url) {
             case "AddNote":

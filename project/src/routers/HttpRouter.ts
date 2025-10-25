@@ -6,25 +6,11 @@ import { injectAll, injectable } from "tsyringe";
 export class HttpRouter {
     constructor(
         @injectAll("StaticRoutes") protected staticRouters: StaticRouter[],
-        @injectAll("DynamicRoutes") protected dynamicRoutes: DynamicRouter[],
+        @injectAll("DynamicRoutes") protected dynamicRoutes: DynamicRouter[]
     ) {}
 
-    protected groupBy<T>(list: T[], keyGetter: (t: T) => string): Map<string, T[]> {
-        const map: Map<string, T[]> = new Map();
-        for (const item of list) {
-            const key = keyGetter(item);
-            const collection = map.get(key);
-            if (!collection) {
-                map.set(key, [item]);
-            } else {
-                collection.push(item);
-            }
-        }
-        return map;
-    }
-
     public async getResponse(req: IncomingMessage, info: any, sessionID: string): Promise<string> {
-        const wrapper: ResponseWrapper = new ResponseWrapper("");
+        const wrapper: ResponseWrapper = { output: "" };
         let url = req.url;
 
         // remove retry from url
@@ -50,7 +36,7 @@ export class HttpRouter {
         sessionID: string,
         wrapper: ResponseWrapper,
         routers: Router[],
-        dynamic: boolean,
+        dynamic: boolean
     ): Promise<boolean> {
         let matched = false;
         for (const route of routers) {
@@ -67,6 +53,6 @@ export class HttpRouter {
     }
 }
 
-class ResponseWrapper {
-    constructor(public output: string) {}
+interface ResponseWrapper {
+    output: string;
 }

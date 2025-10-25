@@ -9,29 +9,29 @@ import { inject, injectable } from "tsyringe";
 export class WeatherStaticRouter extends StaticRouter {
     constructor(@inject("WeatherCallbacks") protected weatherCallbacks: WeatherCallbacks) {
         super([
-            new RouteAction(
-                "/client/weather",
-                async (
+            {
+                url: "/client/weather",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IWeatherData>> => {
                     return this.weatherCallbacks.getWeather(url, info, sessionID);
                 },
-            ),
+            },
 
-            new RouteAction(
-                "/client/localGame/weather",
-                async (
+            {
+                url: "/client/localGame/weather",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    _output: string,
+                    _output: string
                 ): Promise<IGetBodyResponseData<IGetLocalWeatherResponseData>> => {
                     return this.weatherCallbacks.getLocalWeather(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }
