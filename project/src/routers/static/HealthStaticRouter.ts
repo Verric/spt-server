@@ -7,17 +7,17 @@ import { inject, injectable } from "tsyringe";
 export class HealthStaticRouter extends StaticRouter {
     constructor(@inject("HealthCallbacks") protected healthCallbacks: HealthCallbacks) {
         super([
-            new RouteAction(
-                "/client/hideout/workout",
-                async (
+            {
+                url: "/client/hideout/workout",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<string>> => {
                     return this.healthCallbacks.handleWorkoutEffects(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

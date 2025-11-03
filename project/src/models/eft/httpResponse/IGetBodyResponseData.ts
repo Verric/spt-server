@@ -1,5 +1,5 @@
 export interface IGetBodyResponseData<Type> {
     err: number;
-    errmsg: any;
+    errmsg: string;
     data: Type;
 }

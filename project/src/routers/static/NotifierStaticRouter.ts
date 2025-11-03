@@ -11,23 +11,13 @@ export class NotifierStaticRouter extends StaticRouter {
         super([
             {
                 url: "/client/notifier/channel/create",
-                action: async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string
-                ): Promise<IGetBodyResponseData<INotifierChannel>> => {
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<INotifierChannel>> => {
                     return this.notifierCallbacks.createNotifierChannel(url, info, sessionID);
                 },
             },
             {
                 url: "/client/game/profile/select",
-                action: async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string
-                ): Promise<IGetBodyResponseData<ISelectProfileResponse>> => {
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<ISelectProfileResponse>> => {
                     return this.notifierCallbacks.selectProfile(url, info, sessionID);
                 },
             },

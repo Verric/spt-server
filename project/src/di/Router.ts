@@ -66,16 +66,14 @@ export class DynamicRouter extends Router {
 
 // The name of this class should be ItemEventRouter, but that name is taken,
 // So instead I added the definition
-export class ItemEventRouterDefinition extends Router {
-    public async handleItemEvent(
+export abstract class ItemEventRouterDefinition extends Router {
+    public abstract handleItemEvent(
         url: string,
         pmcData: IPmcData,
         body: any,
         sessionID: string,
         output: IItemEventRouterResponse
-    ): Promise<any> {
-        throw new Error("This method needs to be overrode by the router classes");
-    }
+    ): Promise<any>;
 }
 
 export abstract class SaveLoadRouter extends Router {

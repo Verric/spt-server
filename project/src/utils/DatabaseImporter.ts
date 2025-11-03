@@ -1,4 +1,3 @@
-import path from "node:path";
 import { ProgramStatics } from "@spt/ProgramStatics";
 import { OnLoad } from "@spt/di/OnLoad";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
@@ -34,7 +33,7 @@ export class DatabaseImporter implements OnLoad {
         @inject("EncodingUtil") protected encodingUtil: EncodingUtil,
         @inject("HashUtil") protected hashUtil: HashUtil,
         @inject("ImporterUtil") protected importerUtil: ImporterUtil,
-        @inject("ConfigServer") protected configServer: ConfigServer,
+        @inject("ConfigServer") protected configServer: ConfigServer
     ) {
         this.httpConfig = this.configServer.getConfig(ConfigTypes.HTTP);
     }
@@ -58,7 +57,7 @@ export class DatabaseImporter implements OnLoad {
                 if (await this.fileSystem.exists(fileWithPath)) {
                     this.hashedFile = this.jsonUtil.deserialize(
                         this.encodingUtil.fromBase64(await this.fileSystem.read(fileWithPath)),
-                        file,
+                        file
                     );
                 } else {
                     this.valid = VaildationResult.NOT_FOUND;
@@ -87,7 +86,7 @@ export class DatabaseImporter implements OnLoad {
         const dataToImport = await this.importerUtil.loadAsync<IDatabaseTables>(
             `${filepath}database/`,
             this.filepath,
-            async (fileWithPath: string, data: string) => await this.onReadValidate(fileWithPath, data),
+            async (fileWithPath: string, data: string) => await this.onReadValidate(fileWithPath, data)
         );
 
         const validation =

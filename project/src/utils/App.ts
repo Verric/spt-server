@@ -12,7 +12,13 @@ import { LocalisationService } from "@spt/services/LocalisationService";
 import { EncodingUtil } from "@spt/utils/EncodingUtil";
 import { TimeUtil } from "@spt/utils/TimeUtil";
 import { inject, injectAll, injectable } from "tsyringe";
+import fastifyCookie from "@fastify/cookie";
+import SessionIdPlugin from "@spt/fastify/plugins/SessionIdPlugin";
 
+import Fastify from "fastify";
+export const fastify = Fastify({ logger: false });
+fastify.register(fastifyCookie, { hook: "onRequest" });
+fastify.register(SessionIdPlugin);
 @injectable()
 export class App {
     protected onUpdateLastRun: Record<string, number> = {}; //taking guesses on type here
@@ -33,6 +39,8 @@ export class App {
     }
 
     public async load(): Promise<void> {
+        this.logger.info("STARTING FASTIFY, PORT:3000");
+        await fastify.listen({ port: 3000 });
         // execute onLoad callbacks
         this.logger.info(this.localisationService.getText("executing_startup_callbacks"));
 

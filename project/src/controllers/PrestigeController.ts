@@ -5,7 +5,6 @@ import { IPendingPrestige } from "@spt/models/eft/profile/ISptProfile";
 import { SaveServer } from "@spt/servers/SaveServer";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { inject, injectable } from "tsyringe";
-import type { IEmptyRequestData } from "../models/eft/common/IEmptyRequestData";
 
 @injectable()
 export class PrestigeController {
@@ -16,7 +15,7 @@ export class PrestigeController {
     constructor(
         @inject("SaveServer") saveServer: SaveServer,
         @inject("DatabaseService") databaseService: DatabaseService,
-        @inject("ProfileHelper") profileHelper: ProfileHelper,
+        @inject("ProfileHelper") profileHelper: ProfileHelper
     ) {
         this.saveServer = saveServer;
         this.databaseService = databaseService;
@@ -26,7 +25,7 @@ export class PrestigeController {
     /**
      * Handle /client/prestige/list
      */
-    public getPrestige(_sessionID: string, _info: IEmptyRequestData): IPrestige {
+    public getPrestige(): IPrestige {
         return this.databaseService.getTemplates().prestige;
     }
 

@@ -23,17 +23,17 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class SeasonalEventService {
-    protected seasonalEventConfig: ISeasonalEventConfig;
-    protected questConfig: IQuestConfig;
-    protected httpConfig: IHttpConfig;
-    protected weatherConfig: IWeatherConfig;
-    protected locationConfig: ILocationConfig;
+    private seasonalEventConfig: ISeasonalEventConfig;
+    private questConfig: IQuestConfig;
+    private httpConfig: IHttpConfig;
+    private weatherConfig: IWeatherConfig;
+    private locationConfig: ILocationConfig;
 
-    protected halloweenEventActive?: boolean = undefined;
-    protected christmasEventActive?: boolean = undefined;
+    private halloweenEventActive?: boolean = undefined;
+    private christmasEventActive?: boolean = undefined;
 
     /** All events active at this point in time */
-    protected currentlyActiveEvents: ISeasonalEvent[] = [];
+    private currentlyActiveEvents: ISeasonalEvent[] = [];
 
     constructor(
         @inject("PrimaryLogger") protected logger: ILogger,

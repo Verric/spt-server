@@ -21,7 +21,7 @@ export class AchievementController {
      * Get base achievements
      * @param sessionID Session id
      */
-    public getAchievements(_sessionID: string): IGetAchievementsResponse {
+    public getAchievements(): IGetAchievementsResponse {
         return {
             elements: this.databaseService.getAchievements(),
         };
@@ -32,7 +32,7 @@ export class AchievementController {
      * @param sessionId Session id
      * @returns ICompletedAchievementsResponse
      */
-    public getAchievementStatistics(_sessionId: string): ICompletedAchievementsResponse {
+    public getAchievementStatistics(): ICompletedAchievementsResponse {
         const achievements = this.databaseService.getAchievements();
         const stats: Record<string, number> = {};
 

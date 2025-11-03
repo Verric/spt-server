@@ -8,17 +8,17 @@ import { inject, injectable } from "tsyringe";
 export class InsuranceStaticRouter extends StaticRouter {
     constructor(@inject("InsuranceCallbacks") protected insuranceCallbacks: InsuranceCallbacks) {
         super([
-            new RouteAction(
-                "/client/insurance/items/list/cost",
-                async (
+            {
+                url: "/client/insurance/items/list/cost",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IGetInsuranceCostResponseData>> => {
                     return this.insuranceCallbacks.getInsuranceCost(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

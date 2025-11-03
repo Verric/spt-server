@@ -32,7 +32,7 @@ export class InraidController {
         @inject("ProfileHelper") profileHelper: ProfileHelper,
         @inject("LocalisationService") localisationService: LocalisationService,
         @inject("ApplicationContext") applicationContext: ApplicationContext,
-        @inject("ConfigServer") configServer: ConfigServer,
+        @inject("ConfigServer") configServer: ConfigServer
     ) {
         this.logger = logger;
         this.saveServer = saveServer;
@@ -91,11 +91,11 @@ export class InraidController {
         return this.inRaidConfig;
     }
 
-    public getTraitorScavHostileChance(_url: string, _sessionID: string): number {
+    public getTraitorScavHostileChance(): number {
         return this.inRaidConfig.playerScavHostileChancePercent;
     }
 
-    public getBossTypes(_url: string, _sessionId: string): string[] {
+    public getBossTypes(): string[] {
         return this.botConfig.bosses;
     }
 }

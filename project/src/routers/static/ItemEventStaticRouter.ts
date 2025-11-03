@@ -8,17 +8,17 @@ import { inject, injectable } from "tsyringe";
 export class ItemEventStaticRouter extends StaticRouter {
     constructor(@inject("ItemEventCallbacks") protected itemEventCallbacks: ItemEventCallbacks) {
         super([
-            new RouteAction(
-                "/client/game/profile/items/moving",
-                async (
+            {
+                url: "/client/game/profile/items/moving",
+                action: async (
                     url: string,
                     info: any,
                     sessionID: string,
-                    output: string,
+                    output: string
                 ): Promise<IGetBodyResponseData<IItemEventRouterResponse>> => {
                     return this.itemEventCallbacks.handleEvents(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

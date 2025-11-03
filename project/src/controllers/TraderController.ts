@@ -22,24 +22,22 @@ import { inject, injectable } from "tsyringe";
 
 @injectable()
 export class TraderController {
-    protected traderConfig: ITraderConfig;
-    protected logger: ILogger;
-    protected timeUtil: TimeUtil;
-    protected databaseService: DatabaseService;
-    protected traderAssortHelper: TraderAssortHelper;
-    protected profileHelper: ProfileHelper;
-    protected traderHelper: TraderHelper;
-    protected paymentHelper: PaymentHelper;
-    protected traderAssortService: TraderAssortService;
-    protected ragfairPriceService: RagfairPriceService;
-    protected traderPurchasePersisterService: TraderPurchasePersisterService;
-    protected fenceService: FenceService;
-    protected fenceBaseAssortGenerator: FenceBaseAssortGenerator;
-    protected configServer: ConfigServer;
-    protected cloner: ICloner;
+    private traderConfig: ITraderConfig;
+    private timeUtil: TimeUtil;
+    private databaseService: DatabaseService;
+    private traderAssortHelper: TraderAssortHelper;
+    private profileHelper: ProfileHelper;
+    private traderHelper: TraderHelper;
+    private paymentHelper: PaymentHelper;
+    private traderAssortService: TraderAssortService;
+    private ragfairPriceService: RagfairPriceService;
+    private traderPurchasePersisterService: TraderPurchasePersisterService;
+    private fenceService: FenceService;
+    private fenceBaseAssortGenerator: FenceBaseAssortGenerator;
+    private configServer: ConfigServer;
+    private cloner: ICloner;
 
     constructor(
-        @inject("PrimaryLogger") logger: ILogger,
         @inject("TimeUtil") timeUtil: TimeUtil,
         @inject("DatabaseService") databaseService: DatabaseService,
         @inject("TraderAssortHelper") traderAssortHelper: TraderAssortHelper,
@@ -53,9 +51,8 @@ export class TraderController {
         @inject("FenceService") fenceService: FenceService,
         @inject("FenceBaseAssortGenerator") fenceBaseAssortGenerator: FenceBaseAssortGenerator,
         @inject("ConfigServer") configServer: ConfigServer,
-        @inject("PrimaryCloner") cloner: ICloner,
+        @inject("PrimaryCloner") cloner: ICloner
     ) {
-        this.logger = logger;
         this.timeUtil = timeUtil;
         this.databaseService = databaseService;
         this.traderAssortHelper = traderAssortHelper;

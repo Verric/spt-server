@@ -7,30 +7,35 @@ import { inject, injectable } from "tsyringe";
 export class InraidStaticRouter extends StaticRouter {
     constructor(@inject("InraidCallbacks") protected inraidCallbacks: InraidCallbacks) {
         super([
-            new RouteAction(
-                "/raid/profile/scavsave",
-                async (url: string, info: any, sessionID: string, output: string): Promise<INullResponseData> => {
+            {
+                url: "/raid/profile/scavsave",
+                action: async (
+                    url: string,
+                    info: any,
+                    sessionID: string,
+                    output: string
+                ): Promise<INullResponseData> => {
                     return this.inraidCallbacks.saveProgress(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/singleplayer/settings/raid/menu",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+            },
+            {
+                url: "/singleplayer/settings/raid/menu",
+                action: async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
                     return this.inraidCallbacks.getRaidMenuSettings();
                 },
-            ),
-            new RouteAction(
-                "/singleplayer/scav/traitorscavhostile",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+            },
+            {
+                url: "/singleplayer/scav/traitorscavhostile",
+                action: async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
                     return this.inraidCallbacks.getTraitorScavHostileChance(url, info, sessionID);
                 },
-            ),
-            new RouteAction(
-                "/singleplayer/bosstypes",
-                async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
+            },
+            {
+                url: "/singleplayer/bosstypes",
+                action: async (url: string, info: any, sessionID: string, output: string): Promise<string> => {
                     return this.inraidCallbacks.getBossTypes(url, info, sessionID);
                 },
-            ),
+            },
         ]);
     }
 }

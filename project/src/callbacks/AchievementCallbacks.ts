@@ -25,9 +25,9 @@ export class AchievementCallbacks {
     public getAchievements(
         _url: string,
         _info: IEmptyRequestData,
-        sessionID: string
+        _sessionID: string
     ): IGetBodyResponseData<IGetAchievementsResponse> {
-        return this.httpResponse.getBody(this.achievementController.getAchievements(sessionID));
+        return this.httpResponse.getBody(this.achievementController.getAchievements());
     }
 
     /**
@@ -36,8 +36,8 @@ export class AchievementCallbacks {
     public statistic(
         _url: string,
         _info: IEmptyRequestData,
-        sessionID: string
+        _sessionID: string
     ): IGetBodyResponseData<ICompletedAchievementsResponse> {
-        return this.httpResponse.getBody(this.achievementController.getAchievementStatistics(sessionID));
+        return this.httpResponse.getBody(this.achievementController.getAchievementStatistics());
     }
 }

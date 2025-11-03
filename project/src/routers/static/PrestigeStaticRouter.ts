@@ -1,5 +1,5 @@
 import type { PrestigeCallbacks } from "@spt/callbacks/PrestigeCallbacks";
-import { RouteAction, StaticRouter } from "@spt/di/Router";
+import { StaticRouter } from "@spt/di/Router";
 import type { IGetBodyResponseData } from "@spt/models/eft/httpResponse/IGetBodyResponseData";
 import { INullResponseData } from "@spt/models/eft/httpResponse/INullResponseData";
 import { inject, injectable } from "tsyringe";
@@ -10,24 +10,14 @@ export class PrestigeStaticRouter extends StaticRouter {
         super([
             {
                 url: "/client/prestige/list",
-                action: async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    output: string
-                ): Promise<IGetBodyResponseData<any>> => {
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<any>> => {
                     return this.prestigeCallbacks.getPrestige(url, info, sessionID);
                 },
             },
 
             {
                 url: "/client/prestige/obtain",
-                action: async (
-                    url: string,
-                    info: any,
-                    sessionID: string,
-                    _output: string
-                ): Promise<INullResponseData> => {
+                action: async (url, info: any, sessionID): Promise<INullResponseData> => {
                     return await this.prestigeCallbacks.obtainPrestige(url, info, sessionID);
                 },
             },

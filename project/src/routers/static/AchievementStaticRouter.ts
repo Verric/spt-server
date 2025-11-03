@@ -11,24 +11,14 @@ export class AchievementStaticRouter extends StaticRouter {
         super([
             {
                 url: "/client/achievement/list",
-                action: async (
-                    url,
-                    info,
-                    sessionID,
-                    output
-                ): Promise<IGetBodyResponseData<IGetAchievementsResponse>> => {
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<IGetAchievementsResponse>> => {
                     return achievementCallbacks.getAchievements(url, info, sessionID);
                 },
             },
 
             {
                 url: "/client/achievement/statistic",
-                action: async (
-                    url,
-                    info,
-                    sessionID,
-                    output
-                ): Promise<IGetBodyResponseData<ICompletedAchievementsResponse>> => {
+                action: async (url, info, sessionID): Promise<IGetBodyResponseData<ICompletedAchievementsResponse>> => {
                     return achievementCallbacks.statistic(url, info, sessionID);
                 },
             },

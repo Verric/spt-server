@@ -23,7 +23,7 @@ export class QuestCallbacks {
     constructor(
         @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
         @inject("QuestController") questController: QuestController,
-        @inject("RepeatableQuestController") repeatableQuestController: RepeatableQuestController,
+        @inject("RepeatableQuestController") repeatableQuestController: RepeatableQuestController
     ) {
         this.httpResponse = httpResponse;
         this.questController = questController;
@@ -36,7 +36,7 @@ export class QuestCallbacks {
     public changeRepeatableQuest(
         pmcData: IPmcData,
         body: IRepeatableQuestChangeRequest,
-        sessionID: string,
+        sessionID: string
     ): IItemEventRouterResponse {
         return this.repeatableQuestController.changeRepeatableQuest(pmcData, body, sessionID);
     }
@@ -57,7 +57,7 @@ export class QuestCallbacks {
     public completeQuest(
         pmcData: IPmcData,
         body: ICompleteQuestRequestData,
-        sessionID: string,
+        sessionID: string
     ): IItemEventRouterResponse {
         return this.questController.completeQuest(pmcData, body, sessionID);
     }
@@ -68,7 +68,7 @@ export class QuestCallbacks {
     public handoverQuest(
         pmcData: IPmcData,
         body: IHandoverQuestRequestData,
-        sessionID: string,
+        sessionID: string
     ): IItemEventRouterResponse {
         return this.questController.handoverQuest(pmcData, body, sessionID);
     }
@@ -86,7 +86,7 @@ export class QuestCallbacks {
     public activityPeriods(
         _url: string,
         _info: IEmptyRequestData,
-        sessionID: string,
+        sessionID: string
     ): IGetBodyResponseData<IPmcDataRepeatableQuest[]> {
         return this.httpResponse.getBody(this.repeatableQuestController.getClientRepeatableQuests(sessionID));
     }

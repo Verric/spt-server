@@ -16,7 +16,7 @@ export class InraidCallbacks {
 
     constructor(
         @inject("InraidController") inraidController: InraidController,
-        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil,
+        @inject("HttpResponseUtil") httpResponse: HttpResponseUtil
     ) {
         this.inraidController = inraidController;
         this.httpResponse = httpResponse;
@@ -55,11 +55,11 @@ export class InraidCallbacks {
         return this.httpResponse.noBody(this.inraidController.getInraidConfig().raidMenuSettings);
     }
 
-    public getTraitorScavHostileChance(url: string, _info: IEmptyRequestData, sessionId: string): string {
-        return this.httpResponse.noBody(this.inraidController.getTraitorScavHostileChance(url, sessionId));
+    public getTraitorScavHostileChance(url: string, _info: IEmptyRequestData, _sessionId: string): string {
+        return this.httpResponse.noBody(this.inraidController.getTraitorScavHostileChance());
     }
 
-    public getBossTypes(url: string, _info: IEmptyRequestData, sessionId: string): string {
-        return this.httpResponse.noBody(this.inraidController.getBossTypes(url, sessionId));
+    public getBossTypes(url: string, _info: IEmptyRequestData, _sessionId: string): string {
+        return this.httpResponse.noBody(this.inraidController.getBossTypes());
     }
 }

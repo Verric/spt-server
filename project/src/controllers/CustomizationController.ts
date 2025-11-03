@@ -50,7 +50,7 @@ export class CustomizationController {
         @inject("LocalisationService") localisationService: LocalisationService,
         @inject("ProfileHelper") profileHelper: ProfileHelper,
         @inject("PaymentService") paymentService: PaymentService,
-        @inject("PrimaryCloner") cloner: ICloner,
+        @inject("PrimaryCloner") cloner: ICloner
     ) {
         this.logger = logger;
         this.eventOutputHolder = eventOutputHolder;
@@ -78,7 +78,7 @@ export class CustomizationController {
 
         // Return all suits that have a side array containing the players side (usec/bear)
         const matchedSuits = matchingSuits?.filter((matchingSuit) =>
-            clothing[matchingSuit.suiteId]._props.Side.includes(pmcData.Info.Side),
+            clothing[matchingSuit.suiteId]._props.Side.includes(pmcData.Info.Side)
         );
         if (matchingSuits === undefined)
             throw new Error(this.localisationService.getText("customisation-unable_to_get_trader_suits", traderID));
@@ -97,14 +97,14 @@ export class CustomizationController {
     public buyCustomisation(
         pmcData: IPmcData,
         buyClothingRequest: IBuyClothingRequestData,
-        sessionId: string,
+        sessionId: string
     ): IItemEventRouterResponse {
         const output = this.eventOutputHolder.getOutput(sessionId);
 
         const traderOffer = this.getTraderClothingOffer(sessionId, buyClothingRequest.offer);
         if (!traderOffer) {
             this.logger.error(
-                this.localisationService.getText("customisation-unable_to_find_suit_by_id", buyClothingRequest.offer),
+                this.localisationService.getText("customisation-unable_to_find_suit_by_id", buyClothingRequest.offer)
             );
 
             return output;
@@ -117,7 +117,7 @@ export class CustomizationController {
                 this.localisationService.getText("customisation-item_already_purchased", {
                     itemId: suitDetails._id,
                     itemName: suitDetails._name,
-                }),
+                })
             );
 
             return output;
@@ -170,7 +170,7 @@ export class CustomizationController {
         sessionId: string,
         pmcData: IPmcData,
         itemsToPayForClothingWith: IPaymentItemForClothing[],
-        output: IItemEventRouterResponse,
+        output: IItemEventRouterResponse
     ): void {
         for (const inventoryItemToProcess of itemsToPayForClothingWith) {
             const request: IProcessBuyTradeRequestData = {
@@ -205,12 +205,12 @@ export class CustomizationController {
     }
 
     /** Handle client/hideout/customization/offer/list */
-    public getHideoutCustomisation(_sessionID: string, _info: IEmptyRequestData): IHideoutCustomisation {
+    public getHideoutCustomisation(): IHideoutCustomisation {
         return this.databaseService.getHideout().customisation;
     }
 
     /** Handle client/customization/storage */
-    public getCustomisationStorage(sessionID: string, _info: IEmptyRequestData): ICustomisationStorage[] {
+    public getCustomisationStorage(sessionID: string): ICustomisationStorage[] {
         const customisationResultsClone = this.cloner.clone(this.databaseService.getTemplates().customisationStorage);
 
         const profile = this.profileHelper.getFullProfile(sessionID);
@@ -228,7 +228,7 @@ export class CustomizationController {
     public setCustomisation(
         sessionId: string,
         request: ICustomizationSetRequest,
-        pmcData: IPmcData,
+        pmcData: IPmcData
     ): IItemEventRouterResponse {
         for (const customisation of request.customizations) {
             switch (customisation.type) {
@@ -256,7 +256,7 @@ export class CustomizationController {
         const dbSuit = this.databaseService.getCustomization()[customisation.id];
         if (!dbSuit) {
             this.logger.error(
-                `Unable to find suit customisation id: ${customisation.id}, cannot apply clothing to player profile: ${pmcData._id}`,
+                `Unable to find suit customisation id: ${customisation.id}, cannot apply clothing to player profile: ${pmcData._id}`
             );
 
             return;

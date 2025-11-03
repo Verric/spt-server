@@ -39,7 +39,7 @@ export class ProfileController {
         @inject("CreateProfileService") createProfileService: CreateProfileService,
         @inject("PlayerScavGenerator") playerScavGenerator: PlayerScavGenerator,
         @inject("ProfileHelper") profileHelper: ProfileHelper,
-        @inject("ItemHelper") itemHelper: ItemHelper,
+        @inject("ItemHelper") itemHelper: ItemHelper
     ) {
         this.logger = logger;
         this.cloner = cloner;
@@ -136,7 +136,7 @@ export class ProfileController {
     /**
      * Handle client/game/profile/nickname/validate
      */
-    public validateNickname(info: IValidateNicknameRequestData, sessionID: string): string {
+    public validateNickname(info: IValidateNicknameRequestData, sessionID: string): "tooshort" | "taken" | "OK" {
         if (info.nickname.length < 3) {
             return "tooshort";
         }
@@ -152,7 +152,7 @@ export class ProfileController {
      * Handle client/game/profile/nickname/change event
      * Client allows player to adjust their profile name
      */
-    public changeNickname(info: IProfileChangeNicknameRequestData, sessionID: string): string {
+    public changeNickname(info: IProfileChangeNicknameRequestData, sessionID: string) {
         const output = this.validateNickname(info, sessionID);
 
         if (output === "OK") {
